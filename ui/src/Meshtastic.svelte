@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { State } from 'api/src/lib/state'
-
-  export let address = new State('address', '')
-  export let connectionStatus = new State('connectionStatus', 'disconnected')
+  import { connectionStatus, address } from 'api/src/stores'
 </script>
 
 <div>

@@ -1,12 +1,7 @@
 import { HttpConnection } from '@meshtastic/js'
-import { State } from './lib/state'
+import { address, connectionStatus } from './stores'
 
 let connection: HttpConnection
-
-export let address = new State('address', '', { persist: true })
-export let connectionStatus = new State('connectionStatus', 'disconnected')
-export let lastFromRadio = new State('lastFromRadio')
-
 address.subscribe(connect)
 
 /**

@@ -17,7 +17,6 @@ State.subscribe(({ state, action, args }) => {
 })
 
 wss.msg.on('state', ({ name, action, args }, socket) => {
-  console.log('[State]', action, args)
   State.states[name].flags.socket = socket
   State.states[name].call(action, args)
   delete State.states[name].flags.socket

@@ -16,5 +16,5 @@ export function getAllKeyValues(): Record<string, any> {
 
 State.defaults = store
 State.subscribe(({ state, action, args }) => {
-  if (state.flags.persist) store(state.name, state.value)
+  if (state.flags.persist == true || state.flags.persist == 'api') store(state.name, state.value)
 })

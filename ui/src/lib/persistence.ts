@@ -8,7 +8,7 @@ State.defaults = (await entries()).reduce((obj: Record<string, any>, [key, value
 }, {})
 
 State.subscribe(({ state, action, args }) => {
-  if (state.flags.persist) {
+  if (state.flags.persist == true || state.flags.persist == 'ui') {
     set(state.name, state.value)
   }
 })

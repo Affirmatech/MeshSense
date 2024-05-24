@@ -6,7 +6,7 @@ type ValueOf<T> = T[keyof T]
 
 interface StateFlags {
   /** Persist state to disk and reload on next startup */
-  persist?: boolean
+  persist?: boolean | 'api' | 'ui'
   primaryKey?: string
   hideLog?: boolean
   [e: string]: any
