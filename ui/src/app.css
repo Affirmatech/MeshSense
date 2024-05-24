@@ -32,7 +32,7 @@ a:hover {
 }
 
 div {
-  @apply items-center;
+  /* @apply items-center; */
 }
 
 body {
@@ -49,11 +49,11 @@ h2 {
 }
 
 .header-t {
-  @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 rounded-t;
+  @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 font-bold text-white rounded-t;
 }
 
 .header-t + * {
-  @apply flex rounded-b p-1 px-3 shadow-inner shadow-black/50 bg-black/20;
+  @apply rounded-b p-1 px-3 shadow-inner shadow-black/50 bg-black/20;
 }
 
 .input {

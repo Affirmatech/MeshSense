@@ -48,7 +48,7 @@ export class State<T = any> {
     State.states[name] = this
     this.name = name
     this.value = State.defaults[name] === undefined ? value : State.defaults[name]
-    console.log('[State]', name, State.defaults[name] === undefined ? 'init' : 'loaded', Object.keys(this.value || {})?.['length'] || this.value?.['length'] || '')
+    // console.log('[State]', name, State.defaults[name] === undefined ? 'init' : 'loaded', this.value)
     this.flags = flags
   }
 
@@ -111,7 +111,7 @@ export class State<T = any> {
   }
 
   /** Search array and run `Object.assign` on first match.  If no match, value will be appended */
-  upsert(value: any, primaryKey: string = (this.flags.primaryKey as string) || 'id') {
+  upsert(value: object, primaryKey: string = (this.flags.primaryKey as string) || 'id') {
     let match = (this.value as any[]).find((record: any) => record[primaryKey] == value[primaryKey] && record[primaryKey] != undefined)
     if (match) Object.assign(match, value)
     else (this.value as any[]).push(value)

@@ -1,5 +1,5 @@
 import { HttpConnection } from '@meshtastic/js'
-import { address, connectionStatus } from './stores'
+import { address, channels, connectionStatus, lastFromRadio } from './vars'
 
 let connection: HttpConnection
 address.subscribe(connect)
@@ -20,6 +20,8 @@ async function connect(address: string) {
   // Create a new HttpConnection with a unique identifier
   connection = new HttpConnection()
 
+  channels.set([])
+
   connection.events.onDeviceStatus.subscribe((e) => {
     console.log('[meshtastic] Device Status', e)
     if (e == 6) {
@@ -27,6 +29,14 @@ async function connect(address: string) {
     } else if (e == 7) {
       connectionStatus.set('connected')
     }
+  })
+
+  connection.events.onChannelPacket.subscribe((e) => {
+    channels.upsert(e)
+  })
+
+  connection.events.onFromRadio.subscribe((e) => {
+    lastFromRadio.set(e)
   })
 
   // Attempt to connect to the specified MeshTastic Node

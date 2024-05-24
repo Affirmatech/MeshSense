@@ -34,7 +34,7 @@ export class WebSocketClient {
       events.on('state', ({ name, action, args }) => setState(name, action, args))
       events.on('initState', (stateData) => {
         State.defaults = stateData
-        if (stateData) console.log('[ws] Received state defaults')
+        if (stateData) console.log('[ws] Received current state')
         for (let [name, value] of Object.entries(stateData)) {
           setState(name, 'set', [value])
         }
