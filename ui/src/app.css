@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#app {
+  display: contents;
+  @apply text-blue-300;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+div {
+  @apply items-center;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  /* min-width: 320px; */
+  min-height: 100vh;
+  height: 100vh;
+  @apply from-slate-600 bg-gradient-to-br to-blue-950;
+}
+
+h2 {
+  @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 font-bold text-white;
+}
+
+.header-t {
+  @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 rounded-t;
+}
+
+.header-t + * {
+  @apply flex rounded-b p-1 px-3 shadow-inner shadow-black/50 bg-black/20;
+}
+
+.input {
+  @apply rounded p-1 px-2 bg-slate-900 w-full;
+}
+
+.input,
+.btn {
+  @apply focus:outline focus:outline-2 focus:outline-cyan-400;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.btn {
+  @apply px-2 py-0.5 from-blue-800 bg-gradient-to-br to-cyan-700 rounded text-blue-100  border-blue-500;
+}
+
+button:hover {
+  @apply brightness-110;
+}
+
+button:active {
+  @apply brightness-90;
+}
+
+.card {
+  @apply bg-black/20 border border-black/50 rounded-lg p-2;
+}
+
+.label {
+  @apply select-none;
+}
