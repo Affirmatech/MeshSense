@@ -1,28 +1,18 @@
 <script lang="ts">
   import { connectionStatus, address } from 'api/src/vars'
   import Card from './lib/Card.svelte'
+
+  let connectionIcons = {
+    connected: '🟢',
+    connecting: '🟡',
+    disconnected: '🔴'
+  }
 </script>
 
-<!-- Address -->
-<div>
-  <!-- <Card title="Address">Hello!</Card> -->
-  <h2 class="header-t">Address</h2>
-  <div class="flex place-content-between">
-    <div class="flex gap-2">
-      <!-- Connection Icon -->
-      {#if $connectionStatus == 'connected'}
-        <div>🟢</div>
-      {:else if $connectionStatus == 'connecting'}
-        <div>🟡</div>
-      {:else}
-        <div>🔴</div>
-      {/if}
-
-      <!-- URL -->
-      {$address || '(none)'}
-    </div>
-
-    <!-- Connect / Disconnect -->
+<Card title="Address">
+  <div class="grid grid-cols-[auto_1fr_auto] p-2 gap-2">
+    <div>{connectionIcons[$connectionStatus]}</div>
+    <div>{$address || '(none)'}</div>
     {#if $connectionStatus == 'disconnected'}
       <button
         class="btn"
@@ -36,4 +26,4 @@
       <button class="btn" on:click={() => ($address = '')}>Disconnect</button>
     {/if}
   </div>
-</div>
+</Card>
