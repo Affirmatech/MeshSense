@@ -4,6 +4,7 @@ export let address = new State('address', '', { persist: 'api' })
 export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected'>('connectionStatus', 'disconnected')
 export let lastFromRadio = new State('lastFromRadio')
 export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index' })
+export let packets = new State<any[]>('packets', [])
 
 export type Packet = {
   id: number

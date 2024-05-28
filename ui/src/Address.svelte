@@ -10,7 +10,7 @@
 </script>
 
 <Card title="Address">
-  <div class="grid grid-cols-[auto_1fr_auto] p-2 gap-2">
+  <div class="grid grid-cols-[auto_1fr_auto] p-2 gap-2 items-center">
     <div>{connectionIcons[$connectionStatus]}</div>
     <div>{$address || '(none)'}</div>
     {#if $connectionStatus == 'disconnected'}
