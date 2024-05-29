@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { nodes, packets } from 'api/src/vars'
+  import { nodes, packets, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { scrollToBottom } from './lib/util'
+  import { State } from 'api/src/lib/state'
 
   function getNodeName(id: number) {
     if (id == 4294967295) return 'all'
@@ -9,7 +10,13 @@
     return node?.user?.shortName || node?.user?.id
   }
 
+  function shouldPacketBeShown(packet: MeshPacket, includeTx) {
+    if (!includeTx && packet.rxSnr == 0) return false
+    return true
+  }
+
   let packetsDiv: HTMLDivElement
+  let includeTx = true
   $: if ($packets) scrollToBottom(packetsDiv)
 </script>
 
@@ -24,7 +31,7 @@
     <div class="w-10">Hops</div>
   </h2>
   <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start">
-    {#each $packets || [] as packet}
+    {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx)) || [] as packet}
       <div class="flex gap-2 whitespace-nowrap">
         <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
         <div class="w-24 flex gap-1">
@@ -50,4 +57,7 @@
       <!-- <div>{JSON.stringify(packet)}</div> -->
     {/each}
   </div>
+  <h2 class="font-normal text-sm self-end">
+    <label>Tx <input type="checkbox" bind:checked={includeTx} /></label>
+  </h2>
 </Card>

@@ -28,7 +28,7 @@
       'address channels'
       'nodes log'
       'nodes map';
-    grid-template-rows: auto 1fr 2fr;
+    grid-template-rows: auto 1fr 1fr;
     grid-template-columns: auto 1fr;
   }
 </style>
