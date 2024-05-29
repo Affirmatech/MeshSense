@@ -3,8 +3,8 @@
   import Card from './lib/Card.svelte'
 </script>
 
-<Card title="Log">
-  <div class="p-2 text-sm overflow-auto grid">
+<Card title="Log" {...$$restProps}>
+  <div class="p-2 text-sm overflow-auto grid h-full content-start">
     <div class="flex gap-2 font-bold">
       <div class="w-28">Date</div>
       <div class="w-48 whitespace-nowrap overflow-hidden">Nodes</div>

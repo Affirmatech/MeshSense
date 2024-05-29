@@ -4,8 +4,8 @@
   import { unixSecondsTimeAgo } from './lib/util'
 </script>
 
-<Card title="Nodes">
-  <div class="p-1 text-sm overflow-auto grid gap-1">
+<Card title="Nodes" {...$$restProps}>
+  <div class="p-1 text-sm grid gap-1">
     {#each $nodes as node}
       <div class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5">
         <!-- Longname -->

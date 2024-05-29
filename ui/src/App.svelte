@@ -14,17 +14,17 @@
 <ServiceWorker />
 
 <main class="layout w-full grid content-start gap-2 p-2 overflow-auto h-full">
-  <Address style="grid-area: tl;" />
-  <Channels />
-  <Nodes />
-  <Log />
+  <Address style="grid-area: address;" />
+  <Channels style="grid-area: channels;" />
+  <Nodes style="grid-area: nodes;" />
+  <Log style="grid-area: log;" />
 </main>
 
 <style>
   .layout {
     grid-template-areas:
-      'tl tr'
-      'bl br';
+      'address channels'
+      'nodes log';
     grid-template-rows: auto 1fr;
     grid-template-columns: auto 1fr;
   }
