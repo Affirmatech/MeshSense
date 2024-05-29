@@ -47,8 +47,8 @@ export class State<T = any> {
     }
     State.states[name] = this
     this.name = name
-    this.value = State.defaults[name] === undefined ? value : State.defaults[name]
-    // console.log('[State]', name, State.defaults[name] === undefined ? 'init' : 'loaded', this.value)
+    this.value = State.defaults[name] == undefined ? value : State.defaults[name]
+    console.log('[State]', name, State.defaults[name] == undefined ? 'init' : 'loaded', this.value)
     this.flags = flags
   }
 

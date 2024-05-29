@@ -5,6 +5,7 @@
   import { WebSocketClient } from './lib/wsc'
   import Channels from './Channels.svelte'
   import Log from './Log.svelte'
+  import Nodes from './Nodes.svelte'
 
   export const ws = new WebSocketClient(import.meta.env.VITE_API)
   axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
@@ -12,11 +13,19 @@
 
 <ServiceWorker />
 
-<main class="w-full grid grid-cols-[auto_1fr] content-start gap-2 p-2 overflow-auto">
-  <Address />
+<main class="layout w-full grid content-start gap-2 p-2 overflow-auto h-full">
+  <Address style="grid-area: tl;" />
   <Channels />
+  <Nodes />
   <Log />
 </main>
 
 <style>
+  .layout {
+    grid-template-areas:
+      'tl tr'
+      'bl br';
+    grid-template-rows: auto 1fr;
+    grid-template-columns: auto 1fr;
+  }
 </style>

@@ -1,5 +1,6 @@
 import { HttpConnection } from '@meshtastic/js'
-import { address, channels, connectionStatus, lastFromRadio } from './vars'
+import { address, channels, connectionStatus, lastFromRadio, nodes, packets } from './vars'
+import { wss } from './lib/server'
 
 let connection: HttpConnection
 address.subscribe(connect)
@@ -19,7 +20,6 @@ async function connect(address: string) {
 
   // Create a new HttpConnection with a unique identifier
   connection = new HttpConnection()
-
   channels.set([])
 
   connection.events.onDeviceStatus.subscribe((e) => {
@@ -35,9 +35,30 @@ async function connect(address: string) {
     channels.upsert(e)
   })
 
-  connection.events.onFromRadio.subscribe((e) => {
-    lastFromRadio.set(e)
+  // connection.events.onFromRadio.subscribe((e) => {
+  //   lastFromRadio.set(e)
+  //   if ('packet' in e) packets.push(e)
+  // })
+
+  connection.events.onMeshPacket.subscribe((e) => {
+    if (e.from) {
+      // nodes.upsert({
+      //   num: e.from,
+      //   lastHeard: e.rxTime,
+      //   snr: e.Snr,
+      //   rssi: e.rxRssi
+      // })
+      packets.push(e)
+    }
   })
+
+  connection.events.onNodeInfoPacket.subscribe((e) => {
+    nodes.upsert(e)
+  })
+
+  // connection.events.onTelemetryPacket.subscribe((e) => {
+  //   console.log('telemetryPacket', e)
+  // })
 
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)

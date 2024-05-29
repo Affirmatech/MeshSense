@@ -5,6 +5,8 @@ export let connectionStatus = new State<'connected' | 'connecting' | 'disconnect
 export let lastFromRadio = new State('lastFromRadio')
 export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index' })
 export let packets = new State<any[]>('packets', [])
+export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
+export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
 
 export type Packet = {
   id: number
@@ -70,6 +72,7 @@ export type NodeInfo = {
   user: User
   position: Position
   deviceMetrics: DeviceMetrics
+  rssi?: number
 }
 
 export type ChannelSettings = {

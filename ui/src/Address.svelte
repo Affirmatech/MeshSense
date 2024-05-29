@@ -9,7 +9,7 @@
   }
 </script>
 
-<Card title="Address">
+<Card title="Address" {...$$restProps}>
   <div class="grid grid-cols-[auto_1fr_auto] p-2 gap-2 items-center">
     <div>{connectionIcons[$connectionStatus]}</div>
     <div>{$address || '(none)'}</div>
