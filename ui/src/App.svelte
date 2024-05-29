@@ -6,6 +6,7 @@
   import Channels from './Channels.svelte'
   import Log from './Log.svelte'
   import Nodes from './Nodes.svelte'
+  import Map from './Map.svelte'
 
   export const ws = new WebSocketClient(import.meta.env.VITE_API)
   axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
@@ -18,14 +19,16 @@
   <Channels style="grid-area: channels;" />
   <Nodes style="grid-area: nodes;" />
   <Log style="grid-area: log;" />
+  <Map style="grid-area: map;" />
 </main>
 
 <style>
   .layout {
     grid-template-areas:
       'address channels'
-      'nodes log';
-    grid-template-rows: auto 1fr;
+      'nodes log'
+      'nodes map';
+    grid-template-rows: auto 1fr 2fr;
     grid-template-columns: auto 1fr;
   }
 </style>

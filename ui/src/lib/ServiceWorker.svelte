@@ -25,7 +25,7 @@
           console.log('Service worker registration successful:', registration)
         })
         .catch(function (error) {
-          console.error('Service worker registration failed:', error)
+          console.warn('Service worker registration failed:', error)
         })
     }
   }

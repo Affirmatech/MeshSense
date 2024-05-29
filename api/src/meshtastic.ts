@@ -46,7 +46,8 @@ async function connect(address: string) {
         num: e.from,
         lastHeard: e.rxTime,
         snr: e.rxSnr,
-        rssi: e.rxRssi
+        rssi: e.rxRssi,
+        hopsAway: e.hopStart ? e.hopStart - e.hopLimit : 0
       })
       packets.push(e)
     }
@@ -54,6 +55,10 @@ async function connect(address: string) {
 
   connection.events.onNodeInfoPacket.subscribe((e) => {
     nodes.upsert(e)
+  })
+
+  connection.events.onMessagePacket.subscribe((e) => {
+    packets.upsert({ id: e.id, data: e.data })
   })
 
   // connection.events.onTelemetryPacket.subscribe((e) => {

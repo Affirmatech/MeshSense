@@ -23,7 +23,7 @@
     <div class="w-36">Type</div>
     <div class="w-10">Hops</div>
   </h2>
-  <div bind:this={packetsDiv} class="p-2 text-sm overflow-auto grid h-full content-start">
+  <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start">
     {#each $packets || [] as packet}
       <div class="flex gap-2 whitespace-nowrap">
         <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
@@ -38,8 +38,15 @@
         <div class="w-10">{packet.rxSnr}</div>
         <div class="w-10">{packet.rxRssi}</div>
         <div class="w-36">{packet.decoded?.portnum}</div>
-        <div class="w-10">{packet.hopStart} / {packet.hopLimit}</div>
+        {#if packet.hopStart}
+          <div class="w-10">{packet.hopStart - packet.hopLimit} / {packet.hopStart}</div>
+        {/if}
       </div>
+      {#if packet.data}
+        <div class="bg-blue-500/20 rounded px-2 py-1 ring-1 my-0.5">
+          {packet.data}
+        </div>
+      {/if}
       <!-- <div>{JSON.stringify(packet)}</div> -->
     {/each}
   </div>

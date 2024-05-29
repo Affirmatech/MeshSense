@@ -4,7 +4,7 @@ export let address = new State('address', '', { persist: 'api' })
 export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected'>('connectionStatus', 'disconnected')
 export let lastFromRadio = new State('lastFromRadio')
 export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index' })
-export let packets = new State<any[]>('packets', [])
+export let packets = new State<MeshPacket[]>('packets', [])
 export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
 export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
 
@@ -95,6 +95,7 @@ export type MeshPacket = {
   from: number
   to: number
   channel: number
+  decoded?: any
   payloadVariant: any
   // {
   // case: 'decoded',
@@ -118,4 +119,5 @@ export type MeshPacket = {
   delayed: number
   viaMqtt: boolean
   hopStart: number
+  data?: string
 }
