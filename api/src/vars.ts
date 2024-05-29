@@ -23,7 +23,7 @@ export type User = {
   longName: string
   shortName: string
   macaddr: Uint8Array
-  hwModel: number
+  hwModel: string
   isLicensed: boolean
   role: number
 }
