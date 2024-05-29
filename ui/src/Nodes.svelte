@@ -6,17 +6,17 @@
 
 <Card title="Nodes" {...$$restProps}>
   <div class="p-1 text-sm grid gap-1">
-    {#each $nodes as node}
+    {#each $nodes.sort((a, b) => b.lastHeard - a.lastHeard) as node}
       <div class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5">
         <!-- Longname -->
-        <div class="">{node.user?.longName} ({node.user?.role})</div>
+        <div class="">{node.user?.longName || node.num} ({node.user?.role || '?'})</div>
         <div class="flex gap-1.5 items-start">
           <!-- Shortname -->
-          <div class="bg-black/20 rounded p-1 min-w-12 text-center">{node.user?.shortName}</div>
+          <div class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || node.user?.id || '?'}</div>
 
           <!-- Last Heard -->
           {#key $currentTime}
-            <div title={new Date(node.lastHeard * 1000).toLocaleString()} class="text-sm font-normal min-w-10 bg-black/20 rounded p-1 text-center">{unixSecondsTimeAgo(node.lastHeard)}</div>
+            <div title={new Date(node.lastHeard * 1000).toLocaleString()} class="h-7 text-sm font-normal min-w-10 bg-black/20 rounded p-1 text-center">{unixSecondsTimeAgo(node.lastHeard)}</div>
           {/key}
 
           <!-- Voltage -->
@@ -33,7 +33,7 @@
           </div>
 
           <!-- SNR -->
-          <div class="text-sm w-12 shrink-0 text-center bg-black/20 rounded h-7 p-1">
+          <div class="text-sm w-12 shrink-0 text-center {node.snr ? 'bg-black/20' : ''} rounded h-7 p-1">
             {#if node.snr}
               {node.snr}
               <div class="h-0.5" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
