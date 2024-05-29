@@ -8,7 +8,7 @@
 <Card title="Nodes" {...$$restProps}>
   <div class="p-1 text-sm grid gap-1">
     {#each $nodes.sort((a, b) => b.lastHeard - a.lastHeard) as node}
-      <div class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {Date.now() - node.lastHeard * 1000 < 3.6e6 ? 'ring-1 ring-blue-500/80' : 'grayscale'}">
+      <div class:ring-1={node.hopsAway == 0} class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 ring-blue-500 {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}">
         <!-- Longname -->
         <div class="">{node.user?.longName || node.num} ({node.user?.role || '?'})</div>
         <div class="flex gap-1.5 items-start">
