@@ -3,11 +3,22 @@
   import Card from './lib/Card.svelte'
   import { unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
+
+  export let showInactive = false
 </script>
 
 <Card title="Nodes" {...$$restProps}>
+  <h2 slot="title" class="rounded-t flex items-center">
+    <div class="grow">Nodes</div>
+    <label class="text-sm font-normal"
+      >Inactive
+      <input type="checkbox" bind:checked={showInactive} />
+    </label>
+  </h2>
   <div class="p-1 text-sm grid gap-1">
-    {#each $nodes.sort((a, b) => b.lastHeard - a.lastHeard) as node}
+    {#each $nodes
+      .sort((a, b) => (a.hopsAway === b.hopsAway ? a.user?.shortName?.localeCompare(b.user?.shortName) : a.hopsAway - b.hopsAway))
+      .filter((node) => showInactive || Date.now() - node.lastHeard * 1000 < 3.6e6) as node}
       <div class:ring-1={node.hopsAway == 0} class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 ring-blue-500 {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}">
         <!-- Longname -->
         <div class="">{node.user?.longName || node.num} ({node.user?.role || '?'})</div>
