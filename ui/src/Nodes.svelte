@@ -44,15 +44,16 @@
             ></div>
           </div>
 
+          <!-- Hops -->
+          <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.hopsAway}</div>
+
           <!-- SNR -->
-          <div class="text-sm w-12 shrink-0 text-center {node.snr ? 'bg-black/20' : ''} rounded h-7 p-1">
-            {#if node.snr}
+          <div class="text-sm w-12 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-7 p-1">
+            {#if node.snr && node.hopsAway == 0}
               {node.snr}
               <div class="h-0.5" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
             {/if}
           </div>
-
-          <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.hopsAway}</div>
 
           {#if node.user?.hwModel}
             <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
