@@ -3,6 +3,7 @@
   import Card from './lib/Card.svelte'
   import { scrollToBottom } from './lib/util'
   import { State } from 'api/src/lib/state'
+  import Modal from './lib/Modal.svelte'
 
   function getNodeName(id: number) {
     if (id == 4294967295) return 'all'
@@ -17,8 +18,13 @@
 
   let packetsDiv: HTMLDivElement
   let includeTx = true
+  let selectedPacket: MeshPacket
   $: if ($packets) scrollToBottom(packetsDiv)
 </script>
+
+<Modal title="Packet Detail" visible={selectedPacket != undefined}>
+  <pre>{JSON.stringify(selectedPacket, undefined, 2)}</pre>
+</Modal>
 
 <Card title="Log" {...$$restProps}>
   <h2 slot="title" class="flex gap-2 font-bold rounded-t px-2">
@@ -44,10 +50,14 @@
         <div class="w-9">{packet.channel}</div>
         <div class="w-10">{packet.rxSnr}</div>
         <div class="w-10">{packet.rxRssi}</div>
-        <div class="w-36">{packet.decoded?.portnum}</div>
-        {#if packet.hopStart}
-          <div class="w-10">{packet.hopStart - packet.hopLimit} / {packet.hopStart}</div>
-        {/if}
+        <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
+
+        <div class="w-10">
+          {#if packet.hopStart}{packet.hopStart - packet.hopLimit} / {packet.hopStart}{/if}
+        </div>
+        <div>
+          <button on:click={() => (selectedPacket = packet)}>🔍</button>
+        </div>
       </div>
       {#if packet.data}
         <div class="bg-blue-500/20 rounded px-2 py-1 ring-1 my-0.5">

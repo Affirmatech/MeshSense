@@ -95,6 +95,7 @@ export type MeshPacket = {
   from: number
   to: number
   channel: number
+  encrypted?: string
   decoded?: any
   payloadVariant: any
   // {
