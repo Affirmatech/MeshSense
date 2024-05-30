@@ -42,13 +42,20 @@ async function connect(address: string) {
 
   connection.events.onMeshPacket.subscribe((e) => {
     if (e.from) {
-      nodes.upsert({
+      let updates = {
         num: e.from,
-        lastHeard: e.rxTime,
-        snr: e.rxSnr,
-        rssi: e.rxRssi,
-        hopsAway: e.hopStart ? e.hopStart - e.hopLimit : 0
-      })
+        lastHeard: e.rxTime
+      }
+
+      if (e.hopStart) {
+        Object.assign(updates, {
+          snr: e.rxSnr,
+          rssi: e.rxRssi,
+          hopsAway: e.hopStart - e.hopLimit
+        })
+      }
+
+      nodes.upsert(updates)
       packets.push(e)
     }
   })
