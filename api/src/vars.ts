@@ -121,4 +121,5 @@ export type MeshPacket = {
   viaMqtt: boolean
   hopStart: number
   data?: string
+  telemetry?: DeviceMetrics
 }
