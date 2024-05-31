@@ -1,6 +1,5 @@
 import { HttpConnection } from '@meshtastic/js'
 import { NodeInfo, address, channels, connectionStatus, lastFromRadio, nodes, packets } from './vars'
-import { wss } from './lib/server'
 
 let connection: HttpConnection
 address.subscribe(connect)
@@ -77,4 +76,10 @@ async function connect(address: string) {
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)
   await connection.connect({ address, fetchInterval: 2000 })
+}
+
+export async function send({ message = '', destination, channel }) {
+  if (connectionStatus.value != 'connected' || !message) return
+  console.log('Sending', { message, destination, channel })
+  return connection.sendText(message, destination, false, channel)
 }

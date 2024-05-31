@@ -3,8 +3,14 @@
   import Card from './lib/Card.svelte'
   import { unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
+  import axios from 'axios'
 
   export let showInactive = false
+
+  function send(message: string, destination: number) {
+    if (!message) return
+    axios.post('/send', { message, destination })
+  }
 </script>
 
 <Card title="Nodes" {...$$restProps}>
@@ -54,6 +60,8 @@
               <div class="h-0.5" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
             {/if}
           </div>
+
+          <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button>
 
           {#if node.user?.hwModel}
             <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
