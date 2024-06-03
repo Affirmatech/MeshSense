@@ -11,7 +11,7 @@
   }
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx) {
-    if (!includeTx && packet.from == $myNodeNum) return false
+    if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
     return true
   }
 
@@ -68,7 +68,7 @@
         {/if}
       </div>
       {#if packet.message}
-        <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-xs">
+        <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm">
           <span class="font-bold">{getNodeName(packet.from)}:</span>
           {packet.message.data}
         </div>
@@ -77,6 +77,6 @@
     {/each}
   </div>
   <h2 class="font-normal text-sm self-end">
-    <label>Tx <input type="checkbox" bind:checked={includeTx} /></label>
+    <label>Self Metrics <input type="checkbox" bind:checked={includeTx} /></label>
   </h2>
 </Card>
