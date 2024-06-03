@@ -58,15 +58,16 @@
         <div>
           <button on:click={() => (selectedPacket = packet)}>🔍</button>
         </div>
-        {#if packet.data?.['deviceMetrics']}
+        {#if packet.deviceMetrics}
           <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
-            {Number(packet.data['deviceMetrics'].voltage).toFixed(1)}V {packet.data['deviceMetrics'].batteryLevel}%
+            {Number(packet.deviceMetrics.voltage).toFixed(1)}V {packet.deviceMetrics.batteryLevel}%
           </div>
         {/if}
       </div>
-      {#if typeof packet.data == 'string'}
+      {#if packet.message}
         <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-xs">
-          {packet.data}
+          <span class="font-bold">{getNodeName(packet.from)}:</span>
+          {packet.message.data}
         </div>
       {/if}
       <!-- <div>{JSON.stringify(packet)}</div> -->

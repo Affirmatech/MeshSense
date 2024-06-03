@@ -32,15 +32,12 @@ async function connect(address: string) {
     }
   })
 
+  /** Channel Info */
   connection.events.onChannelPacket.subscribe((e) => {
     channels.upsert(copy(e))
   })
 
-  // connection.events.onFromRadio.subscribe((e) => {
-  //   lastFromRadio.set(e)
-  //   if ('packet' in e) packets.push(e)
-  // })
-
+  /** All packets */
   connection.events.onMeshPacket.subscribe((e) => {
     if (e.from) {
       let updates = {
@@ -61,19 +58,26 @@ async function connect(address: string) {
     }
   })
 
+  /** NODEINFO_APP */
   connection.events.onNodeInfoPacket.subscribe((e) => {
+    console.log('NODEINFO', e, copy(e))
     nodes.upsert(copy(e))
   })
 
+  /** TEXT_MESSAGE_APP */
   connection.events.onMessagePacket.subscribe((e) => {
-    packets.upsert({ id: e.id, data: e.data })
+    packets.upsert({ id: e.id, message: copy(e) })
   })
 
+  /** TELEMETRY_APP */
   connection.events.onTelemetryPacket.subscribe((e) => {
     let { id, data } = copy(e)
-    packets.upsert({ id, data })
+    packets.upsert({ id, deviceMetrics: data.deviceMetrics })
     if (data.deviceMetrics) nodes.upsert({ num: e.from, deviceMetrics: data.deviceMetrics })
   })
+
+  /** POSITION_APP */
+  connection.events.onPositionPacket.subscribe((e) => {})
 
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)

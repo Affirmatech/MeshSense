@@ -8,7 +8,7 @@ export let packets = new State<MeshPacket[]>('packets', [])
 export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
 export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
 
-export type Packet = {
+export type Message = {
   id: number
   rxTime: string
   type: string
@@ -120,5 +120,7 @@ export type MeshPacket = {
   delayed: number
   viaMqtt: boolean
   hopStart: number
-  data?: string | { time: number; deviceMetrics: DeviceMetrics }
+  data?: string
+  message?: Message
+  deviceMetrics?: DeviceMetrics
 }
