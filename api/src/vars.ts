@@ -7,6 +7,7 @@ export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index'
 export let packets = new State<MeshPacket[]>('packets', [])
 export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
 export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
+export let myNodeNum = new State<number>('myNodeNum')
 
 export type Message = {
   id: number
@@ -123,4 +124,5 @@ export type MeshPacket = {
   data?: string
   message?: Message
   deviceMetrics?: DeviceMetrics
+  position?: Position
 }

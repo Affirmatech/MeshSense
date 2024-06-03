@@ -1,5 +1,5 @@
 import { HttpConnection } from '@meshtastic/js'
-import { NodeInfo, address, channels, connectionStatus, lastFromRadio, nodes, packets } from './vars'
+import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeNum, nodes, packets } from './vars'
 
 let connection: HttpConnection
 address.subscribe(connect)
@@ -16,6 +16,7 @@ async function connect(address: string) {
   // Disconnect from any existing connection
   connection?.disconnect()
   connectionStatus.set('disconnected')
+  myNodeNum.set(undefined)
 
   if (!address) return
 
@@ -60,8 +61,18 @@ async function connect(address: string) {
 
   /** NODEINFO_APP */
   connection.events.onNodeInfoPacket.subscribe((e) => {
-    console.log('NODEINFO', e, copy(e))
+    console.log('BASENODEINFO', e, copy(e))
     nodes.upsert(copy(e))
+    lastFromRadio.set({ event: 'onNodeInfoPacket', e })
+  })
+
+  connection.events.onMyNodeInfo.subscribe((e) => {
+    lastFromRadio.set({ event: 'onMyNodeInfo', e })
+    myNodeNum.set(e.myNodeNum)
+  })
+
+  connection.events.onNeighborInfoPacket.subscribe((e) => {
+    lastFromRadio.set({ event: 'onNeighborInfoPacket', e })
   })
 
   /** TEXT_MESSAGE_APP */
@@ -77,7 +88,15 @@ async function connect(address: string) {
   })
 
   /** POSITION_APP */
-  connection.events.onPositionPacket.subscribe((e) => {})
+  connection.events.onPositionPacket.subscribe((e) => {
+    let { id, data } = copy(e)
+    if (id && data.latitudeI) packets.upsert({ id, position: data })
+    if (e.from && data.latitudeI) nodes.upsert({ num: e.from, position: data })
+  })
+
+  /** TRACEROUTE_APP */
+
+  /** ROUTING_APP */
 
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)

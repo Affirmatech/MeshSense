@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { nodes, packets, type MeshPacket } from 'api/src/vars'
+  import { myNodeNum, nodes, packets, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { scrollToBottom } from './lib/util'
-  import { State } from 'api/src/lib/state'
   import Modal from './lib/Modal.svelte'
 
   function getNodeName(id: number) {
@@ -12,12 +11,12 @@
   }
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx) {
-    if (!includeTx && packet.rxSnr == 0) return false
+    if (!includeTx && packet.from == $myNodeNum) return false
     return true
   }
 
   let packetsDiv: HTMLDivElement
-  let includeTx = true
+  let includeTx = false
   let selectedPacket: MeshPacket
   $: if ($packets) scrollToBottom(packetsDiv)
 </script>
@@ -61,6 +60,10 @@
         {#if packet.deviceMetrics}
           <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
             {Number(packet.deviceMetrics.voltage).toFixed(1)}V {packet.deviceMetrics.batteryLevel}%
+          </div>
+        {:else if packet.position}
+          <div class="bg-teal-800/60 rounded px-1 my-0.5 text-xs ring-0 text-teal-200 mx-2 w-fit">
+            ({(packet.position.latitudeI / 10000000).toFixed(3)}, {(packet.position.longitudeI / 10000000).toFixed(3)}) {packet.position.altitude}m asl
           </div>
         {/if}
       </div>
