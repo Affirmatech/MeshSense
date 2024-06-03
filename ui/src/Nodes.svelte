@@ -27,7 +27,11 @@
       .filter((node) => showInactive || Date.now() - node.lastHeard * 1000 < 3.6e6) as node}
       <div class:ring-1={node.hopsAway == 0} class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 ring-blue-500 {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}">
         <!-- Longname -->
-        <div class="">{node.user?.longName || node.num} ({node.user?.role || '?'})</div>
+
+        <div class="">
+          <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.user?.id}" alt="Node {node.user?.id}" />
+          {node.user?.longName || node.num} ({node.user?.role || '?'})
+        </div>
         <div class="flex gap-1.5 items-start">
           <!-- Shortname -->
           <div class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || node.user?.id || '?'}</div>

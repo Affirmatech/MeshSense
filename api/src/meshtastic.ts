@@ -4,6 +4,8 @@ import { NodeInfo, address, channels, connectionStatus, lastFromRadio, nodes, pa
 let connection: HttpConnection
 address.subscribe(connect)
 
+let copy = (obj: any) => JSON.parse(JSON.stringify(obj))
+
 /**
  * Connects to a MeshTastic Node using an HTTP connection.
  * @param {string} address - The IP address of the MeshTastic Node to connect to.
@@ -31,7 +33,7 @@ async function connect(address: string) {
   })
 
   connection.events.onChannelPacket.subscribe((e) => {
-    channels.upsert(e)
+    channels.upsert(copy(e))
   })
 
   // connection.events.onFromRadio.subscribe((e) => {
@@ -55,12 +57,12 @@ async function connect(address: string) {
       }
 
       nodes.upsert(updates)
-      packets.push({ ...e })
+      packets.push(copy(e))
     }
   })
 
   connection.events.onNodeInfoPacket.subscribe((e) => {
-    nodes.upsert(e)
+    nodes.upsert(copy(e))
   })
 
   connection.events.onMessagePacket.subscribe((e) => {
@@ -68,9 +70,9 @@ async function connect(address: string) {
   })
 
   connection.events.onTelemetryPacket.subscribe((e) => {
-    packets.upsert({ id: e.id, telemetry: e.data })
-    let deviceMetrics = e.data?.variant?.value
-    if (deviceMetrics) nodes.upsert({ num: e.from, deviceMetrics } as NodeInfo)
+    let { id, data } = copy(e)
+    packets.upsert({ id, data })
+    if (data.deviceMetrics) nodes.upsert({ num: e.from, deviceMetrics: data.deviceMetrics })
   })
 
   // Attempt to connect to the specified MeshTastic Node

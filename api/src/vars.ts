@@ -120,6 +120,5 @@ export type MeshPacket = {
   delayed: number
   viaMqtt: boolean
   hopStart: number
-  data?: string
-  telemetry?: DeviceMetrics
+  data?: string | { time: number; deviceMetrics: DeviceMetrics }
 }

@@ -41,7 +41,7 @@
       <div class="flex gap-2 whitespace-nowrap">
         <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
         <div class="w-24 flex gap-1">
-          <div class="">{getNodeName(packet.from)}</div>
+          <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
           {#if packet.to != 4294967295}
             <div>to</div>
             <div class="">{getNodeName(packet.to)}</div>
@@ -58,9 +58,14 @@
         <div>
           <button on:click={() => (selectedPacket = packet)}>🔍</button>
         </div>
+        {#if packet.data?.['deviceMetrics']}
+          <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
+            {Number(packet.data['deviceMetrics'].voltage).toFixed(1)}V {packet.data['deviceMetrics'].batteryLevel}%
+          </div>
+        {/if}
       </div>
-      {#if packet.data}
-        <div class="bg-blue-500/20 rounded px-2 py-1 ring-1 my-0.5">
+      {#if typeof packet.data == 'string'}
+        <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-xs">
           {packet.data}
         </div>
       {/if}
