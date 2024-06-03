@@ -8,7 +8,7 @@
   function getNodeName(id: number) {
     if (id == 4294967295) return 'all'
     let node = nodes.value.find((node) => node.num == id)
-    return node?.user?.shortName || node?.user?.id
+    return node?.user?.shortName || node?.user?.id || id
   }
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx) {

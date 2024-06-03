@@ -55,7 +55,7 @@ async function connect(address: string) {
       }
 
       nodes.upsert(updates)
-      packets.push(e)
+      packets.push({ ...e })
     }
   })
 
