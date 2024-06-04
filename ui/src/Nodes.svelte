@@ -1,3 +1,10 @@
+<script context="module" lang="ts">
+  export function sendDirect(message: string, destination: number) {
+    if (!message) return
+    axios.post('/send', { message, destination })
+  }
+</script>
+
 <script lang="ts">
   import { currentTime, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
@@ -16,11 +23,6 @@
       if (b.num === $myNodeNum) return 1
       return a.hopsAway === b.hopsAway ? a.user?.shortName?.localeCompare(b.user?.shortName) : a.hopsAway - b.hopsAway
     })
-
-  function send(message: string, destination: number) {
-    if (!message) return
-    axios.post('/send', { message, destination })
-  }
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
@@ -46,7 +48,7 @@
           <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.user?.id}" alt="Node {node.user?.id}" />
 
           <div class="">
-            <button class="" on:click={() => send(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button>
+            <button class="" on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button>
           </div>
           {#if node.user?.role?.includes('ROUTER')}
             <div class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>

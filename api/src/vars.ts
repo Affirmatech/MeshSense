@@ -8,6 +8,7 @@ export let packets = new State<MeshPacket[]>('packets', [])
 export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
 export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
 export let myNodeNum = new State<number>('myNodeNum')
+export let broadcastId = 4294967295
 
 export type Message = {
   id: number

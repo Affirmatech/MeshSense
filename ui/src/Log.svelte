@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { myNodeNum, nodes, packets, type MeshPacket } from 'api/src/vars'
+  import { broadcastId, channels, myNodeNum, nodes, packets, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { scrollToBottom } from './lib/util'
   import Modal from './lib/Modal.svelte'
+  import { send } from './Channels.svelte'
+  import { sendDirect } from './Nodes.svelte'
 
   function getNodeName(id: number) {
-    if (id == 4294967295) return 'all'
+    if (id == broadcastId) return 'all'
     let node = nodes.value.find((node) => node.num == id)
     return node?.user?.shortName || node?.user?.id || id
   }
@@ -69,7 +71,10 @@
       </div>
       {#if packet.message}
         <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm">
-          <span class="font-bold">{getNodeName(packet.from)}:</span>
+          {#if packet.to == broadcastId}
+            <button on:click={() => send(prompt('Enter message to send'), packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
+          {/if}
+          <button class="font-bold" on:click={() => sendDirect(prompt(`Enter message to send to ${getNodeName(packet.from)}`), packet.from)}>{getNodeName(packet.from)}:</button>
           {packet.message.data}
         </div>
       {/if}

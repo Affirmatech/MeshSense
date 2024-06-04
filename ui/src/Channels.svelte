@@ -1,12 +1,14 @@
+<script context="module" lang="ts">
+  export function send(message: string, channel: number) {
+    if (!message) return
+    axios.post('/send', { message, channel })
+  }
+</script>
+
 <script lang="ts">
   import { channels } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import axios from 'axios'
-
-  function send(message: string, channel: number) {
-    if (!message) return
-    axios.post('/send', { message, channel })
-  }
 </script>
 
 <Card title="Channels" {...$$restProps}>
