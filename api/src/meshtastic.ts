@@ -4,7 +4,9 @@ import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeNum
 let connection: HttpConnection
 address.subscribe(connect)
 
-let copy = (obj: any) => JSON.parse(JSON.stringify(obj))
+function copy(obj: any) {
+  return JSON.parse(JSON.stringify(obj))
+}
 
 /**
  * Connects to a MeshTastic Node using an HTTP connection.
@@ -59,20 +61,21 @@ async function connect(address: string) {
     }
   })
 
-  /** NODEINFO_APP */
-  connection.events.onNodeInfoPacket.subscribe((e) => {
-    console.log('BASENODEINFO', e, copy(e))
-    nodes.upsert(copy(e))
-    lastFromRadio.set({ event: 'onNodeInfoPacket', e })
-  })
-
+  /** MyNodeInfo ID on Connection */
   connection.events.onMyNodeInfo.subscribe((e) => {
-    lastFromRadio.set({ event: 'onMyNodeInfo', e })
     myNodeNum.set(e.myNodeNum)
   })
 
-  connection.events.onNeighborInfoPacket.subscribe((e) => {
-    lastFromRadio.set({ event: 'onNeighborInfoPacket', e })
+  /** NODEINFO_APP */
+  connection.events.onNodeInfoPacket.subscribe((e) => {
+    nodes.upsert(copy(e))
+  })
+
+  /** Update Node User data */
+  connection.events.onUserPacket.subscribe((e) => {
+    let { id, from, data } = copy(e)
+    if (id) packets.upsert({ id, user: data })
+    if (from) nodes.upsert({ num: from, user: data })
   })
 
   /** TEXT_MESSAGE_APP */
@@ -92,6 +95,19 @@ async function connect(address: string) {
     let { id, data } = copy(e)
     if (id && data.latitudeI) packets.upsert({ id, position: data })
     if (e.from && data.latitudeI) nodes.upsert({ num: e.from, position: data })
+  })
+
+  // /** Subscribe to all events */
+  // for (let event in connection.events) {
+  //   console.log(event)
+  //   if ([''])
+  //   connection.events[event].subscribe((e: any) => {
+  //     packets.push({ event, json: copy(e) })
+  //   })
+  // }
+
+  connection.events.onFromRadio.subscribe((e) => {
+    lastFromRadio.set(copy(e))
   })
 
   /** TRACEROUTE_APP */

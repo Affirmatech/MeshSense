@@ -24,7 +24,7 @@ export type User = {
   id: string
   longName: string
   shortName: string
-  macaddr: Uint8Array
+  macaddr: string
   hwModel: string
   isLicensed: boolean
   role: string
@@ -126,4 +126,5 @@ export type MeshPacket = {
   message?: Message
   deviceMetrics?: DeviceMetrics
   position?: Position
+  user?: User
 }
