@@ -26,7 +26,7 @@ export type User = {
   macaddr: Uint8Array
   hwModel: string
   isLicensed: boolean
-  role: number
+  role: string
 }
 
 export type Position = {
