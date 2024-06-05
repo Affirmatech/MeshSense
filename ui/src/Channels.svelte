@@ -12,7 +12,7 @@
 </script>
 
 <Card title="Channels" {...$$restProps}>
-  <div class="flex flex-wrap gap-2 p-2 text-sm">
+  <div class="flex flex-wr gap-2 p-2 text-sm whitespace-nowrap">
     {#each $channels as channel}
       {#if channel.role != 'DISABLED'}
         <button
