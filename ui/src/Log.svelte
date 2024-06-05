@@ -19,8 +19,10 @@
 
   let packetsDiv: HTMLDivElement
   let includeTx = false
+  let messagesOnly = false
   let selectedPacket: MeshPacket
   $: if ($packets) scrollToBottom(packetsDiv)
+  $: messagesOnly, scrollToBottom(packetsDiv)
 </script>
 
 <Modal title="Packet Detail" visible={selectedPacket != undefined}>
@@ -36,41 +38,48 @@
     <div class="w-10">RSSI</div>
     <div class="w-36">Type</div>
     <div class="w-10">Hops</div>
+    <div class="w-52"></div>
   </h2>
-  <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start">
+  <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-clip">
     {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx)) || [] as packet}
-      <div class="flex gap-2 whitespace-nowrap">
-        <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
-        <div class="w-24 flex gap-1">
-          <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
-          {#if packet.to != 4294967295}
-            <div>to</div>
-            <div class="">{getNodeName(packet.to)}</div>
+      {#if !messagesOnly}
+        <div class="flex gap-2 whitespace-nowrap">
+          <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
+          <div class="w-24 flex gap-1">
+            <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
+            {#if packet.to != 4294967295}
+              <div>to</div>
+              <div class="">{getNodeName(packet.to)}</div>
+            {/if}
+          </div>
+          <div class="w-9">{packet.channel}</div>
+          <div class="w-10">{packet.rxSnr}</div>
+          <div class="w-10">{packet.rxRssi}</div>
+          <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
+
+          <div class="w-10">
+            {#if packet.hopStart}{packet.hopStart - packet.hopLimit} / {packet.hopStart}{/if}
+          </div>
+          <div>
+            <button on:click={() => (selectedPacket = packet)}>🔍</button>
+          </div>
+          {#if packet.deviceMetrics}
+            <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
+              {Number(packet.deviceMetrics.voltage).toFixed(1)}V {packet.deviceMetrics.batteryLevel}%
+            </div>
+          {:else if packet.position}
+            <div class="bg-teal-800/60 rounded px-1 my-0.5 text-xs ring-0 text-teal-200 mx-2 w-fit">
+              ({(packet.position.latitudeI / 10000000).toFixed(3)}, {(packet.position.longitudeI / 10000000).toFixed(3)}) {packet.position.altitude}m asl
+            </div>
+          {:else if packet.user}
+            <div class="bg-indigo-800/60 rounded px-1 my-0.5 text-xs ring-0 text-indigo-300 mx-2 w-fit">
+              {packet?.user?.longName}
+            </div>
           {/if}
         </div>
-        <div class="w-9">{packet.channel}</div>
-        <div class="w-10">{packet.rxSnr}</div>
-        <div class="w-10">{packet.rxRssi}</div>
-        <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
-
-        <div class="w-10">
-          {#if packet.hopStart}{packet.hopStart - packet.hopLimit} / {packet.hopStart}{/if}
-        </div>
-        <div>
-          <button on:click={() => (selectedPacket = packet)}>🔍</button>
-        </div>
-        {#if packet.deviceMetrics}
-          <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
-            {Number(packet.deviceMetrics.voltage).toFixed(1)}V {packet.deviceMetrics.batteryLevel}%
-          </div>
-        {:else if packet.position}
-          <div class="bg-teal-800/60 rounded px-1 my-0.5 text-xs ring-0 text-teal-200 mx-2 w-fit">
-            ({(packet.position.latitudeI / 10000000).toFixed(3)}, {(packet.position.longitudeI / 10000000).toFixed(3)}) {packet.position.altitude}m asl
-          </div>
-        {/if}
-      </div>
+      {/if}
       {#if packet.message}
-        <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm">
+        <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm w-fit">
           {#if packet.to == broadcastId}
             <button on:click={() => send(prompt('Enter message to send'), packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
           {/if}
@@ -81,7 +90,8 @@
       <!-- <div>{JSON.stringify(packet)}</div> -->
     {/each}
   </div>
-  <h2 class="font-normal text-sm self-end">
+  <h2 class="font-normal text-sm self-end flex gap-4">
     <label>Self Metrics <input type="checkbox" bind:checked={includeTx} /></label>
+    <label>Messages Only <input type="checkbox" bind:checked={messagesOnly} /></label>
   </h2>
 </Card>
