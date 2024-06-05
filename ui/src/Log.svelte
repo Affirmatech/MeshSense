@@ -14,7 +14,7 @@
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
     if (filterText) {
-      if (!getNodeName(packet.from).toLowerCase().includes(filterText.toLowerCase())) return false
+      if (!(getNodeName(packet.from).toLowerCase().includes(filterText.toLowerCase()) || getNodeName(packet.to).toLowerCase().includes(filterText.toLowerCase()))) return false
     }
     if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
     return true
@@ -57,8 +57,8 @@
             {/if}
           </div>
           <div class="w-9">{packet.channel}</div>
-          <div class="w-10">{packet.rxSnr}</div>
-          <div class="w-10">{packet.rxRssi}</div>
+          <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxSnr || '' : ''}</div>
+          <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxRssi || '' : ''}</div>
           <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
 
           <div class="w-10">
@@ -97,6 +97,9 @@
   <h2 class="font-normal text-sm self-end flex gap-4">
     <label>Self Metrics <input type="checkbox" bind:checked={includeTx} /></label>
     <label>Messages Only <input type="checkbox" bind:checked={messagesOnly} /></label>
-    <label class="flex gap-1">Filter <input class="rounded bg-black text-blue-300 font-bold px-2" type="text" bind:value={filterText} /></label>
+    <label class="flex gap-1"
+      >Filter <input class="rounded bg-black text-blue-300 font-bold px-2 w-20" type="text" bind:value={filterText} />
+      {#if filterText}<button on:click={() => (filterText = '')} class="btn text-sm !py-0">Clear</button>{/if}
+    </label>
   </h2>
 </Card>
