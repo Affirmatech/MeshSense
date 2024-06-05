@@ -9,10 +9,13 @@
   function getNodeName(id: number) {
     if (id == broadcastId) return 'all'
     let node = nodes.value.find((node) => node.num == id)
-    return node?.user?.shortName || node?.user?.id || id
+    return node?.user?.shortName || node?.user?.id || String(id)
   }
 
-  function shouldPacketBeShown(packet: MeshPacket, includeTx) {
+  function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
+    if (filterText) {
+      if (!getNodeName(packet.from).toLowerCase().includes(filterText.toLowerCase())) return false
+    }
     if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
     return true
   }
@@ -21,6 +24,7 @@
   let includeTx = false
   let messagesOnly = false
   let selectedPacket: MeshPacket
+  let filterText = ''
   $: if ($packets) scrollToBottom(packetsDiv)
   $: messagesOnly, scrollToBottom(packetsDiv)
 </script>
@@ -41,7 +45,7 @@
     <div class="w-52"></div>
   </h2>
   <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-clip">
-    {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx)) || [] as packet}
+    {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx, filterText)) || [] as packet}
       {#if !messagesOnly}
         <div class="flex gap-2 whitespace-nowrap">
           <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
@@ -93,5 +97,6 @@
   <h2 class="font-normal text-sm self-end flex gap-4">
     <label>Self Metrics <input type="checkbox" bind:checked={includeTx} /></label>
     <label>Messages Only <input type="checkbox" bind:checked={messagesOnly} /></label>
+    <label class="flex gap-1">Filter <input class="rounded bg-black text-blue-300 font-bold px-2" type="text" bind:value={filterText} /></label>
   </h2>
 </Card>
