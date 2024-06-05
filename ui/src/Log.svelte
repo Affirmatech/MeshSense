@@ -29,7 +29,7 @@
   <pre>{JSON.stringify(selectedPacket, undefined, 2)}</pre>
 </Modal>
 
-<Card title="Log" {...$$restProps}>
+<Card title="Log" {...$$restProps} class="min-h-36">
   <h2 slot="title" class="flex gap-2 font-bold rounded-t px-2">
     <div class="w-28">Date</div>
     <div class="w-24 whitespace-nowrap overflow-hidden">Nodes</div>

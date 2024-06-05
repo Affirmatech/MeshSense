@@ -47,9 +47,11 @@
         <div class="flex gap-1 items-center">
           <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.user?.id}" alt="Node {node.user?.id}" />
 
-          <div class="">
-            <button class="" on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button>
-          </div>
+          <button
+            title={node.user?.longName || String(node.num)}
+            class="text-left truncate max-w-44"
+            on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button
+          >
           {#if node.user?.role?.includes('ROUTER')}
             <div class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
           {/if}
