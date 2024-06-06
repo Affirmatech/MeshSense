@@ -1,5 +1,5 @@
 import { HttpConnection } from '@meshtastic/js'
-import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeNum, nodes, packets } from './vars'
+import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
 
 let connection: HttpConnection
 address.subscribe(connect)
@@ -19,6 +19,7 @@ async function connect(address: string) {
   connection?.disconnect()
   connectionStatus.set('disconnected')
   myNodeNum.set(undefined)
+  myNodeMetadata.set(undefined)
 
   if (!address) return
 
@@ -66,6 +67,10 @@ async function connect(address: string) {
     myNodeNum.set(e.myNodeNum)
   })
 
+  connection.events.onDeviceMetadataPacket.subscribe((e) => {
+    myNodeMetadata.set(e.data)
+  })
+
   /** NODEINFO_APP */
   connection.events.onNodeInfoPacket.subscribe((e) => {
     nodes.upsert(copy(e))
@@ -98,13 +103,34 @@ async function connect(address: string) {
   })
 
   // /** Subscribe to all events */
-  // for (let event in connection.events) {
-  //   console.log(event)
-  //   if ([''])
-  //   connection.events[event].subscribe((e: any) => {
-  //     packets.push({ event, json: copy(e) })
-  //   })
-  // }
+  for (let event in connection.events) {
+    console.log(event)
+    if (
+      [
+        'onUserPacket',
+        'onFromRadio',
+        'onNodeInfoPacket',
+        'onDeviceStatus',
+        'onPositionPacket',
+        'onChannelPacket',
+        'onMyNodeInfo',
+        'onConfigPacket',
+        'onModuleConfigPacket',
+        'onDeviceMetadataPacket',
+        'onMeshPacket',
+        'onQueueStatus',
+        'onMeshHeartbeat',
+        'onTelemetryPacket',
+        'onMessagePacket'
+      ].includes(event)
+    ) {
+      continue
+    }
+
+    connection.events[event].subscribe((e: any) => {
+      packets.push({ event, json: copy(e) })
+    })
+  }
 
   connection.events.onFromRadio.subscribe((e) => {
     lastFromRadio.set(copy(e))

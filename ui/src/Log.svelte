@@ -48,7 +48,7 @@
   </h2>
   <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-hidden">
     {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx, filterText)) || [] as packet}
-      {#if !messagesOnly}
+      {#if !messagesOnly || packet.message}
         <div class="flex gap-2 whitespace-nowrap">
           <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
           <div class="w-24 flex gap-1">
