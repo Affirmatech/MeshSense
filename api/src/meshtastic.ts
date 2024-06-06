@@ -102,6 +102,12 @@ async function connect(address: string) {
     if (e.from && data.latitudeI) nodes.upsert({ num: e.from, position: data })
   })
 
+  /** DETECTION_SENSOR_APP */
+  connection.events.onDetectionSensorPacket.subscribe((e) => {
+    let { id, data } = copy(e)
+    packets.upsert({ id, detectionSensor: String(data) })
+  })
+
   // /** Subscribe to all events */
   for (let event in connection.events) {
     console.log(event)
@@ -121,7 +127,8 @@ async function connect(address: string) {
         'onQueueStatus',
         'onMeshHeartbeat',
         'onTelemetryPacket',
-        'onMessagePacket'
+        'onMessagePacket',
+        'onDetectionSensorPacket'
       ].includes(event)
     ) {
       continue

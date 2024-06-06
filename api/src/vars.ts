@@ -141,4 +141,5 @@ export type MeshPacket = {
   deviceMetrics?: DeviceMetrics
   position?: Position
   user?: User
+  detectionSensor?: string
 }
