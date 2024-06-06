@@ -25,6 +25,7 @@
     "api": "file:../api",
     "axios": "^1.7.2",
     "eventemitter3": "^5.0.1",
-    "idb-keyval": "^6.2.1"
+    "idb-keyval": "^6.2.1",
+    "ol": "^9.2.4"
   }
 }

@@ -1,8 +1,28 @@
 <script lang="ts">
-  import { channels } from 'api/src/vars'
+  import { filteredNodes } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
+  import OpenLayersMap from './lib/OpenLayersMap.svelte'
+
+  let ol: OpenLayersMap
+
+  $: console.log($filteredNodes.map((v) => [v.position?.latitudeI, v.position?.longitudeI]))
+
+  $: if (ol)
+    ol.plotPoints(
+      'nodes',
+      $filteredNodes
+        .filter((n) => n.position?.latitudeI != undefined)
+        .map((n) => {
+          return {
+            lat: n.position.latitudeI / 10000000,
+            lon: n.position.longitudeI / 10000000,
+            icon: `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}`,
+            description: n?.user?.shortName || String(n.num)
+          }
+        })
+    )
 </script>
 
 <Card title="Map" {...$$restProps}>
-  <img src="https://media.hswstatic.com/eyJidWNrZXQiOiJjb250ZW50Lmhzd3N0YXRpYy5jb20iLCJrZXkiOiJnaWZcL21hcHMuanBnIiwiZWRpdHMiOnsicmVzaXplIjp7IndpZHRoIjo4Mjh9LCJ0b0Zvcm1hdCI6ImF2aWYifX0=" alt="" />
+  <OpenLayersMap bind:this={ol} />
 </Card>

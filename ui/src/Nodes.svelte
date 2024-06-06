@@ -4,6 +4,7 @@
     axios.post('/send', { message, destination })
   }
   export let smallMode = writable(true)
+  export let filteredNodes = writable<NodeInfo[]>([])
 </script>
 
 <script lang="ts">
@@ -18,7 +19,7 @@
   export let showInactive = false
   let selectedNode: NodeInfo
 
-  $: filteredNodes = $nodes
+  $: $filteredNodes = $nodes
     .filter((node) => showInactive || Date.now() - node.lastHeard * 1000 < 3.6e6)
     .sort((a, b) => {
       if (a.num === $myNodeNum) return -1
@@ -42,14 +43,14 @@
     {/if}
   </h2>
   <div class="p-1 text-sm grid gap-1">
-    {#each filteredNodes as node (node.num)}
+    {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
         class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {node.num == $myNodeNum ? 'bg-gradient-to-r ' : ''}  {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}"
       >
         {#if $smallMode}
           <div title={node.user?.longName} class="flex items-center gap-1">
-            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.user?.id}" alt="Node {node.user?.id}" />
+            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
             <!-- Shortname -->
             <button on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)} class="bg-black/20 rounded w-12 text-center overflow-hidden"
               >{node.user?.shortName || node.user?.id || '?'}</button
