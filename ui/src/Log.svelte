@@ -25,8 +25,10 @@
   let messagesOnly = false
   let selectedPacket: MeshPacket
   let filterText = ''
-  $: if ($packets) scrollToBottom(packetsDiv)
-  $: messagesOnly, scrollToBottom(packetsDiv)
+  let unseenMessages = false
+
+  $: if ($packets) scrollToBottom(packetsDiv, false, (unseen) => (unseenMessages = unseen))
+  $: messagesOnly, scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))
 </script>
 
 <Modal title="Packet Detail" visible={selectedPacket != undefined}>
@@ -44,7 +46,7 @@
     <div class="w-10">Hops</div>
     <div class="w-52"></div>
   </h2>
-  <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-clip">
+  <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-hidden">
     {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx, filterText)) || [] as packet}
       {#if !messagesOnly}
         <div class="flex gap-2 whitespace-nowrap">
@@ -94,12 +96,14 @@
       <!-- <div>{JSON.stringify(packet)}</div> -->
     {/each}
   </div>
-  <h2 class="font-normal text-sm self-end flex gap-4">
+  <h2 class="relative font-normal text-sm self-end flex gap-4">
     <label>Self Metrics <input type="checkbox" bind:checked={includeTx} /></label>
     <label>Messages Only <input type="checkbox" bind:checked={messagesOnly} /></label>
     <label class="flex gap-1"
       >Filter <input class="rounded bg-black text-blue-300 font-bold px-2 w-20" type="text" bind:value={filterText} />
       {#if filterText}<button on:click={() => (filterText = '')} class="btn text-sm !py-0">Clear</button>{/if}
+      {#if unseenMessages}{unseenMessages}<button class="btn !py-0 bottom-10" on:click={() => scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))}>Jump to new messages</button
+        >{/if}
     </label>
   </h2>
 </Card>

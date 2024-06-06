@@ -1,4 +1,4 @@
-import { tick } from "svelte"
+import { tick } from 'svelte'
 
 export function unixSecondsTimeAgo(seconds) {
   return seconds ? timeAgo(Date.now() / 1000 - seconds) : ''
@@ -22,7 +22,19 @@ export function timeAgo(seconds) {
   return `now`
 }
 
-export function scrollToBottom(element) {
+export function isScrollAtEnd(element: HTMLElement) {
+  return element.scrollTop + element.clientHeight >= element.scrollHeight - 1
+}
+
+export function scrollToBottom(element: HTMLElement, force?, notifyUnseen: (recordsUnseen: boolean) => void = undefined) {
   if (!element) return
-  tick().then(() => (element.scrollTop = element.scrollHeight))
+  let atEnd = isScrollAtEnd(element)
+  tick().then(() => {
+    if (atEnd || force) {
+      element.scrollTop = element.scrollHeight
+      if (notifyUnseen) notifyUnseen(false)
+    } else {
+      if (notifyUnseen) notifyUnseen(true)
+    }
+  })
 }
