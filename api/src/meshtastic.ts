@@ -128,7 +128,7 @@ async function connect(address: string) {
     }
 
     connection.events[event].subscribe((e: any) => {
-      packets.push({ event, json: copy(e) })
+      packets.push({ event, json: copy(e) } as any)
     })
   }
 
