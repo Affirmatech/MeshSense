@@ -44,7 +44,7 @@ async function connect(address: string) {
   /** All packets */
   connection.events.onMeshPacket.subscribe((e) => {
     if (e.from) {
-      let updates = {
+      let updates: any = {
         num: e.from,
         lastHeard: e.rxTime
       }
@@ -55,6 +55,12 @@ async function connect(address: string) {
           rssi: e.rxRssi,
           hopsAway: e.hopStart - e.hopLimit
         })
+      }
+
+      let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
+      if (updates.hopsAway == 0) updates.trace = null
+      if (updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
+        traceRoute(updates.num)
       }
 
       nodes.upsert(updates)
@@ -170,5 +176,6 @@ export async function send({ message = '', destination, channel }) {
 }
 
 export async function traceRoute(destination: number) {
+  console.log('[Meshtastic] Requesting Traceroute for', destination)
   return connection.traceRoute(destination)
 }

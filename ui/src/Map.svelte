@@ -15,9 +15,9 @@
     ol.plotLines(
       'routes',
       pointsWithCoords
-        .filter((n) => n.trace)
+        .filter((n) => n.trace || n.hopsAway == 0)
         .map((n) => {
-          return [myNodeCoords, ...n.trace.route.map((n) => getCoordinates(n)), getCoordinates(n)]
+          return [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
         })
     )
 

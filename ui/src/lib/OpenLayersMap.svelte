@@ -28,8 +28,10 @@
   let map: Map
   let layers: Record<string, Layer> = {}
 
-  export let center = [-90.3242479, 39.5167587]
-  export let zoom = 12
+  export let center = undefined
+  export let zoom = center ? 12 : 5
+
+  if (!center) center = [-90.3242479, 39.5167587]
 
   // $: if ($lastUpdate && map) {
   // 	plotPoints($lastUpdate.aid)
