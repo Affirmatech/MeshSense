@@ -38,7 +38,7 @@
 <Card title="Log" {...$$restProps} class="min-h-36">
   <h2 slot="title" class="flex gap-2 font-bold rounded-t px-2">
     <div class="w-28">Date</div>
-    <div class="w-24 whitespace-nowrap overflow-hidden">Nodes</div>
+    <div class="w-32 whitespace-nowrap overflow-hidden">Nodes</div>
     <div class="w-9">Ch</div>
     <div class="w-10">SNR</div>
     <div class="w-10">RSSI</div>
@@ -51,7 +51,9 @@
       {#if !messagesOnly || packet.message}
         <div class="flex gap-2 whitespace-nowrap">
           <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
-          <div class="w-24 flex gap-1">
+
+          <!-- Nodes -->
+          <div class="w-32 flex gap-1 overflow-hidden">
             <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
             {#if packet.to != 4294967295}
               <div>to</div>
@@ -80,6 +82,14 @@
           {:else if packet.user}
             <div class="bg-indigo-800/60 rounded px-1 my-0.5 text-xs ring-0 text-indigo-300 mx-2 w-fit">
               {packet?.user?.longName}
+            </div>
+          {:else if packet.routing}
+            <div class="bg-pink-800/40 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
+              Err: {packet?.routing?.errorReason}
+            </div>
+          {:else if packet.trace}
+            <div class="bg-purple-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
+              {[packet.to, ...packet?.trace?.route, packet.from].map((id) => getNodeName(id)).join(' -> ')}
             </div>
           {/if}
         </div>

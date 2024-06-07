@@ -142,4 +142,10 @@ export type MeshPacket = {
   position?: Position
   user?: User
   detectionSensor?: string
+  trace?: {
+    route: number[]
+  }
+  routing?: {
+    errorReason: string
+  }
 }

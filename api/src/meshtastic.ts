@@ -128,7 +128,9 @@ async function connect(address: string) {
         'onMeshHeartbeat',
         'onTelemetryPacket',
         'onMessagePacket',
-        'onDetectionSensorPacket'
+        'onDetectionSensorPacket',
+        'onTraceRoutePacket',
+        'onRoutingPacket'
       ].includes(event)
     ) {
       continue
@@ -144,8 +146,16 @@ async function connect(address: string) {
   })
 
   /** TRACEROUTE_APP */
+  connection.events.onTraceRoutePacket.subscribe((e) => {
+    let { id, data } = copy(e)
+    if (id) packets.upsert({ id, trace: data })
+  })
 
   /** ROUTING_APP */
+  connection.events.onRoutingPacket.subscribe((e) => {
+    let { id, data } = copy(e)
+    if (id) packets.upsert({ id, routing: data })
+  })
 
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)
@@ -156,4 +166,8 @@ export async function send({ message = '', destination, channel }) {
   if (connectionStatus.value != 'connected' || !message) return
   console.log('Sending', { message, destination, channel })
   return connection.sendText(message, destination, false, channel)
+}
+
+export async function traceRoute(destination: number) {
+  return connection.traceRoute(destination)
 }

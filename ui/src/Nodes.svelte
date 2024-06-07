@@ -125,6 +125,8 @@
             <button on:click={() => (selectedNode = node)}>🔍</button>
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->
 
+            <button title="Traceroute" on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button>
+
             {#if node.user?.hwModel}
               <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
             {/if}
