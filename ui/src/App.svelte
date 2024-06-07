@@ -7,9 +7,14 @@
   import Log from './Log.svelte'
   import Nodes from './Nodes.svelte'
   import Map from './Map.svelte'
+  import OpenLayersMap from './lib/OpenLayersMap.svelte'
 
   export const ws = new WebSocketClient(import.meta.env.VITE_API)
   axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
+</script>
+
+<script lang="ts">
+  let ol: OpenLayersMap
 </script>
 
 <ServiceWorker />
@@ -17,9 +22,9 @@
 <main class="layout w-full grid content-start gap-2 p-2 overflow-auto h-full">
   <Address style="grid-area: address;" />
   <Channels style="grid-area: channels;" />
-  <Nodes style="grid-area: nodes;" />
+  <Nodes {ol} style="grid-area: nodes;" />
   <Log style="grid-area: log;" />
-  <Map style="grid-area: map;" />
+  <Map bind:ol style="grid-area: map;" />
 </main>
 
 <style>

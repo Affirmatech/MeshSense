@@ -3,21 +3,23 @@
     if (!message) return
     axios.post('/send', { message, destination })
   }
-  export let smallMode = writable(true)
+  export let smallMode = writable(false)
   export let filteredNodes = writable<NodeInfo[]>([])
 </script>
 
 <script lang="ts">
   import { currentTime, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { unixSecondsTimeAgo } from './lib/util'
+  import { getCoordinates, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
   import axios from 'axios'
   import Modal from './lib/Modal.svelte'
   import { writable } from 'svelte/store'
+  import OpenLayersMap from './lib/OpenLayersMap.svelte'
 
   export let showInactive = false
   let selectedNode: NodeInfo
+  export let ol: OpenLayersMap = undefined
 
   $: $filteredNodes = $nodes
     .filter((node) => showInactive || Date.now() - node.lastHeard * 1000 < 3.6e6)
@@ -132,7 +134,13 @@
             {/if}
 
             {#if node.position?.latitudeI}
-              <button class="h-7 w-5">🌐</button>
+              <button
+                class="h-7 w-5"
+                on:click={() => {
+                  let [long, lat] = getCoordinates(node)
+                  ol.flyTo(long, lat)
+                }}>🌐</button
+              >
             {/if}
           </div>
         {/if}

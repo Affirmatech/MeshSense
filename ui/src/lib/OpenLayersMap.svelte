@@ -28,8 +28,8 @@
   let map: Map
   let layers: Record<string, Layer> = {}
 
-  export let center = [-76.3242479, 39.5167587]
-  export let zoom = 10
+  export let center = [-90.3242479, 39.5167587]
+  export let zoom = 12
 
   // $: if ($lastUpdate && map) {
   // 	plotPoints($lastUpdate.aid)
@@ -108,7 +108,6 @@
     layers[layerName] = new VectorLayer({
       source: new Vector({
         features: data.map((points) => {
-          console.log('line', points)
           let feature = new Feature({
             geometry: new LineString(points),
             name: 'Line'
@@ -121,6 +120,12 @@
     })
 
     map.addLayer(layers[layerName])
+  }
+
+  export function flyTo(long, lat) {
+    map.getView().animate({
+      center: [long, lat]
+    })
   }
 
   // function plotLocations() {

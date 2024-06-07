@@ -1,23 +1,15 @@
 <script lang="ts">
-  import { myNodeNum, type NodeInfo } from 'api/src/vars'
+  import { connectionStatus, myNodeNum, type NodeInfo } from 'api/src/vars'
   import { filteredNodes } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
+  import { getCoordinates } from './lib/util'
 
-  let ol: OpenLayersMap
-
-  function getCoordinates(node: NodeInfo | number) {
-    if (typeof node == 'number') node = getNodeById(node)
-    return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
-  }
+  export let ol: OpenLayersMap = undefined
 
   $: pointsWithCoords = $filteredNodes.filter((n) => n.position?.latitudeI != undefined)
 
-  function getNodeById(num: number) {
-    return pointsWithCoords.find((n) => n.num == num)
-  }
-
-  $: if (ol) {
+  $: if (ol && $connectionStatus == 'connected') {
     let myNodeCoords = getCoordinates($myNodeNum)
 
     ol.plotLines(
@@ -44,6 +36,8 @@
   }
 </script>
 
-<Card title="Map" {...$$restProps}>
-  <OpenLayersMap bind:this={ol} />
-</Card>
+{#if $connectionStatus == 'connected'}
+  <Card title="Map" {...$$restProps}>
+    <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
+  </Card>
+{/if}

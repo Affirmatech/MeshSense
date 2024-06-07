@@ -1,3 +1,4 @@
+import { nodes, type NodeInfo } from 'api/src/vars'
 import { tick } from 'svelte'
 
 export function unixSecondsTimeAgo(seconds) {
@@ -37,4 +38,13 @@ export function scrollToBottom(element: HTMLElement, force?, notifyUnseen: (reco
       if (notifyUnseen) notifyUnseen(true)
     }
   })
+}
+
+export function getCoordinates(node: NodeInfo | number) {
+  if (typeof node == 'number') node = getNodeById(node)
+  return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
+}
+
+function getNodeById(num: number) {
+  return nodes.value.find((n) => n.num == num)
 }
