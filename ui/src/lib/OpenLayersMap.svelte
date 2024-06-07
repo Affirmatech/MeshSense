@@ -3,7 +3,7 @@
   import { OSM, Vector } from 'ol/source'
   import TileLayer from 'ol/layer/Tile'
 
-  import { Point, Polygon } from 'ol/geom'
+  import { LineString, Point, Polygon } from 'ol/geom'
   import { createEventDispatcher, onMount } from 'svelte'
   import 'ol/ol.css'
   import { fromLonLat } from 'ol/proj'
@@ -17,6 +17,7 @@
   import Icon from 'ol/style/Icon'
   import { descending } from 'ol/array'
   import Text from 'ol/style/Text'
+  import type { LoadingStrategy } from 'ol/source/Vector'
 
   useGeographic()
   let dispatch = createEventDispatcher()
@@ -96,6 +97,27 @@
           return feature
         })
       })
+    })
+
+    map.addLayer(layers[layerName])
+  }
+
+  export function plotLines(layerName: string, data: number[][][]) {
+    if (layers[layerName]) map.removeLayer(layers[layerName])
+
+    layers[layerName] = new VectorLayer({
+      source: new Vector({
+        features: data.map((points) => {
+          console.log('line', points)
+          let feature = new Feature({
+            geometry: new LineString(points),
+            name: 'Line'
+          })
+          // feature.setStyle({st})
+          return feature
+        })
+      }),
+      style: { 'stroke-width': 4, 'stroke-color': 'rgba(50,50,150, 0.6)' }
     })
 
     map.addLayer(layers[layerName])
