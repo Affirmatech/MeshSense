@@ -149,6 +149,7 @@ async function connect(address: string) {
   connection.events.onTraceRoutePacket.subscribe((e) => {
     let { id, data } = copy(e)
     if (id) packets.upsert({ id, trace: data })
+    if (e.from && data) nodes.upsert({ num: e.from, trace: data })
   })
 
   /** ROUTING_APP */

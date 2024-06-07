@@ -89,6 +89,7 @@ export type NodeInfo = {
   position: Position
   deviceMetrics: DeviceMetrics
   rssi?: number
+  trace?: { route: number[] }
 }
 
 export type ChannelSettings = {
