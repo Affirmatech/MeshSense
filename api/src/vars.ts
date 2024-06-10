@@ -2,10 +2,10 @@ import { State } from './lib/state'
 
 export let address = new State('address', '', { persist: 'api' })
 export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected'>('connectionStatus', 'disconnected')
-export let lastFromRadio = new State('lastFromRadio')
-export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index' })
-export let packets = new State<MeshPacket[]>('packets', [])
-export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num' })
+export let lastFromRadio = new State('lastFromRadio', undefined, { hideLog: true })
+export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index', hideLog: true })
+export let packets = new State<MeshPacket[]>('packets', [], { hideLog: true })
+export let nodes = new State<NodeInfo[]>('nodes', [], { primaryKey: 'num', hideLog: true })
 export let currentTime = new State<number>('currentTime', Date.now(), { hideLog: true })
 export let myNodeNum = new State<number>('myNodeNum')
 export let broadcastId = 4294967295

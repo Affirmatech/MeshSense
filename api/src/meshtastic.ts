@@ -116,7 +116,6 @@ async function connect(address: string) {
 
   // /** Subscribe to all events */
   for (let event in connection.events) {
-    console.log(event)
     if (
       [
         'onUserPacket',

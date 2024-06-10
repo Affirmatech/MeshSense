@@ -1,9 +1,24 @@
 import express, { type Express } from 'express'
 import { WebSocketHTTPServer } from './wss'
 import { State } from './state'
+import https from 'https'
+import pem from 'pem'
+
+async function createCertificate(options: pem.CertificateCreationOptions): Promise<pem.CertificateCreationResult> {
+  return new Promise((success, fail) => {
+    pem.createCertificate(options, (error, keys) => {
+      if (error) {
+        return fail(error)
+      }
+      success(keys)
+    })
+  })
+}
 
 export let app: Express = express()
-export let server = app.listen(Number(process.env.PORT) || 5920)
+let keys = await createCertificate({ days: 365, selfSigned: true })
+let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
+export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
 export let wss = new WebSocketHTTPServer(server, { path: '/' })
 
 process.on('unhandledRejection', (reason, promise) => {

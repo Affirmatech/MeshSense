@@ -22,6 +22,7 @@
     "vite": "^5.2.11"
   },
   "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "api": "file:../api",
     "axios": "^1.7.2",
     "eventemitter3": "^5.0.1",
