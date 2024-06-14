@@ -9,4 +9,5 @@ export default defineConfig({
     port: process.env.PORT || '5921'
   },
   plugins: [basicSsl(), svelte()]
+  // plugins: [svelte()]
 })

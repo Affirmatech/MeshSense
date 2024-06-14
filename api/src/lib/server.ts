@@ -3,20 +3,40 @@ import { WebSocketHTTPServer } from './wss'
 import { State } from './state'
 import https from 'https'
 import pem from 'pem'
+import { store } from './persistence'
 
-async function createCertificate(options: pem.CertificateCreationOptions): Promise<pem.CertificateCreationResult> {
+async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
   return new Promise((success, fail) => {
-    pem.createCertificate(options, (error, keys) => {
-      if (error) {
-        return fail(error)
-      }
-      success(keys)
-    })
+    if (originalKeys) {
+      pem.checkCertificate(originalKeys?.certificate || {}, (error, valid) => {
+        if (error || !valid) {
+          console.log('Creating updated Self-Signed Certificate')
+          pem.createCertificate(options, (error, keys) => {
+            if (error) return fail(error)
+            success(keys)
+          })
+        }
+        console.log('Current Certificate is valid')
+        return success(originalKeys)
+      })
+    } else {
+      console.log('Creating new Self-Signed Certificate')
+      pem.createCertificate(options, (error, keys) => {
+        if (error) return fail(error)
+        success(keys)
+      })
+    }
   })
 }
 
 export let app: Express = express()
-let keys = await createCertificate({ days: 365, selfSigned: true })
+let originalKeys = store['keys']
+
+/** Create Self Signed Certificate */
+let keys = await createCertificate({ days: 365 * 5, selfSigned: true }, originalKeys)
+store['keys'] = keys
+
+/** Begin Listening for connections */
 let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
 export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
 export let wss = new WebSocketHTTPServer(server, { path: '/' })
