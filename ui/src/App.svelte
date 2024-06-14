@@ -9,8 +9,8 @@
   import Map from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
 
-  export const ws = new WebSocketClient(import.meta.env.VITE_API)
-  axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
+  export const ws = new WebSocketClient('/ws')
+  // if (import.meta.env.VITE_API) axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
 </script>
 
 <script lang="ts">

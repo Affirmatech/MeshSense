@@ -30,6 +30,7 @@
     "env-paths": "^3.0.0",
     "eventemitter3": "^5.0.1",
     "express": "^4.19.2",
+    "http-proxy-middleware": "^3.0.0",
     "key-file-storage": "^2.3.3",
     "pem": "^1.14.8",
     "ws": "^8.17.0"

@@ -1,9 +1,12 @@
+import 'dotenv/config'
 import express, { type Express } from 'express'
 import { WebSocketHTTPServer } from './wss'
 import { State } from './state'
 import https from 'https'
 import pem from 'pem'
 import { store } from './persistence'
+import { createProxyMiddleware } from 'http-proxy-middleware'
+import { staticDirectory } from './paths'
 
 async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
   return new Promise((success, fail) => {
@@ -39,7 +42,7 @@ store['keys'] = keys
 /** Begin Listening for connections */
 let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
 export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
-export let wss = new WebSocketHTTPServer(server, { path: '/' })
+export let wss = new WebSocketHTTPServer(server, { path: '/ws' })
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error(promise)
@@ -95,7 +98,19 @@ export function finalize() {
     return res.status(500).json(String(err))
   })
 
+  'DEV_UI_URL' in process.env ? enableDevProxy() : app.use(express.static(staticDirectory))
   console.log('Server listening', server.address())
 }
 
 export default { app, server, wss, finalize }
+
+/** When in development, proxy UI route instead of serving static files */
+function enableDevProxy() {
+  let wsProxy = createProxyMiddleware({
+    target: process.env.DEV_UI_URL,
+    changeOrigin: true,
+    ws: true
+  })
+  server.on('upgrade', wsProxy.upgrade)
+  app.use('/', wsProxy)
+}
