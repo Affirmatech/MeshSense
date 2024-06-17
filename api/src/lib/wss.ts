@@ -28,7 +28,7 @@ export let events = new EventEmitter()
  *    wss.send('confirmation', "saluations", {to: socket})
  * })
  * ```
- *  
+ *
  */
 export class WebSocketHTTPServer extends WebSocketServer {
   msg = events
@@ -37,12 +37,9 @@ export class WebSocketHTTPServer extends WebSocketServer {
     super({ noServer: true, ...options })
     this.attachHTTPServer(server, options?.path)
     this.on('connection', (socket, request) => {
+      let remoteAddress = 'x-forwarded-for' in request.headers ? String(request.headers['x-forwarded-for']).split(',')[0].trim() : request.socket.remoteAddress
 
-      let remoteAddress = 'x-forwarded-for' in request.headers
-        ? String(request.headers['x-forwarded-for']).split(',')[0].trim()
-        : request.socket.remoteAddress
-
-      remoteAddress = remoteAddress + ":" + request.socket['_peername'].port
+      remoteAddress = remoteAddress + ':' + request.socket['_peername']?.port
 
       console.log('[WSS]', `Connection from ${remoteAddress}`)
       socket['remoteAddress'] = remoteAddress
@@ -54,19 +51,21 @@ export class WebSocketHTTPServer extends WebSocketServer {
   }
 
   // TODO: Implement Authentication
-  authenticate() { return true }
+  authenticate() {
+    return true
+  }
 
   attachHTTPServer(server: Server, path?: string) {
     server.on('upgrade', (request, socket, head) => {
       if (!this.authenticate()) {
-        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
-        socket.destroy();
-        return;
+        socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
+        socket.destroy()
+        return
       }
 
-      const { pathname } = parse(request.url);
+      const { pathname } = parse(request.url)
       if (!path || pathname == path) {
-        this.handleUpgrade(request, socket, head, socket => {
+        this.handleUpgrade(request, socket, head, (socket) => {
           this.emit('connection', socket, request)
         })
       }
@@ -77,10 +76,14 @@ export class WebSocketHTTPServer extends WebSocketServer {
     try {
       let messageObject: MessageObject = JSON.parse(message)
       console.log('[WSS]', socket['remoteAddress'], messageObject?.data)
-      try { if (messageObject.event) this.msg.emit(messageObject.event, messageObject.data, socket) }
-      catch (e) { console.log(`Unable to process event ${messageObject.event} | ${e}`) }
+      try {
+        if (messageObject.event) this.msg.emit(messageObject.event, messageObject.data, socket)
+      } catch (e) {
+        console.log(`Unable to process event ${messageObject.event} | ${e}`)
+      }
+    } catch (e) {
+      console.log(`Unable to parse data | ${e}`)
     }
-    catch (e) { console.log(`Unable to parse data | ${e}`) }
   }
 
   /**
@@ -88,7 +91,7 @@ export class WebSocketHTTPServer extends WebSocketServer {
    * - `to` Socket to send data to, otherwise send to all
    * - `skip` Socket to skip
    */
-  send(event: string, data?: any, options: { to?: WebSocket.WebSocket, skip?: WebSocket.WebSocket } = {}) {
+  send(event: string, data?: any, options: { to?: WebSocket.WebSocket; skip?: WebSocket.WebSocket } = {}) {
     let message = JSON.stringify({ event, data })
 
     try {
@@ -96,12 +99,10 @@ export class WebSocketHTTPServer extends WebSocketServer {
       else {
         this.clients.forEach(function each(client) {
           if (client != options.skip && client.readyState === WebSocket.OPEN) client.send(message)
-        });
+        })
       }
-    }
-    catch (e) {
+    } catch (e) {
       console.log(`Unable to send data | ${e}`)
     }
   }
-
 }

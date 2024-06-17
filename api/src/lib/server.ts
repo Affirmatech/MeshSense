@@ -40,8 +40,13 @@ let keys = await createCertificate({ days: 365 * 5, selfSigned: true }, original
 store['keys'] = keys
 
 /** Begin Listening for connections */
-let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
-export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
+
+// HTTPS
+// let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
+// export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
+
+// HTTP
+let server = app.listen(Number(process.env.PORT) || 5920)
 export let wss = new WebSocketHTTPServer(server, { path: '/ws' })
 
 process.on('unhandledRejection', (reason, promise) => {

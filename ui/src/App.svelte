@@ -9,7 +9,8 @@
   import Map from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
 
-  export const ws = new WebSocketClient('/ws')
+  export const ws = new WebSocketClient('/meshmagic/ws')
+  axios.defaults.baseURL = '/meshmagic'
   // if (import.meta.env.VITE_API) axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
 </script>
 

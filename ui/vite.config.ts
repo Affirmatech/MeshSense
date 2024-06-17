@@ -4,7 +4,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // base: '/meshmagic/',
+  base: '/meshmagic/',
   server: {
     port: process.env.PORT || '5921'
   },
