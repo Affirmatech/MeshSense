@@ -8,6 +8,7 @@
   import Nodes from './Nodes.svelte'
   import Map from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
+  import Bluetooth from './Bluetooth.svelte'
 
   export const ws = new WebSocketClient('/meshmagic/ws')
   axios.defaults.baseURL = '/meshmagic'
@@ -21,7 +22,10 @@
 <ServiceWorker />
 
 <main class="layout w-full grid content-start gap-2 p-2 overflow-auto h-full">
-  <Address style="grid-area: address;" />
+  <div style="grid-area: address;" class="flex flex-col gap-2">
+    <Address />
+    <Bluetooth />
+  </div>
   <Channels style="grid-area: channels;" />
   <Nodes {ol} style="grid-area: nodes;" />
   <Log style="grid-area: log;" />

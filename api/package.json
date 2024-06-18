@@ -33,6 +33,7 @@
     "http-proxy-middleware": "^3.0.0",
     "key-file-storage": "^2.3.3",
     "pem": "^1.14.8",
+    "webbluetooth": "^3.2.1",
     "ws": "^8.17.0"
   }
 }

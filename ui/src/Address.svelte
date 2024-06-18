@@ -6,6 +6,7 @@
   let connectionIcons = {
     connected: '🟢',
     connecting: '🟡',
+    searching: '🟡',
     disconnected: '🔴'
   }
 </script>
@@ -28,6 +29,8 @@
         >
       {:else if $connectionStatus == 'connecting'}
         <div>Connecting</div>
+      {:else if $connectionStatus == 'searching'}
+        <div>Searching</div>
       {:else if $connectionStatus == 'connected'}
         <button class="btn" on:click={() => ($address = '')}>Disconnect</button>
       {/if}

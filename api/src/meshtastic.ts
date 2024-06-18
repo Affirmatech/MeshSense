@@ -1,11 +1,17 @@
-import { HttpConnection } from '@meshtastic/js'
+import { HttpConnection, BleConnection } from '@meshtastic/js'
 import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
+import { bluetoothDevices } from './lib/bluetooth'
 
-let connection: HttpConnection
+let connection: HttpConnection | BleConnection
 address.subscribe(connect)
 
 function copy(obj: any) {
   return JSON.parse(JSON.stringify(obj))
+}
+
+function validateMACAddress(macAddress: string): boolean {
+  const pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
+  return pattern.test(macAddress)
 }
 
 /**
@@ -23,8 +29,20 @@ async function connect(address: string) {
 
   if (!address) return
 
-  // Create a new HttpConnection with a unique identifier
-  connection = new HttpConnection()
+  if (validateMACAddress(address)) {
+    connection = new BleConnection()
+    connectionStatus.set('searching')
+
+    /** Wait for device to appear if not present */
+    while (!bluetoothDevices[address] && connectionStatus.value == 'searching') {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+
+    /** If device never showed up, bail */
+    // if (!bluetoothDevices[address]) return
+  } else {
+    connection = new HttpConnection()
+  }
   channels.set([])
 
   connection.events.onDeviceStatus.subscribe((e) => {
@@ -165,7 +183,10 @@ async function connect(address: string) {
 
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)
-  await connection.connect({ address, fetchInterval: 2000 })
+  if (connection instanceof BleConnection) {
+    console.log(bluetoothDevices[address])
+    await connection.connect({ device: bluetoothDevices[address] })
+  } else await connection.connect({ address, fetchInterval: 2000 })
 }
 
 export async function send({ message = '', destination, channel }) {
