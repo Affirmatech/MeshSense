@@ -15,14 +15,17 @@ export async function scanForDevice() {
   if (exitScanning) return
 
   // console.log('scanning...')
-  // let device = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.error(e))
+
+  let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.error(e))
   // let device = await bluetooth.requestDevice({ filters: [{ services: [Constants.ServiceUuid] }] }).catch((e) => console.error(e))
   // let device = await bluetooth.requestDevice({ filters: [{ serviceData: [] }] }).catch((e) => console.error(e))
-  let device = await bluetooth
-    .requestDevice({
-      filters: [{ services: ['00001801-0000-1000-8000-00805f9b34fb'] }, { services: ['6ba1b218-15a8-461f-9fa8-5dcae273eafd'] }, { services: ['0000180f-0000-1000-8000-00805f9b34fb'] }]
-    })
-    .catch((e) => console.error(e))
+  // let device = await bluetooth
+  //   .requestDevice({
+  //     filters: [{ services: ['00001801-0000-1000-8000-00805f9b34fb'] }, { services: ['6ba1b218-15a8-461f-9fa8-5dcae273eafd'] }, { services: ['0000180f-0000-1000-8000-00805f9b34fb'] }]
+  //   })
+  //   .catch((e) => console.error(e))
+
+  // device.gatt.disconnect()
 
   if (device) {
     const decoder = new TextDecoder()
@@ -32,17 +35,19 @@ export async function scanForDevice() {
     bluetoothDeviceList.upsert({ id, name })
   }
 
-  if (!exitScanning) setTimeout(scanForDevice, 100)
+  if (!exitScanning) setTimeout(scanForDevice, 500)
 }
 
 export function beginScanning() {
   if (scanning) throw 'Already Scanning'
+  console.log('[bluetooth] Begin Scanning')
   exitScanning = false
   scanning = true
   scanForDevice()
 }
 
 export function stopScanning() {
+  console.log('[bluetooth] Stop Scanning')
   exitScanning = true
   scanning = false
 }

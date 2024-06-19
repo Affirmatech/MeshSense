@@ -1,12 +1,13 @@
 import { HttpConnection, BleConnection } from '@meshtastic/js'
 import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
+import exitHook from 'exit-hook'
 
 let connection: HttpConnection | BleConnection
 address.subscribe(connect)
 
 connectionStatus.subscribe((value) => {
-  if (value != 'connected') {
+  if (value == 'disconnected' || value == 'searching') {
     beginScanning()
   } else stopScanning()
 })
@@ -19,6 +20,11 @@ function validateMACAddress(macAddress: string): boolean {
   const pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
   return pattern.test(macAddress)
 }
+
+exitHook(() => {
+  console.log('Disconnecting from device')
+  connection?.disconnect()
+})
 
 /**
  * Connects to a MeshTastic Node using an HTTP connection.
