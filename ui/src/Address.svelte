@@ -30,7 +30,7 @@
       {:else if $connectionStatus == 'connecting'}
         <div>Connecting</div>
       {:else if $connectionStatus == 'searching'}
-        <div>Searching</div>
+        <button class="btn" on:click={() => ($address = '')}>Cancel</button>
       {:else if $connectionStatus == 'connected'}
         <button class="btn" on:click={() => ($address = '')}>Disconnect</button>
       {/if}
