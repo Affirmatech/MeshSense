@@ -1,9 +1,15 @@
 import { HttpConnection, BleConnection } from '@meshtastic/js'
 import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
-import { bluetoothDevices } from './lib/bluetooth'
+import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 
 let connection: HttpConnection | BleConnection
 address.subscribe(connect)
+
+connectionStatus.subscribe((value) => {
+  if (value != 'connected') {
+    beginScanning()
+  } else stopScanning()
+})
 
 function copy(obj: any) {
   return JSON.parse(JSON.stringify(obj))
@@ -39,7 +45,8 @@ async function connect(address: string) {
     }
 
     /** If device never showed up, bail */
-    // if (!bluetoothDevices[address]) return
+    if (!bluetoothDevices[address]) return
+    stopScanning()
   } else {
     connection = new HttpConnection()
   }
@@ -184,7 +191,7 @@ async function connect(address: string) {
   // Attempt to connect to the specified MeshTastic Node
   console.log('[meshtastic] Connecting to Node', address)
   if (connection instanceof BleConnection) {
-    console.log(bluetoothDevices[address])
+    // console.log(bluetoothDevices[address])
     await connection.connect({ device: bluetoothDevices[address] })
   } else await connection.connect({ address, fetchInterval: 2000 })
 }
