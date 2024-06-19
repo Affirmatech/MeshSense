@@ -8,6 +8,7 @@ let bluetoothDeviceList = new State('bluetoothDeviceList', [], { primaryKey: 'id
 
 let scanning = false
 let exitScanning = false
+let deviceTargetId = ''
 const bluetooth = new Bluetooth({ scanTime: 10 })
 
 /** Loop to show devices consistently */
@@ -33,13 +34,19 @@ export async function scanForDevice() {
     bluetoothDevices[device.id] = device
     let { id, name } = device
     bluetoothDeviceList.upsert({ id, name })
+    if (id == deviceTargetId) stopScanning()
   }
 
   if (!exitScanning) setTimeout(scanForDevice, 500)
 }
 
-export function beginScanning() {
-  if (scanning) throw 'Already Scanning'
+export function beginScanning(targetId?: string) {
+  deviceTargetId = targetId
+  delete bluetoothDevices[targetId]
+  if (scanning) {
+    console.warn('Already Scanning')
+    return
+  }
   console.log('[bluetooth] Begin Scanning')
   exitScanning = false
   scanning = true

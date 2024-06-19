@@ -46,6 +46,7 @@ async function connect(address: string) {
     connectionStatus.set('searching')
 
     /** Wait for device to appear if not present */
+    beginScanning(address)
     while (!bluetoothDevices[address] && connectionStatus.value == 'searching') {
       await new Promise((resolve) => setTimeout(resolve, 100))
     }
