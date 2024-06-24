@@ -147,9 +147,12 @@
             {#if node.position?.latitudeI}
               <button
                 class="h-7 w-5"
-                on:click={() => {
-                  let [long, lat] = getCoordinates(node)
-                  ol.flyTo(long, lat)
+                on:click={(e) => {
+                  axios.post('/requestPosition', { destination: node.num })
+                  if (!e.ctrlKey) {
+                    let [long, lat] = getCoordinates(node)
+                    ol.flyTo(long, lat)
+                  }
                 }}>🌐</button
               >
             {/if}

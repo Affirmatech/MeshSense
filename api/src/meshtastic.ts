@@ -220,3 +220,8 @@ export async function traceRoute(destination: number) {
   } as any)
   return connection.traceRoute(destination)
 }
+
+export async function requestPosition(destination: number) {
+  console.log('[Meshtastic] Requesting Position for', destination)
+  return connection.requestPosition(destination)
+}
