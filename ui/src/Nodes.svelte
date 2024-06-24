@@ -78,7 +78,7 @@
         {:else}
           <!-- Longname -->
           <div class="flex gap-1 items-center">
-            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.user?.id}" alt="Node {node.user?.id}" />
+            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
             <button
               title={node.user?.longName || String(node.num)}
