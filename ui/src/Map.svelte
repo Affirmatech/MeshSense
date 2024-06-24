@@ -7,7 +7,7 @@
 
   export let ol: OpenLayersMap = undefined
 
-  $: pointsWithCoords = $filteredNodes.filter((n) => n.position?.latitudeI != undefined)
+  $: pointsWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0))
 
   $: if (ol) {
     let myNodeCoords = getCoordinates($myNodeNum)

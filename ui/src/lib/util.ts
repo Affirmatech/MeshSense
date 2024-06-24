@@ -2,7 +2,7 @@ import { accessKey, nodes, type NodeInfo } from 'api/src/vars'
 import { tick } from 'svelte'
 import { derived, writable } from 'svelte/store'
 
-export const userKey = writable(localStorage.getItem('userKey'))
+export const userKey = writable(localStorage.getItem('userKey') || '')
 userKey.subscribe((value) => localStorage.setItem('userKey', value))
 export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) => $accessKey == $userKey)
 window['userKey'] = userKey
