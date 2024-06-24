@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { connectionStatus, address } from 'api/src/vars'
+  import { connectionStatus, address, locked } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { smallMode } from './Nodes.svelte'
 
@@ -11,29 +11,32 @@
   }
 </script>
 
-<Card title="Address" {...$$restProps}>
-  <h2 slot="title" class="rounded-t flex items-center">
-    <div class="grow">Address</div>
-    <button on:click={() => ($smallMode = !$smallMode)} class="btn !px-1 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
-  </h2>
-  <div class="grid grid-cols-[auto_1fr_auto] p-2 gap-2 items-center text-sm">
-    <div>{connectionIcons[$connectionStatus]}</div>
-    <div>{$address || '(none)'}</div>
-    {#if !$smallMode}
-      {#if $connectionStatus == 'disconnected'}
-        <button
-          class="btn"
-          on:click={() => {
-            $address = prompt('Enter Node IP to connect to', $address || '')
-          }}>Connect</button
-        >
-      {:else if $connectionStatus == 'connecting'}
-        <div>Connecting</div>
-      {:else if $connectionStatus == 'searching'}
-        <button class="btn" on:click={() => ($address = '')}>Cancel</button>
-      {:else if $connectionStatus == 'connected'}
-        <button class="btn" on:click={() => ($address = '')}>Disconnect</button>
-      {/if}
-    {/if}
-  </div>
-</Card>
+{#if !$locked}
+  <Card title="Address" {...$$restProps}>
+    <h2 slot="title" class="rounded-t flex items-center">
+      <div class="grow">Address</div>
+    </h2>
+    <div class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-2'} p-2 gap-2 items-center text-sm">
+      <div class="flex gap-2">
+        {connectionIcons[$connectionStatus]}
+        <div>{$address || '(none)'}</div>
+      </div>
+      <div>
+        {#if $connectionStatus == 'disconnected'}
+          <button
+            class="btn w-full"
+            on:click={() => {
+              $address = prompt('Enter Node IP to connect to', $address || '')
+            }}>Connect</button
+          >
+        {:else if $connectionStatus == 'connecting'}
+          <div class="text-center w-full text-yellow-300">Connecting</div>
+        {:else if $connectionStatus == 'searching'}
+          <button class="btn w-full" on:click={() => ($address = '')}>Cancel Connect</button>
+        {:else if $connectionStatus == 'connected'}
+          <button class="btn w-full" on:click={() => ($address = '')}>Disconnect</button>
+        {/if}
+      </div>
+    </div>
+  </Card>
+{/if}

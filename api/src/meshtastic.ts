@@ -211,5 +211,12 @@ export async function send({ message = '', destination, channel }) {
 
 export async function traceRoute(destination: number) {
   console.log('[Meshtastic] Requesting Traceroute for', destination)
+  packets.push({
+    from: myNodeNum.value,
+    to: destination,
+    rxTime: Date.now() / 1000,
+    channel: '',
+    decoded: { portnum: 'TRACEROUTE' }
+  } as any)
   return connection.traceRoute(destination)
 }

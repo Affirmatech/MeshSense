@@ -35,7 +35,7 @@
 </Modal>
 
 <Card title="Nodes" {...$$restProps}>
-  <h2 slot="title" class="rounded-t flex items-center">
+  <h2 slot="title" class="rounded-t flex items-center gap-2">
     <div class="grow">Nodes</div>
     {#if !$smallMode}
       <label class="text-sm font-normal"
@@ -43,8 +43,9 @@
         <input type="checkbox" bind:checked={showInactive} />
       </label>
     {/if}
+    <button on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
-  <div class="p-1 text-sm grid gap-1">
+  <div class="p-1 text-sm grid gap-1 overflow-auto h-full">
     {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
@@ -63,6 +64,11 @@
               <div class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
                 {node.snr}
                 <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
+              </div>
+
+              <!-- RSSI -->
+              <div class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
+                {node.rssi || '-'}
               </div>
             {:else}
               <!-- Hops -->
@@ -91,6 +97,11 @@
               <div class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
                 {node.snr}
                 <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
+              </div>
+
+              <!-- RSSI -->
+              <div class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
+                {node.rssi || '-'}
               </div>
             {/if}
           </div>

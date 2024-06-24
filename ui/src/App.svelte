@@ -10,9 +10,8 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
 
-  export const ws = new WebSocketClient('/meshmagic/ws')
-  axios.defaults.baseURL = '/meshmagic'
-  // if (import.meta.env.VITE_API) axios.defaults.baseURL = import.meta.env.VITE_API.replace('{{hostname}}', document.location.hostname)
+  export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
+  axios.defaults.baseURL = import.meta.env.VITE_PATH
 </script>
 
 <script lang="ts">
@@ -21,24 +20,15 @@
 
 <ServiceWorker />
 
-<main class="layout w-full grid content-start gap-2 p-2 overflow-auto h-full">
-  <div style="grid-area: address;" class="flex flex-col gap-2">
+<main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
+  <div class="grid gap-2 content-start h-full overflow-auto">
     <Address />
     <Bluetooth />
+    <Channels />
+    <Nodes {ol} />
   </div>
-  <Channels style="grid-area: channels;" />
-  <Nodes {ol} style="grid-area: nodes;" />
-  <Log style="grid-area: log;" />
-  <Map bind:ol style="grid-area: map;" />
+  <div class="grid grid-rows-[1fr_2fr] content-start h-full overflow-auto gap-2">
+    <Log />
+    <Map bind:ol />
+  </div>
 </main>
-
-<style>
-  .layout {
-    grid-template-areas:
-      'address channels'
-      'nodes log'
-      'nodes map';
-    grid-template-rows: auto 1fr 2fr;
-    grid-template-columns: auto 1fr;
-  }
-</style>

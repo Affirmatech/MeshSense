@@ -20,7 +20,7 @@
   const registerServiceWorker = async () => {
     if (navigator.serviceWorker) {
       navigator.serviceWorker
-        .register('/meshmagic/sw.js')
+        .register(`${import.meta.env.VITE_PATH || ''}/sw.js`)
         .then(function (registration) {
           console.log('Service worker registration successful:', registration)
         })

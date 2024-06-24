@@ -17,6 +17,7 @@
       if (!(getNodeName(packet.from).toLowerCase().includes(filterText.toLowerCase()) || getNodeName(packet.to).toLowerCase().includes(filterText.toLowerCase()))) return false
     }
     if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
+    if (!includeTx && packet.decoded?.portnum == 'ROUTING_APP') return false
     return true
   }
 
@@ -38,8 +39,8 @@
 <Card title="Log" {...$$restProps} class="min-h-36">
   <h2 slot="title" class="flex gap-2 font-bold rounded-t px-2">
     <div class="w-28">Date</div>
-    <div class="w-32 whitespace-nowrap overflow-hidden">Nodes</div>
-    <div class="w-9">Ch</div>
+    <div class="w-40 whitespace-nowrap overflow-hidden">Nodes</div>
+    <div class="w-7">Ch</div>
     <div class="w-10">SNR</div>
     <div class="w-10">RSSI</div>
     <div class="w-36">Type</div>
@@ -53,14 +54,14 @@
           <div class="w-28">{new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' })}</div>
 
           <!-- Nodes -->
-          <div class="w-32 flex gap-1 overflow-hidden">
+          <div class="w-40 flex gap-1 overflow-hidden">
             <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
             {#if packet.to != 4294967295}
               <div>to</div>
               <div class="">{getNodeName(packet.to)}</div>
             {/if}
           </div>
-          <div class="w-9">{packet.channel}</div>
+          <div class="w-7">{packet.channel}</div>
           <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxSnr || '' : ''}</div>
           <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxRssi || '' : ''}</div>
           <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
@@ -112,8 +113,7 @@
     <label class="flex gap-1"
       >Filter <input class="rounded bg-black text-blue-300 font-bold px-2 w-20" type="text" bind:value={filterText} />
       {#if filterText}<button on:click={() => (filterText = '')} class="btn text-sm !py-0">Clear</button>{/if}
-      {#if unseenMessages}{unseenMessages}<button class="btn !py-0 bottom-10" on:click={() => scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))}>Jump to new messages</button
-        >{/if}
+      {#if unseenMessages}<button class="btn !py-0 bottom-10" on:click={() => scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))}>Jump to new messages</button>{/if}
     </label>
   </h2>
 </Card>
