@@ -152,7 +152,7 @@
                   let [long, lat] = getCoordinates(node)
                   ol.flyTo(long, lat)
                 }
-              }}>{node.position?.latitudeI ? '🌐' : '🯄'}</button
+              }}>{node.position?.latitudeI ? '🌐' : '📡'}</button
             >
           </div>
         {/if}
