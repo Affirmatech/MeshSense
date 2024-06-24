@@ -22,6 +22,7 @@ function validateMACAddress(macAddress: string): boolean {
 }
 
 exitHook(() => {
+  connectionStatus.set('disconnected')
   console.log('Disconnecting from device')
   connection?.disconnect()
 })
@@ -34,8 +35,8 @@ async function connect(address: string) {
   console.log('[meshtastic] Calling connect', address)
 
   // Disconnect from any existing connection
-  connection?.disconnect()
   connectionStatus.set('disconnected')
+  connection?.disconnect()
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
 
@@ -65,6 +66,11 @@ async function connect(address: string) {
       connectionStatus.set('connecting')
     } else if (e == 7) {
       connectionStatus.set('connected')
+    } else if (e == 2) {
+      if (connectionStatus.value != 'disconnected') {
+        console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
+        connect(address)
+      }
     }
   })
 
