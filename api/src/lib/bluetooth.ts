@@ -29,7 +29,6 @@ export async function scanForDevice() {
   // device.gatt.disconnect()
 
   if (device) {
-    const decoder = new TextDecoder()
     console.log('[bluetooth] Device Detected |', device.id, device.name)
     bluetoothDevices[device.id] = device
     let { id, name } = device
@@ -48,9 +47,13 @@ export function beginScanning(targetId?: string) {
     return
   }
   console.log('[bluetooth] Begin Scanning')
-  exitScanning = false
-  scanning = true
-  scanForDevice()
+  bluetooth.getAvailability().then((adapterAvailable) => {
+    if (adapterAvailable) {
+      exitScanning = false
+      scanning = true
+      scanForDevice()
+    } else console.warn('No bluetooth adapters found')
+  })
 }
 
 export function stopScanning() {
