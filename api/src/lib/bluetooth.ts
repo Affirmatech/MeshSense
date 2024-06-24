@@ -17,7 +17,7 @@ export async function scanForDevice() {
 
   // console.log('scanning...')
 
-  let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.error(e))
+  let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.warn(e))
   // let device = await bluetooth.requestDevice({ filters: [{ services: [Constants.ServiceUuid] }] }).catch((e) => console.error(e))
   // let device = await bluetooth.requestDevice({ filters: [{ serviceData: [] }] }).catch((e) => console.error(e))
   // let device = await bluetooth
@@ -39,7 +39,7 @@ export async function scanForDevice() {
   if (!exitScanning) setTimeout(scanForDevice, 500)
 }
 
-export function beginScanning(targetId?: string) {
+export async function beginScanning(targetId?: string) {
   deviceTargetId = targetId
   delete bluetoothDevices[targetId]
   if (scanning) {
@@ -47,13 +47,12 @@ export function beginScanning(targetId?: string) {
     return
   }
   console.log('[bluetooth] Begin Scanning')
-  bluetooth.getAvailability().then((adapterAvailable) => {
-    if (adapterAvailable) {
-      exitScanning = false
-      scanning = true
-      scanForDevice()
-    } else console.warn('No bluetooth adapters found')
-  })
+  let adapterAvailable = await bluetooth.getAvailability().catch((e) => console.warn(e))
+  if (adapterAvailable) {
+    scanning = true
+    exitScanning = false
+    scanForDevice()
+  } else console.warn('No bluetooth adapters found')
 }
 
 export function stopScanning() {

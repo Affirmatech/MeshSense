@@ -9,7 +9,7 @@
 
   $: pointsWithCoords = $filteredNodes.filter((n) => n.position?.latitudeI != undefined)
 
-  $: if (ol && $connectionStatus == 'connected') {
+  $: if (ol) {
     let myNodeCoords = getCoordinates($myNodeNum)
 
     ol.plotLines(

@@ -84,7 +84,7 @@ async function connect(address: string) {
     if (e.from) {
       let updates: any = {
         num: e.from,
-        lastHeard: e.rxTime
+        lastHeard: Date.now() / 1000
       }
 
       if (e.hopStart) {
