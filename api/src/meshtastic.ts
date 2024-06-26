@@ -117,6 +117,8 @@ async function connect(address: string) {
 
   /** NODEINFO_APP */
   connection.events.onNodeInfoPacket.subscribe((e) => {
+    let existingNode = nodes.value.find((n) => e.num == n.num)
+    if (existingNode?.lastHeard > e.lastHeard) e.lastHeard = existingNode.lastHeard
     nodes.upsert(copy(e))
   })
 
