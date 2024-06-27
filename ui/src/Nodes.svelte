@@ -26,6 +26,7 @@
     .sort((a, b) => {
       if (a.num === $myNodeNum) return -1
       if (b.num === $myNodeNum) return 1
+      if (a.hopsAway == 0 && b.hopsAway == 0) return b.snr - a.snr
       return a.hopsAway === b.hopsAway ? a.user?.shortName?.localeCompare(b.user?.shortName) : a.hopsAway - b.hopsAway
     })
 </script>
@@ -146,6 +147,7 @@
 
             <button
               class="h-7 w-5"
+              title="Request Position"
               on:click={(e) => {
                 axios.post('/requestPosition', { destination: node.num })
                 if (!e.ctrlKey && node.position?.latitudeI) {
