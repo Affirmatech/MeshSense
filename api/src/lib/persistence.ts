@@ -1,10 +1,10 @@
 import kfs from 'key-file-storage'
 import { State } from './state'
-import { programDirectory } from './paths'
+import { dataDirectory } from './paths'
 import { join } from 'path'
 
-export let store = kfs(join(programDirectory, '.store'))
-store.version = 0.1
+export let store = kfs(join(dataDirectory, 'state'))
+// store.version = 0.1
 
 /** Return key-values as a `Record` object */
 export function getAllKeyValues(): Record<string, any> {
