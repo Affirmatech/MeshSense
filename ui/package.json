@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "vite build --emptyOutDir --outDir ../api/static --outDir ../api/dist/static",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },

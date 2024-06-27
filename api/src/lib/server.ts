@@ -2,42 +2,42 @@ import 'dotenv/config'
 import express, { type Express } from 'express'
 import { WebSocketHTTPServer } from './wss'
 import { State } from './state'
-import https from 'https'
-import pem from 'pem'
-import { store } from './persistence'
+// import https from 'https'
+// import pem from 'pem'
+// import { store } from './persistence'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import { staticDirectory } from './paths'
 
-async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
-  return new Promise((success, fail) => {
-    if (originalKeys) {
-      pem.checkCertificate(originalKeys?.certificate || {}, (error, valid) => {
-        if (error || !valid) {
-          console.log('Creating updated Self-Signed Certificate')
-          pem.createCertificate(options, (error, keys) => {
-            if (error) return fail(error)
-            success(keys)
-          })
-        }
-        console.log('Current Certificate is valid')
-        return success(originalKeys)
-      })
-    } else {
-      console.log('Creating new Self-Signed Certificate')
-      pem.createCertificate(options, (error, keys) => {
-        if (error) return fail(error)
-        success(keys)
-      })
-    }
-  })
-}
+// async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
+//   return new Promise((success, fail) => {
+//     if (originalKeys) {
+//       pem.checkCertificate(originalKeys?.certificate || {}, (error, valid) => {
+//         if (error || !valid) {
+//           console.log('Creating updated Self-Signed Certificate')
+//           pem.createCertificate(options, (error, keys) => {
+//             if (error) return fail(error)
+//             success(keys)
+//           })
+//         }
+//         console.log('Current Certificate is valid')
+//         return success(originalKeys)
+//       })
+//     } else {
+//       console.log('Creating new Self-Signed Certificate')
+//       pem.createCertificate(options, (error, keys) => {
+//         if (error) return fail(error)
+//         success(keys)
+//       })
+//     }
+//   })
+// }
 
 export let app: Express = express()
-let originalKeys = store['keys']
+// let originalKeys = store['keys']
 
 /** Create Self Signed Certificate */
-let keys = await createCertificate({ days: 365 * 5, selfSigned: true }, originalKeys)
-store['keys'] = keys
+// let keys = await createCertificate({ days: 365 * 5, selfSigned: true }, originalKeys)
+// store['keys'] = keys
 
 /** Begin Listening for connections */
 
