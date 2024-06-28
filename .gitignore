@@ -3,3 +3,4 @@ node_modules
 .store
 api/dist
 api/static
+electron/resources/api

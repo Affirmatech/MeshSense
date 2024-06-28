@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon --signal SIGINT -x 'vite-node' src/index.ts",
-    "build": "rollup -c",
+    "build": "rollup -c && copyup \"dist/**/*\" ../electron/resources/api",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -24,6 +24,7 @@
     "@types/node": "^20.14.5",
     "@types/pem": "^1.14.4",
     "@types/ws": "^8.5.10",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.3",
     "rollup": "^4.18.0",
     "rollup-plugin-natives": "^0.7.8",
