@@ -86,10 +86,10 @@
               class="text-left truncate max-w-44"
               on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button
             >
-            {#if node.user?.role?.includes('ROUTER')}
+            {#if typeof node.user?.role == 'string' && node.user?.role?.includes('ROUTER')}
               <div class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
             {/if}
-            {#if node.user?.role?.includes('CLIENT')}
+            {#if typeof node.user?.role == 'string' && node.user?.role?.includes('CLIENT')}
               <div class="bg-blue-500/50 rounded px-1 font-bold">C</div>
             {/if}
             <div class="grow"></div>
