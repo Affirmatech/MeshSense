@@ -46,8 +46,10 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   console.log(`DIRNAME`, __dirname)
-
-  apiProcess = utilityProcess.fork(join(__dirname, '../../resources/api/index.cjs'), process.argv, { stdio: 'pipe' })
+  let apiPath = join(__dirname, '../../resources/api/index.cjs').replace('app.asar', 'app.asar.unpacked')
+  console.log(`API_PATH`, apiPath)
+  
+  apiProcess = utilityProcess.fork(apiPath, process.argv, { stdio: 'pipe' })
   apiProcess.stdout?.on('data', (e) => process.stdout.write(e))
   apiProcess.stderr?.on('data', (e) => process.stderr.write(e))
   apiProcess.on('exit', () => console.log('API PROCESS EXITED!'))

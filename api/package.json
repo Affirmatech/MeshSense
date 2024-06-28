@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon --signal SIGINT -x 'vite-node' src/index.ts",
-    "build": "rollup -c && copyup \"dist/**/*\" ../electron/resources/api",
+    "build": "rollup -c && copyfiles -u 1 \"dist/**/*\" ../electron/resources/api",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
