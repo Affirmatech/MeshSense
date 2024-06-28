@@ -22,7 +22,7 @@ win:
   verifyUpdateCodeSignature: true
   certificateSubjectName: Affirmatech Incorporated
 nsis:
-  artifactName: ${name}-${version}-setup-${arch}.${ext}
+  artifactName: ${name}-setup-${arch}.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: true
@@ -37,7 +37,7 @@ mac:
     - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
     - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
 dmg:
-  artifactName: ${name}-${version}-${arch}.${ext}
+  artifactName: ${name}-${arch}.${ext}
 linux:
   target:
     - AppImage
@@ -46,8 +46,8 @@ linux:
   maintainer: electronjs.org
   category: Utility
 appImage:
-  artifactName: ${name}-${version}-${arch}.${ext}
+  artifactName: ${name}-${arch}.${ext}
 npmRebuild: false
 publish:
   provider: generic
-  url: https://example.com/auto-updates
+  url: https://affirmatech.com/download
