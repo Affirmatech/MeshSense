@@ -1,5 +1,5 @@
 appId: com.electron.app
-productName: MeshMagic
+productName: Meshmagic
 directories:
   buildResources: build
 files:

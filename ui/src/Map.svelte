@@ -36,7 +36,7 @@
   }
 </script>
 
-{#if $myNodeNum}
+{#if $connectionStatus == 'connected'}
   <Card title="Map" {...$$restProps}>
     <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
   </Card>
