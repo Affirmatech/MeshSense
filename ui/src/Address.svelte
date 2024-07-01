@@ -10,34 +10,40 @@
     searching: '🟡',
     disconnected: '🔴'
   }
+
+  $: inputAddress = $address || inputAddress
+
+  function connect() {
+    $address = inputAddress
+  }
 </script>
 
 <Card title="Address" {...$$restProps}>
-  <h2 slot="title" class="rounded-t flex items-center">
+  <h2 slot="title" class="rounded-t flex items-center h-full">
     <div class="grow">Address</div>
+    {#if $connectionStatus == 'connecting'}
+      <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1">Connecting</div>
+    {:else if $connectionStatus == 'searching'}
+      <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1">Searching</div>
+    {/if}
   </h2>
-  <div class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-2'} p-2 gap-2 items-center text-sm">
-    <div class="flex gap-2">
+  <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-2'} p-2 gap-2 items-center text-sm">
+    <div class="flex gap-2 items-center">
       {connectionIcons[$connectionStatus]}
-      <div>{$address || '(none)'}</div>
+      <input disabled={$connectionStatus != 'disconnected'} class="input" type="text" bind:value={inputAddress} placeholder="Device IP Address" />
     </div>
-    <div>
-      {#if $connectionStatus == 'disconnected'}
-        <button
-          class="btn w-full"
-          on:click={() => {
-            $address = prompt('Enter Node IP to connect to', $address || '')
-          }}>Connect</button
-        >
-      {:else if $connectionStatus == 'connecting'}
-        <div class="text-center w-full text-yellow-300">Connecting</div>
-      {:else if $connectionStatus == 'searching'}
-        <button class="btn w-full" on:click={() => ($address = '')}>Cancel Connect</button>
-      {:else if $connectionStatus == 'connected'}
-        {#if $hasAccess}
-          <button class="btn w-full" on:click={() => ($address = '')}>Disconnect</button>
+    {#if $hasAccess}
+      <div class=" h-full grid grid-flow-col">
+        {#if $connectionStatus == 'disconnected'}
+          <button class="btn w-full h-full">Connect</button>
+        {:else if $connectionStatus == 'connecting'}
+          <button class="btn w-full h-full" on:click={() => ($address = '')}>Cancel</button>
+        {:else if $connectionStatus == 'searching'}
+          <button class="btn w-full h-full" on:click={() => ($address = '')}>Cancel</button>
+        {:else if $connectionStatus == 'connected'}
+          <button type="button" class="btn w-full h-full" on:click={() => ($address = '')}>Disconnect</button>
         {/if}
-      {/if}
-    </div>
-  </div>
+      </div>
+    {/if}
+  </form>
 </Card>
