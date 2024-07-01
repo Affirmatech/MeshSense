@@ -57,7 +57,7 @@ h2 {
 }
 
 .input {
-  @apply rounded p-1 px-2 bg-slate-900 w-full;
+  @apply rounded p-1 px-2 bg-slate-900;
 }
 
 .input,

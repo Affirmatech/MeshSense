@@ -46,7 +46,7 @@
     {/if}
     <button on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
-  <div class="p-1 text-sm grid gap-1 overflow-auto h-full">
+  <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
     {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
@@ -73,7 +73,7 @@
               </div>
             {:else}
               <!-- Hops -->
-              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway}</div>
+              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway || '?'}</div>
             {/if}
           </div>
         {:else}
@@ -134,7 +134,7 @@
             </div>
 
             <!-- Hops -->
-            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway}</div>
+            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway || '?'}</div>
 
             <button on:click={() => (selectedNode = node)}>🔍</button>
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->

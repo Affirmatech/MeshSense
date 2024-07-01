@@ -12,7 +12,7 @@
   import { smallMode } from './Nodes.svelte'
 </script>
 
-<Card title="Channels" {...$$restProps} class="">
+<Card title="Channels" {...$$restProps}>
   <div class="gap-1 p-2 text-sm grid {$smallMode ? 'grid-cols-1' : 'grid-cols-2'}">
     {#each $channels as channel}
       {#if channel.role != 'DISABLED'}

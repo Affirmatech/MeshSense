@@ -5,10 +5,11 @@
   import { WebSocketClient } from './lib/wsc'
   import Channels from './Channels.svelte'
   import Log from './Log.svelte'
-  import Nodes from './Nodes.svelte'
+  import Nodes, { smallMode } from './Nodes.svelte'
   import Map from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
+  import Message from './Message.svelte'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -21,11 +22,12 @@
 <ServiceWorker />
 
 <main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
-  <div class="grid gap-2 content-start h-full overflow-auto">
-    <Address />
-    <Bluetooth />
-    <Channels />
-    <Nodes {ol} />
+  <div class="flex flex-col gap-2 content-start h-full overflow-auto {$smallMode ? 'w-44' : 'w-[21rem]'}">
+    <Address class="shrink-0" />
+    <Bluetooth class="shrink-0" />
+    <Channels class="shrink-0" />
+    <Nodes {ol} class="grow" />
+    <Message />
   </div>
   <div class="grid grid-rows-[1fr_2fr] content-start h-full overflow-auto gap-2">
     <Log />

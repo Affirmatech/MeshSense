@@ -8,7 +8,7 @@
 </script>
 
 {#if $connectionStatus == 'disconnected'}
-  <Card title="BLE Devices">
+  <Card title="BLE Devices" {...$$restProps}>
     <div class="text-sm p-2 flex flex-col gap-1">
       {#each $bluetoothDeviceList as { id, name }}
         <button
