@@ -22,7 +22,7 @@
 <ServiceWorker />
 
 <main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
-  <div class="flex flex-col gap-2 content-start h-full overflow-auto {$smallMode ? 'w-44' : 'w-[21rem]'}">
+  <div class="flex flex-col gap-2 content-start h-full overflow-auto">
     <Address class="shrink-0" />
     <Bluetooth class="shrink-0" />
     <Channels class="shrink-0" />
