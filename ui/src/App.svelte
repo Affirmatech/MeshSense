@@ -25,7 +25,7 @@
   <div class="flex flex-col gap-2 content-start h-full overflow-auto">
     <Address class="shrink-0" />
     <Bluetooth class="shrink-0" />
-    <Channels class="shrink-0" />
+    <!-- <Channels class="shrink-0" /> -->
     <Nodes {ol} class="grow" />
     <Message />
   </div>
