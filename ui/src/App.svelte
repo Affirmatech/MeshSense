@@ -6,7 +6,7 @@
   import Channels from './Channels.svelte'
   import Log from './Log.svelte'
   import Nodes, { smallMode } from './Nodes.svelte'
-  import Map from './Map.svelte'
+  import Map, { expandedMap } from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
@@ -30,13 +30,15 @@
     <Message />
   </div>
   <div id="content" class="grid grid-rows-[2fr_1fr] content-start h-full overflow-auto gap-2">
-    <Map bind:ol />
-    <Log />
+    <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
+    {#if !$expandedMap}
+      <Log />
+    {/if}
   </div>
 </main>
 
 <style>
-  @media (min-width: 1700px) {
+  @media (min-width: 2000px) {
     #content {
       grid-template-rows: repeat(1, minmax(0, 1fr));
       grid-template-columns: 1fr auto;

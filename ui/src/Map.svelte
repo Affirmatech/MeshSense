@@ -1,3 +1,8 @@
+<script context="module" lang="ts">
+  import { writable } from 'svelte/store'
+  export let expandedMap = writable(false)
+</script>
+
 <script lang="ts">
   import { connectionStatus, myNodeNum, type NodeInfo } from 'api/src/vars'
   import { filteredNodes } from './Nodes.svelte'
@@ -38,6 +43,10 @@
 
 {#if $connectionStatus == 'connected'}
   <Card title="Map" {...$$restProps}>
+    <h2 slot="title" class="rounded-t flex">
+      <div class="gap-2 grow">Map</div>
+      <button on:click={() => ($expandedMap = !$expandedMap)} class="btn text-sm font-normal">{$expandedMap ? 'Collapse' : 'Expand'}</button>
+    </h2>
     <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
   </Card>
 {/if}

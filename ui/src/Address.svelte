@@ -27,7 +27,7 @@
       <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1">Searching</div>
     {/if}
   </h2>
-  <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-2 items-center text-sm">
+  <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-1 items-center text-sm">
     <div class="flex gap-2 items-center">
       {connectionIcons[$connectionStatus]}
       <input disabled={$connectionStatus != 'disconnected'} size="3" class="input w-full" type="text" bind:value={inputAddress} placeholder="Device IP" />
