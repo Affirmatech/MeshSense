@@ -50,4 +50,4 @@ appImage:
 npmRebuild: false
 publish:
   provider: generic
-  url: https://affirmatech.com/download
+  url: https://affirmatech.com/meshmagic
