@@ -29,8 +29,17 @@
     <Nodes {ol} class="grow" />
     <Message />
   </div>
-  <div class="grid grid-rows-[2fr_1fr] 2xl:grid-rows-1 2xl:grid-cols-[1fr_1fr] content-start h-full overflow-auto gap-2">
+  <div id="content" class="grid grid-rows-[2fr_1fr] content-start h-full overflow-auto gap-2">
     <Map bind:ol />
     <Log />
   </div>
 </main>
+
+<style>
+  @media (min-width: 1700px) {
+    #content {
+      grid-template-rows: repeat(1, minmax(0, 1fr));
+      grid-template-columns: 1fr auto;
+    }
+  }
+</style>
