@@ -3,8 +3,7 @@
   import Card from './lib/Card.svelte'
   import { scrollToBottom } from './lib/util'
   import Modal from './lib/Modal.svelte'
-  import { send } from './Channels.svelte'
-  import { sendDirect } from './Nodes.svelte'
+  import { messageDestination } from './Message.svelte'
 
   function getNodeName(id: number) {
     if (id == broadcastId) return 'all'
@@ -98,9 +97,9 @@
       {#if packet.message}
         <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm w-fit">
           {#if packet.to == broadcastId}
-            <button on:click={() => send(prompt('Enter message to send'), packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
+            <button on:click={() => ($messageDestination = packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
           {/if}
-          <button class="font-bold" on:click={() => sendDirect(prompt(`Enter message to send to ${getNodeName(packet.from)}`), packet.from)}>{getNodeName(packet.from)}:</button>
+          <button class="font-bold" on:click={() => ($messageDestination = packet.from)}>{getNodeName(packet.from)}:</button>
           {packet.message.data}
         </div>
       {/if}

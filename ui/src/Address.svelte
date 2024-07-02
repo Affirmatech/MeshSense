@@ -30,7 +30,7 @@
   <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-2 items-center text-sm">
     <div class="flex gap-2 items-center">
       {connectionIcons[$connectionStatus]}
-      <input disabled={$connectionStatus != 'disconnected'} size="3" class="input w-full" type="text" bind:value={inputAddress} placeholder="Device IP Address" />
+      <input disabled={$connectionStatus != 'disconnected'} size="3" class="input w-full" type="text" bind:value={inputAddress} placeholder="Device IP" />
     </div>
     {#if $hasAccess}
       <div class=" h-full grid grid-flow-col">

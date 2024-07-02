@@ -1,8 +1,4 @@
 <script context="module" lang="ts">
-  export function sendDirect(message: string, destination: number) {
-    if (!message) return
-    axios.post('/send', { message, destination })
-  }
   export let smallMode = writable(false)
   export let filteredNodes = writable<NodeInfo[]>([])
 </script>
@@ -16,6 +12,7 @@
   import Modal from './lib/Modal.svelte'
   import { writable } from 'svelte/store'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
+  import { messageDestination } from './Message.svelte'
 
   export let showInactive = false
   let selectedNode: NodeInfo
@@ -56,9 +53,7 @@
           <div title={node.user?.longName} class="flex items-center gap-1">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
             <!-- Shortname -->
-            <button on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)} class="bg-black/20 rounded w-12 text-center overflow-hidden"
-              >{node.user?.shortName || node.user?.id || '?'}</button
-            >
+            <button on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded w-12 text-center overflow-hidden">{node.user?.shortName || node.user?.id || '?'}</button>
 
             {#if node.snr && node.hopsAway == 0}
               <!-- SNR -->
@@ -73,7 +68,7 @@
               </div>
             {:else}
               <!-- Hops -->
-              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway || '?'}</div>
+              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway ?? '?'}</div>
             {/if}
           </div>
         {:else}
@@ -81,11 +76,7 @@
           <div class="flex gap-1 items-center">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
-            <button
-              title={node.user?.longName || String(node.num)}
-              class="text-left truncate max-w-44"
-              on:click={() => sendDirect(prompt(`Enter message to send to ${node.user?.longName || node.num}`), node.num)}>{node.user?.longName || node.num}</button
-            >
+            <button title={node.user?.longName || String(node.num)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}>{node.user?.longName || node.num}</button>
             {#if typeof node.user?.role == 'string' && node.user?.role?.includes('ROUTER')}
               <div class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
             {/if}
@@ -109,7 +100,7 @@
 
           <div class="flex gap-1.5 items-center">
             <!-- Shortname -->
-            <div class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || node.user?.id || '?'}</div>
+            <button on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || node.user?.id || '?'}</button>
 
             <!-- Last Heard -->
             {#key $currentTime}
@@ -134,7 +125,7 @@
             </div>
 
             <!-- Hops -->
-            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway || '?'}</div>
+            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway ?? '?'}</div>
 
             <button on:click={() => (selectedNode = node)}>🔍</button>
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->
