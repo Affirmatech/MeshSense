@@ -29,8 +29,8 @@
     <Nodes {ol} class="grow" />
     <Message />
   </div>
-  <div class="grid grid-rows-[1fr_2fr] content-start h-full overflow-auto gap-2">
-    <Log />
+  <div class="grid grid-rows-[2fr_1fr] 2xl:grid-rows-1 2xl:grid-cols-[1fr_1fr] content-start h-full overflow-auto gap-2">
     <Map bind:ol />
+    <Log />
   </div>
 </main>
