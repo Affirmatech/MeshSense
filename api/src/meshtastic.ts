@@ -66,6 +66,9 @@ async function connect(address: string) {
       connectionStatus.set('connecting')
     } else if (e == 7) {
       connectionStatus.set('connected')
+    } else if (e == 4) {
+      connectionStatus.set('disconnected')
+      connect('')
     } else if (e == 2) {
       if (connectionStatus.value != 'disconnected') {
         console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')

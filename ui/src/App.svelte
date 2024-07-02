@@ -10,6 +10,7 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
+  import { connectionStatus } from 'api/src/vars'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -30,7 +31,17 @@
     <Message />
   </div>
   <div id="content" class="grid grid-rows-[2fr_1fr] content-start h-full overflow-auto gap-2">
-    <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
+    {#if $connectionStatus == 'connected'}
+      <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
+    {:else}
+      <div class="grid items-center px-5 m-auto">
+        <div class="text-3xl font-bold">Welcome to Meshmagic!</div>
+        <div class="max-w-md mt-5 flex flex-col gap-4">
+          <div>Available bluetooth devices will appear on the left</div>
+          <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
+        </div>
+      </div>
+    {/if}
     {#if !$expandedMap}
       <Log />
     {/if}

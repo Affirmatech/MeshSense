@@ -41,15 +41,12 @@
   }
 </script>
 
-{#if $connectionStatus == 'connected'}
-  <Card title="Map" {...$$restProps}>
-    <h2 slot="title" class="rounded-t flex items-center gap-1">
-      <div class="gap-2 grow">Map</div>
-      <a title="Support Meshmagic" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:text-white" href="https://purchase.affirmatech.com/?productId=MeshmagicDonation"
-        >♥</a
-      >
-      <button on:click={() => ($expandedMap = !$expandedMap)} class="btn text-sm font-normal">{$expandedMap ? 'Collapse' : 'Expand'}</button>
-    </h2>
-    <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
-  </Card>
-{/if}
+<Card title="Map" {...$$restProps}>
+  <h2 slot="title" class="rounded-t flex items-center gap-1">
+    <div class="gap-2 grow">Map</div>
+    <a title="Support Meshmagic" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:text-white" href="https://purchase.affirmatech.com/?productId=MeshmagicDonation">♥</a
+    >
+    <button on:click={() => ($expandedMap = !$expandedMap)} class="btn text-sm font-normal">{$expandedMap ? 'Collapse' : 'Expand'}</button>
+  </h2>
+  <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
+</Card>

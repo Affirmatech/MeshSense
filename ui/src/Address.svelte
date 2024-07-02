@@ -11,7 +11,7 @@
     disconnected: '🔴'
   }
 
-  $: inputAddress = $address || inputAddress
+  $: inputAddress = $address
 
   function connect() {
     $address = inputAddress
@@ -36,8 +36,8 @@
       <div class=" h-full grid grid-flow-col">
         {#if $connectionStatus == 'disconnected'}
           <button class="btn w-full h-full">Connect</button>
-        {:else if $connectionStatus == 'connecting'}
-          <button class="btn w-full h-full" on:click={() => ($address = '')}>Cancel</button>
+          <!-- {:else if $connectionStatus == 'connecting'} -->
+          <!-- <button class="btn w-full h-full" on:click={() => ($address = '')}>Cancel</button> -->
         {:else if $connectionStatus == 'searching'}
           <button class="btn w-full h-full" on:click={() => ($address = '')}>Cancel</button>
         {:else if $connectionStatus == 'connected'}
