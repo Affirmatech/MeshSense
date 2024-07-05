@@ -38,10 +38,12 @@ const config = {
     "uninstallDisplayName": "${productName}",
     "createDesktopShortcut": true
   },
+  "afterSign": "build/notarize.js",
   "mac": {
-    "notarize": {
-      "teamId": `${process.env.APPLE_TEAM_ID}`
-    },
+    // "notarize": {
+    //   "teamId": `${process.env.APPLE_TEAM_ID}`
+    // },
+    "notarize": false,
     "entitlementsInherit": "build/entitlements.mac.plist",
     "extendInfo": [
       {
