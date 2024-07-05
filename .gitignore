@@ -4,3 +4,4 @@ node_modules
 api/dist
 api/static
 electron/resources/api
+electron-builder.env
