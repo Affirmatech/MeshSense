@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { spawn } from 'child_process'
 import { styleText } from 'util';
+import './api/node_modules/dotenv/config.js'
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
   let cmd = spawn(commandString, { shell: true, env: process.env })
