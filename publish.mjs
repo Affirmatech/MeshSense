@@ -2,7 +2,7 @@
 import { spawn } from 'child_process'
 import { styleText } from 'util';
 import './api/node_modules/dotenv/config.js'
-import {name} from './electron/package.json'
+import config from './electron/package.json' with { type: "json" }
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
   let cmd = spawn(commandString, { shell: true, env: process.env })
@@ -17,4 +17,4 @@ if (!process.env.DEPLOY_LOCATION) {
   console.error('Example: DEPLOY_LOCATION = "app@cloud:/path/download/meshmagic/"')
   process.exit(-1)
 }
-await runCmd(`rsync -av --include '${name}-arm64*' --exclude '*-unpacked' --exclude 'mac*' --exclude '*-mac.zip' --exclude '*-mac.zip.blockmap' --exclude '*arm64.dmg*' --exclude ' electron/dist/ ${process.env.DEPLOY_LOCATION}`)
+await runCmd(`rsync -av --include '${config.name}-arm64*' --exclude '*-unpacked' --exclude 'mac*' --exclude '*-mac.zip' --exclude '*-mac.zip.blockmap' --exclude '*arm64.dmg*' --exclude ' electron/dist/' ${process.env.DEPLOY_LOCATION}`)
