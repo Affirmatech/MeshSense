@@ -90,6 +90,19 @@ app.use(function (req, res, next) {
 
 app.get('/state', (_, res) => res.json(State.getStateData()))
 
+// Electron Hook if present
+let parentPort = process['parentPort']
+
+parentPort?.on('message', (e) => {
+  console.log('Electron Message', e)
+  wss?.send(e.data.event, e.data.body)
+})
+
+app.get('/installUpdate', (req, res) => {
+  parentPort?.postMessage({ event: 'installUpdate' })
+  res.sendStatus(200)
+})
+
 export async function createRoutes(callback: (app: Express) => void) {
   await callback(app)
   finalize()

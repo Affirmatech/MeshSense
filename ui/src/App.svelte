@@ -11,6 +11,7 @@
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
   import { connectionStatus } from 'api/src/vars'
+  import UpdateStatus from './lib/UpdateStatus.svelte'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -21,6 +22,8 @@
 </script>
 
 <!-- <ServiceWorker /> -->
+
+<UpdateStatus />
 
 <main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
   <div class="flex flex-col gap-2 content-start h-full overflow-auto">

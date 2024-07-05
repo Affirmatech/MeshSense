@@ -1,7 +1,6 @@
 <script lang="ts">
   import { State } from 'api/src/lib/state'
   import Card from './lib/Card.svelte'
-  import axios from 'axios'
   import { address, connectionStatus } from 'api/src/vars'
   import { smallMode } from './Nodes.svelte'
 
