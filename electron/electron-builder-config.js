@@ -3,7 +3,7 @@
 * @see https://www.electron.build/configuration/configuration
 */
 const config = {
-  "appId": "com.electron.app",
+  "appId": "com.affirmatech.meshmagic",
   "productName": "Meshmagic",
   "directories": {
     "buildResources": "build"
@@ -38,12 +38,10 @@ const config = {
     "uninstallDisplayName": "${productName}",
     "createDesktopShortcut": true
   },
-  "afterSign": "build/notarize.js",
   "mac": {
-    // "notarize": {
-    //   "teamId": `${process.env.APPLE_TEAM_ID}`
-    // },
-    "notarize": false,
+    "notarize": {
+      "teamId": `${process.env.APPLE_TEAM_ID}`
+    },
     "entitlementsInherit": "build/entitlements.mac.plist",
     "extendInfo": [
       {
@@ -70,3 +68,4 @@ const config = {
     "url": "https://affirmatech.com/download/meshmagic"
   }
 }
+module.exports = config
