@@ -31,7 +31,7 @@ exitHook(() => {
  * Connects to a MeshTastic Node using an HTTP connection.
  * @param {string} address - The IP address of the MeshTastic Node to connect to.
  */
-async function connect(address: string) {
+async function connect(address?: string) {
   console.log('[meshtastic] Calling connect', address)
 
   // Disconnect from any existing connection
@@ -40,7 +40,7 @@ async function connect(address: string) {
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
 
-  if (!address) return
+  if (!address || address == '') return
 
   if (validateMACAddress(address)) {
     connection = new BleConnection()
@@ -70,7 +70,7 @@ async function connect(address: string) {
       connectionStatus.set('disconnected')
       connect('')
     } else if (e == 2) {
-      if (connectionStatus.value != 'disconnected') {
+      if (connectionStatus.value == 'connected') {
         console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
         connect(address)
       }
