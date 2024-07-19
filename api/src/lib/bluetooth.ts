@@ -2,6 +2,7 @@ import { Bluetooth } from 'webbluetooth'
 import { State } from './state'
 import { BluetoothDeviceImpl } from 'webbluetooth/dist/device'
 import { Constants } from '@meshtastic/js'
+import { createBluetooth } from 'node-ble'
 
 export let bluetoothDevices: Record<string, BluetoothDeviceImpl> = {}
 let bluetoothDeviceList = new State('bluetoothDeviceList', [], { primaryKey: 'id', hideLog: true })
@@ -47,12 +48,21 @@ export async function beginScanning(targetId?: string) {
     return
   }
   console.log('[bluetooth] Begin Scanning')
-  let adapterAvailable = await bluetooth.getAvailability().catch((e) => console.warn(e))
+
+  let adapterAvailable = false
+
+  /** Look for an available bluetooth adapter */
+  try {
+    adapterAvailable = process.platform == 'linux' ? (await createBluetooth().bluetooth.adapters()).length > 0 : await bluetooth.getAvailability()
+  } catch (e) {
+    console.warn('[bluetooth] Unable to detect Bluetooth adapters')
+  }
+
   if (adapterAvailable) {
     scanning = true
     exitScanning = false
     scanForDevice()
-  } else console.warn('No bluetooth adapters found')
+  }
 }
 
 export function stopScanning() {
