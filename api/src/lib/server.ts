@@ -32,6 +32,7 @@ import { staticDirectory } from './paths'
 //   })
 // }
 
+export let version = new State('version', 'dev')
 export let app: Express = express()
 // let originalKeys = store['keys']
 
@@ -95,6 +96,7 @@ let parentPort = process['parentPort']
 
 parentPort?.on('message', (e) => {
   console.log('Electron Message', e)
+  if (e.data.event == 'version') version.set(e.data.body)
   wss?.send(e.data.event, e.data.body)
 })
 

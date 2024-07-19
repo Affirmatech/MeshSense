@@ -4,7 +4,7 @@
 </script>
 
 <script lang="ts">
-  import { connectionStatus, myNodeNum, type NodeInfo } from 'api/src/vars'
+  import { connectionStatus, myNodeNum, version, type NodeInfo } from 'api/src/vars'
   import { filteredNodes } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
@@ -44,6 +44,7 @@
 <Card title="Map" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center gap-1">
     <div class="gap-2 grow">Map</div>
+    <div class="text-xs text-white/50 pr-2">Meshmagic {$version}</div>
     <a title="Support Meshmagic" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:text-white" href="https://purchase.affirmatech.com/?productId=MeshmagicDonation">♥</a
     >
     <button on:click={() => ($expandedMap = !$expandedMap)} class="btn text-sm font-normal">{$expandedMap ? 'Collapse' : 'Expand'}</button>
