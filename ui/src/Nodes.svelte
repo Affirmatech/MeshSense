@@ -1,12 +1,13 @@
 <script context="module" lang="ts">
   export let smallMode = writable(false)
   export let filteredNodes = writable<NodeInfo[]>([])
+  export let inactiveNodes = writable<NodeInfo[]>([])
 </script>
 
 <script lang="ts">
   import { currentTime, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { getCoordinates, unixSecondsTimeAgo } from './lib/util'
+  import { getCoordinates, hasAccess, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
   import axios from 'axios'
   import Modal from './lib/Modal.svelte'
@@ -18,14 +19,24 @@
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: $filteredNodes = $nodes
-    .filter((node) => showInactive || Date.now() - node.lastHeard * 1000 < 3.6e6)
-    .sort((a, b) => {
-      if (a.num === $myNodeNum) return -1
-      if (b.num === $myNodeNum) return 1
-      if (a.hopsAway == 0 && b.hopsAway == 0) return b.snr - a.snr
-      return a.hopsAway === b.hopsAway ? a.user?.shortName?.localeCompare(b.user?.shortName) : a.hopsAway - b.hopsAway
-    })
+  $: if ($nodes.length) showInactive, filterNodes()
+
+  function filterNodes() {
+    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= 3.6e6)
+
+    $filteredNodes = $nodes
+      .filter((node) => showInactive || !$inactiveNodes.some((inactive) => node.num == inactive.num))
+      .sort((a, b) => {
+        if (a.num === $myNodeNum) return -1
+        if (b.num === $myNodeNum) return 1
+        if (a.hopsAway == 0 && b.hopsAway == 0) return b.snr - a.snr
+        return a.hopsAway === b.hopsAway ? a.user?.shortName?.localeCompare(b.user?.shortName) : a.hopsAway - b.hopsAway
+      })
+  }
+
+  function clearNodes() {
+    axios.post('/deleteNodes', { nodes: $inactiveNodes })
+  }
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
@@ -151,5 +162,8 @@
         {/if}
       </div>
     {/each}
+    {#if $hasAccess && !showInactive && $inactiveNodes.length >= 10}
+      <button on:click={clearNodes} class="btn h-12">Clear {$nodes?.length - $filteredNodes?.length} Inactive Nodes</button>
+    {/if}
   </div>
 </Card>

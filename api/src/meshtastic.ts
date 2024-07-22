@@ -236,3 +236,18 @@ export async function requestPosition(destination: number) {
   console.log('[Meshtastic] Requesting Position for', destination)
   return connection.requestPosition(destination)
 }
+
+let deleteInProgress = false
+export async function deleteNodes(nodeList: NodeInfo[]) {
+  if (deleteInProgress) return
+  deleteInProgress = true
+  try {
+    for (let node of nodeList) {
+      await connection.removeNodeByNum(node.num)
+      nodes.delete(node)
+    }
+  } catch (e) {
+    console.error(e)
+  }
+  deleteInProgress = false
+}

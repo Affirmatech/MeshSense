@@ -32,7 +32,7 @@ import { staticDirectory } from './paths'
 //   })
 // }
 
-export let version = new State('version', 'dev')
+export let version = new State('version', '')
 export let app: Express = express()
 // let originalKeys = store['keys']
 

@@ -1,6 +1,6 @@
 import { State } from './lib/state'
 
-export let version = new State('version', 'dev')
+export let version = new State('version', '')
 export let address = new State('address', '', { persist: 'api' })
 export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected' | 'searching'>('connectionStatus', 'disconnected')
 export let lastFromRadio = new State('lastFromRadio', undefined, { hideLog: true })
