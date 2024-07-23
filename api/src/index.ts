@@ -2,8 +2,8 @@ import 'dotenv/config'
 import './lib/persistence'
 import { app, finalize } from './lib/server'
 import './meshtastic'
-import { currentTime } from './vars'
-import { deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
+import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
+import { address, currentTime } from './vars'
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 app.post('/send', (req, res) => {
@@ -29,6 +29,15 @@ app.post('/requestPosition', async (req, res) => {
 app.post('/deleteNodes', async (req, res) => {
   let nodes = req.body.nodes
   await deleteNodes(nodes)
+})
+
+app.post('/connect', async (req, res) => {
+  connect(req.body.address || address.value)
+  return res.sendStatus(200)
+})
+
+app.post('/disconnect', async (req, res) => {
+  disconnect()
   return res.sendStatus(200)
 })
 

@@ -5,7 +5,7 @@ import exitHook from 'exit-hook'
 
 let packetLimit = 500
 let connection: HttpConnection | BleConnection
-address.subscribe(connect)
+// address.subscribe(connect)
 
 packets.subscribe(() => {
   while (packets.value?.length > packetLimit) packets.shift()
@@ -32,26 +32,30 @@ exitHook(() => {
   connection?.disconnect()
 })
 
-/**
- * Connects to a MeshTastic Node using an HTTP connection.
- * @param {string} address - The IP address of the MeshTastic Node to connect to.
- */
-async function connect(address?: string) {
-  console.log('[meshtastic] Calling connect', address)
-
-  // Disconnect from any existing connection
+/** Disconnect from any existing connection */
+export function disconnect() {
   connectionStatus.set('disconnected')
   connection?.disconnect()
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
+}
 
+/**
+ * Connects to a MeshTastic Node using an HTTP connection.
+ * @param {string} address - The IP address of the MeshTastic Node to connect to.
+ */
+export async function connect(address?: string) {
+  console.log('[meshtastic] Calling connect', address)
+  
+  disconnect()
   if (!address || address == '') return
 
   if (validateMACAddress(address)) {
+    /** Bluetooth Device */
     connection = new BleConnection()
     connectionStatus.set('searching')
 
-    /** Wait for device to appear if not present */
+    /** Scan and wait for device to appear if not present */
     beginScanning(address)
     while (!bluetoothDevices[address] && connectionStatus.value == 'searching') {
       await new Promise((resolve) => setTimeout(resolve, 100))
@@ -60,10 +64,13 @@ async function connect(address?: string) {
     /** If device never showed up, bail */
     if (!bluetoothDevices[address]) return
     stopScanning()
+
   } else {
+    /** HTTP Endpoint */
     connection = new HttpConnection()
   }
   channels.set([])
+
 
   connection.events.onDeviceStatus.subscribe((e) => {
     console.log('[meshtastic] Device Status', e)
@@ -72,10 +79,11 @@ async function connect(address?: string) {
     } else if (e == 7) {
       connectionStatus.set('connected')
     } else if (e == 4) {
-      connectionStatus.set('disconnected')
-      connect('')
+      disconnect()
     } else if (e == 2) {
-      if (connectionStatus.value == 'connected') {
+      let wasConnected = connectionStatus.value == 'connected'
+      disconnect()
+      if (wasConnected) {
         console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
         connect(address)
       }
