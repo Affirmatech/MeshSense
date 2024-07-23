@@ -80,6 +80,7 @@ export class State<T = any> {
   }
 
   set(value: T) {
+    if (this.value == value) return
     this.value = value
     this.notify('set', value)
   }
