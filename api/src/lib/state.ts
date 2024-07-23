@@ -134,6 +134,13 @@ export class State<T = any> {
 
     this.notify('delete', value, primaryKey)
   }
+
+  /** Removes the first element from an array and returns it. If the array is empty, undefined is returned and the array is not modified. */
+  shift() {
+    let value = (this.value as []).shift()
+    this.notify('shift')
+    return value
+  }
 }
 
 State.subscribe(({ state, action, args }) => {

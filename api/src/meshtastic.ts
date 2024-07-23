@@ -3,8 +3,13 @@ import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMet
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 
+let packetLimit = 500
 let connection: HttpConnection | BleConnection
 address.subscribe(connect)
+
+packets.subscribe(() => {
+  while (packets.value?.length > packetLimit) packets.shift()
+})
 
 connectionStatus.subscribe((value) => {
   if (value == 'disconnected' || value == 'searching') {

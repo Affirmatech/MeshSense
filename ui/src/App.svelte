@@ -33,7 +33,7 @@
     <Nodes {ol} class="grow" />
     <Message />
   </div>
-  <div id="content" class="grid grid-rows-[2fr_1fr] content-start h-full overflow-auto gap-2">
+  <div id="content" class="grid grid-rows-[5fr_3fr] content-start h-full overflow-auto gap-2">
     {#if $connectionStatus == 'connected'}
       <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
     {:else}
