@@ -3,6 +3,7 @@
   import Card from './lib/Card.svelte'
   import { address, connectionStatus } from 'api/src/vars'
   import { smallMode } from './Nodes.svelte'
+  import axios from 'axios'
 
   let bluetoothDeviceList = new State<{ id: string; name: string }[]>('bluetoothDeviceList', [])
 </script>
@@ -20,6 +21,7 @@
           class="btn"
           on:click={() => {
             $address = id
+            axios.post('/connect', { address: id })
           }}
         >
           {name}

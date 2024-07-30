@@ -32,11 +32,13 @@ app.post('/deleteNodes', async (req, res) => {
 })
 
 app.post('/connect', async (req, res) => {
+  console.log('[express]', '/connect')
   connect(req.body.address || address.value)
   return res.sendStatus(200)
 })
 
 app.post('/disconnect', async (req, res) => {
+  console.log('[express]', '/disconnect')
   disconnect()
   return res.sendStatus(200)
 })
