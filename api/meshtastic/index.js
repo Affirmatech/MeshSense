@@ -8376,7 +8376,8 @@ var BleConnection = class extends MeshDevice {
   /** Short description */
   async readFromRadio() {
     let readBuffer = new ArrayBuffer(1);
-    while (readBuffer.byteLength > 0 && this.fromRadioCharacteristic) {
+    let error = false;
+    while (readBuffer.byteLength > 0 && this.fromRadioCharacteristic && !error) {
       await this.fromRadioCharacteristic.readValue().then((value) => {
         readBuffer = value.buffer;
         if (value.byteLength > 0) {
@@ -8389,6 +8390,7 @@ var BleConnection = class extends MeshDevice {
           Emitter[22 /* ReadFromRadio */],
           `\u274C ${e.message}`
         );
+        error = true;
       });
     }
   }

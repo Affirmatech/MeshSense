@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { connectionStatus, address, accessKey } from 'api/src/vars'
+  import { connectionStatus, address } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { smallMode } from './Nodes.svelte'
   import { hasAccess } from './lib/util'
@@ -10,6 +10,7 @@
     connecting: '🟡',
     configuring: '🟡',
     searching: '🟡',
+    reconnecting: '🟡',
     disconnected: '🔴'
   }
 
@@ -30,18 +31,21 @@
     {/if}
   </h2>
   <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-1 items-center text-sm">
+    <!-- Icon and Input -->
     <div class="flex gap-2 items-center">
       {connectionIcons[$connectionStatus]}
       <input disabled={$connectionStatus != 'disconnected'} size="3" class="input w-full" type="text" bind:value={$address} placeholder="Device IP" />
     </div>
+
+    <!-- Cancel Button -->
     {#if $hasAccess}
       <div class=" h-full grid grid-flow-col">
         {#if $connectionStatus == 'disconnected'}
           <button class="btn w-full h-full">Connect</button>
-        {:else if ['searching', 'connecting', 'configuring'].includes($connectionStatus)}
-          <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
         {:else if $connectionStatus == 'connected'}
           <button type="button" class="btn w-full h-full" on:click={disconnect}>Disconnect</button>
+        {:else if ['searching', 'connecting', 'configuring', 'reconnecting'].includes($connectionStatus)}
+          <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
         {/if}
       </div>
     {/if}

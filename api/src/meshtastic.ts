@@ -5,6 +5,7 @@ import exitHook from 'exit-hook'
 
 let packetLimit = 500
 let connection: HttpConnection | BleConnection
+let connectionIntended = false
 // address.subscribe(connect)
 
 packets.subscribe(() => {
@@ -12,7 +13,7 @@ packets.subscribe(() => {
 })
 
 connectionStatus.subscribe((value) => {
-  if (value == 'disconnected' || value == 'searching') {
+  if (value == 'disconnected' || value == 'searching' || value == 'reconnecting') {
     beginScanning()
   } else stopScanning()
 })
@@ -40,11 +41,14 @@ exitHook(() => {
 })
 
 /** Disconnect from any existing connection */
-export async function disconnect() {
+export async function disconnect(setIntent = true) {
+  connectionStatus.set('disconnected')
+  if (setIntent) connectionIntended = false
   console.log('Disconnecting from device')
   if (connection) {
     disableReconnect()
     connection.disconnect()
+    clearTimeout(connection['timeout'])
   }
   reset()
 }
@@ -62,7 +66,8 @@ export function reset() {
 export async function connect(address?: string) {
   console.log('[meshtastic] Calling connect', address)
 
-  await disconnect()
+  await disconnect(false)
+  connectionIntended = true
   if (!address || address == '') return
 
   if (validateMACAddress(address)) {
@@ -86,6 +91,7 @@ export async function connect(address?: string) {
 
   connectionStatus.set('connecting')
   channels.set([])
+  updateTimeout()
 
   //   DeviceRestarting = 1,
   //   DeviceDisconnected = 2,
@@ -105,14 +111,14 @@ export async function connect(address?: string) {
       // } else if (e == 4) {
       // await disconnect()
     } else if (e == 2) {
-      connectionStatus.set('disconnected')
-      reset()
-      // let wasConnected = connectionStatus.value == 'connected'
-      // await disconnect()
-      // if (wasConnected) {
-      // console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
-      // connect(address)
-      // }
+      console.log('Connection Intended', connectionIntended)
+      if (connectionIntended) {
+        connectionStatus.set('reconnecting')
+        connect(address)
+      } else {
+        connectionStatus.set('disconnected')
+        reset()
+      }
     }
   })
 
@@ -228,7 +234,21 @@ export async function connect(address?: string) {
     })
   }
 
+  function updateTimeout() {
+    if (connectionStatus.value == 'connected') return
+
+    console.log('[meshtastic]', 'Updating timeout')
+    clearTimeout(connection['timeout'])
+    connection['timeout'] = setTimeout(() => {
+      if (connectionStatus.value != 'connected') {
+        console.log('[meshtastic]', 'No recent data from device, assuming disconnected')
+        disconnect(false)
+      }
+    }, 10000)
+  }
+
   connection.events.onFromRadio.subscribe((e) => {
+    updateTimeout()
     lastFromRadio.set(copy(e))
   })
 
