@@ -8,6 +8,7 @@
   let connectionIcons = {
     connected: '🟢',
     connecting: '🟡',
+    configuring: '🟡',
     searching: '🟡',
     disconnected: '🔴'
   }
@@ -24,10 +25,8 @@
 <Card title="Address" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center h-full gap-2">
     <div class="grow">Address</div>
-    {#if $connectionStatus == 'connecting'}
-      <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1">Connecting</div>
-    {:else if $connectionStatus == 'searching'}
-      <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1">Searching</div>
+    {#if $connectionStatus}
+      <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1 capitalize">{$connectionStatus}</div>
     {/if}
   </h2>
   <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-1 items-center text-sm">
@@ -39,9 +38,7 @@
       <div class=" h-full grid grid-flow-col">
         {#if $connectionStatus == 'disconnected'}
           <button class="btn w-full h-full">Connect</button>
-          <!-- {:else if $connectionStatus == 'connecting'} -->
-          <!-- <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button> -->
-        {:else if $connectionStatus == 'searching'}
+        {:else if ['searching', 'connecting', 'configuring'].includes($connectionStatus)}
           <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
         {:else if $connectionStatus == 'connected'}
           <button type="button" class="btn w-full h-full" on:click={disconnect}>Disconnect</button>

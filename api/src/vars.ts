@@ -2,7 +2,7 @@ import { State } from './lib/state'
 
 export let version = new State('version', '')
 export let address = new State('address', '', { persist: 'api' })
-export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected' | 'searching'>('connectionStatus', 'disconnected')
+export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected' | 'searching' | 'configuring'>('connectionStatus', 'disconnected')
 export let lastFromRadio = new State('lastFromRadio', undefined, { hideLog: true })
 export let channels = new State<Channel[]>('channels', [], { primaryKey: 'index', hideLog: true })
 export let packets = new State<MeshPacket[]>('packets', [], { hideLog: true })

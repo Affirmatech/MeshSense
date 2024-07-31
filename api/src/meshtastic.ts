@@ -1,4 +1,4 @@
-import { HttpConnection, BleConnection } from '@meshtastic/js'
+import { HttpConnection, BleConnection } from '../../../meshtastic-js/src'
 import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
@@ -26,6 +26,12 @@ function validateMACAddress(macAddress: string): boolean {
   return pattern.test(macAddress)
 }
 
+function disableReconnect() {
+  connection.connect = async (args: any) => {
+    console.log('[meshtastic] Preventing Automatic Reconnect')
+  }
+}
+
 exitHook(() => {
   disconnect()
   // connectionStatus.set('disconnected')
@@ -36,8 +42,14 @@ exitHook(() => {
 /** Disconnect from any existing connection */
 export async function disconnect() {
   console.log('Disconnecting from device')
-  connection?.disconnect()
-  connectionStatus.set('disconnected')
+  if (connection) {
+    disableReconnect()
+    connection.disconnect()
+  }
+  reset()
+}
+
+export function reset() {
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
   deleteInProgress = false
@@ -85,18 +97,22 @@ export async function connect(address?: string) {
   connection.events.onDeviceStatus.subscribe(async (e) => {
     console.log('[meshtastic] Device Status', e)
     if (e == 6) {
+      connectionStatus.set('configuring')
+    } else if (e == 3) {
       connectionStatus.set('connecting')
     } else if (e == 7) {
       connectionStatus.set('connected')
-    } else if (e == 4) {
-      await disconnect()
+      // } else if (e == 4) {
+      // await disconnect()
     } else if (e == 2) {
-      let wasConnected = connectionStatus.value == 'connected'
-      await disconnect()
-      if (wasConnected) {
-        console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
-        connect(address)
-      }
+      connectionStatus.set('disconnected')
+      reset()
+      // let wasConnected = connectionStatus.value == 'connected'
+      // await disconnect()
+      // if (wasConnected) {
+      // console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
+      // connect(address)
+      // }
     }
   })
 
@@ -138,7 +154,7 @@ export async function connect(address?: string) {
   })
 
   connection.events.onDeviceMetadataPacket.subscribe((e) => {
-    myNodeMetadata.set(e.data)
+    myNodeMetadata.set(e.data as any)
   })
 
   /** NODEINFO_APP */
