@@ -27,17 +27,20 @@ function validateMACAddress(macAddress: string): boolean {
 }
 
 exitHook(() => {
-  connectionStatus.set('disconnected')
-  console.log('Disconnecting from device')
-  connection?.disconnect()
+  disconnect()
+  // connectionStatus.set('disconnected')
+  // console.log('Disconnecting from device')
+  // connection?.disconnect()
 })
 
 /** Disconnect from any existing connection */
-export function disconnect() {
-  connectionStatus.set('disconnected')
+export async function disconnect() {
+  console.log('Disconnecting from device')
   connection?.disconnect()
+  connectionStatus.set('disconnected')
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
+  deleteInProgress = false
 }
 
 /**
@@ -46,8 +49,8 @@ export function disconnect() {
  */
 export async function connect(address?: string) {
   console.log('[meshtastic] Calling connect', address)
-  
-  disconnect()
+
+  await disconnect()
   if (!address || address == '') return
 
   if (validateMACAddress(address)) {
@@ -64,25 +67,32 @@ export async function connect(address?: string) {
     /** If device never showed up, bail */
     if (!bluetoothDevices[address]) return
     stopScanning()
-
   } else {
     /** HTTP Endpoint */
     connection = new HttpConnection()
   }
+
+  connectionStatus.set('connecting')
   channels.set([])
 
-
-  connection.events.onDeviceStatus.subscribe((e) => {
+  //   DeviceRestarting = 1,
+  //   DeviceDisconnected = 2,
+  //   DeviceConnecting = 3,
+  //   DeviceReconnecting = 4,
+  //   DeviceConnected = 5,
+  //   DeviceConfiguring = 6,
+  //   DeviceConfigured = 7,
+  connection.events.onDeviceStatus.subscribe(async (e) => {
     console.log('[meshtastic] Device Status', e)
     if (e == 6) {
       connectionStatus.set('connecting')
     } else if (e == 7) {
       connectionStatus.set('connected')
     } else if (e == 4) {
-      disconnect()
+      await disconnect()
     } else if (e == 2) {
       let wasConnected = connectionStatus.value == 'connected'
-      disconnect()
+      await disconnect()
       if (wasConnected) {
         console.warn('[Meshtastic] Unexpected disconnect, attempting to reconnect')
         connect(address)

@@ -3,7 +3,7 @@
   import Card from './lib/Card.svelte'
   import { smallMode } from './Nodes.svelte'
   import { hasAccess } from './lib/util'
-    import axios from 'axios'
+  import axios from 'axios'
 
   let connectionIcons = {
     connected: '🟢',
@@ -13,7 +13,7 @@
   }
 
   function connect() {
-    axios.post('/connect', {address: $address})
+    axios.post('/connect', { address: $address })
   }
 
   function disconnect() {
@@ -39,10 +39,10 @@
       <div class=" h-full grid grid-flow-col">
         {#if $connectionStatus == 'disconnected'}
           <button class="btn w-full h-full">Connect</button>
-        {:else if $connectionStatus == 'connecting'}
-          <button class="btn w-full h-full" on:click={disconnect}>Cancel</button>
+          <!-- {:else if $connectionStatus == 'connecting'} -->
+          <!-- <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button> -->
         {:else if $connectionStatus == 'searching'}
-          <button class="btn w-full h-full" on:click={disconnect}>Cancel</button>
+          <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
         {:else if $connectionStatus == 'connected'}
           <button type="button" class="btn w-full h-full" on:click={disconnect}>Disconnect</button>
         {/if}
