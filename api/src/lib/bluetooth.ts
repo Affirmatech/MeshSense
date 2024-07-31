@@ -1,7 +1,6 @@
 import { Bluetooth } from 'webbluetooth'
 import { State } from './state'
 import { BluetoothDeviceImpl } from 'webbluetooth/dist/device'
-import { Constants } from '@meshtastic/js'
 import { createBluetooth } from 'node-ble'
 
 export let bluetoothDevices: Record<string, BluetoothDeviceImpl> = {}

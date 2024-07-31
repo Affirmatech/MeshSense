@@ -34,8 +34,8 @@
     "vite-node": "^2.0.3"
   },
   "dependencies": {
-    "@meshtastic/js": "^2.3.7-0",
     "axios": "^1.7.2",
+    "crc": "^4.3.2",
     "dotenv": "^16.4.5",
     "env-paths": "^3.0.0",
     "eventemitter3": "^5.0.1",
@@ -45,6 +45,8 @@
     "key-file-storage": "^2.3.3",
     "node-ble": "^1.11.0",
     "pem": "^1.14.8",
+    "ste-simple-events": "^3.0.11",
+    "tslog": "^4.9.3",
     "webbluetooth": "^3.2.1",
     "ws": "^8.18.0",
     "x11": "^2.3.0"
