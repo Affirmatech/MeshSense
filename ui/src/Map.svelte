@@ -45,6 +45,7 @@
   <h2 slot="title" class="rounded-t flex items-center gap-1">
     <div class="gap-2 grow">Map</div>
     <div class="text-xs text-white/50 pr-2">Meshmagic {$version}</div>
+    <a href="https://affirmatech.com" target="_blank" rel="noopener" class="text-xs text-white/50 pr-2 font-normal">by Affirmatech</a>
     <a title="Support Meshmagic" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:text-white" href="https://purchase.affirmatech.com/?productId=MeshmagicDonation">♥</a
     >
     <button on:click={() => ($expandedMap = !$expandedMap)} class="btn text-sm font-normal">{$expandedMap ? 'Collapse' : 'Expand'}</button>
