@@ -23,6 +23,9 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     autoUpdater.checkForUpdates()
+    setInterval(() => {
+      autoUpdater.checkForUpdates()
+    }, 7.2e6)
     // autoUpdater.checkForUpdatesAndNotify({ title: 'Meshmagic', body: 'Meshmagic has an update!' })
     mainWindow.show()
   })
