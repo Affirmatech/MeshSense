@@ -91,7 +91,7 @@ export async function connect(address?: string) {
 
   connectionStatus.set('connecting')
   channels.set([])
-  updateTimeout()
+  // updateTimeout()
 
   //   DeviceRestarting = 1,
   //   DeviceDisconnected = 2,
@@ -244,7 +244,7 @@ export async function connect(address?: string) {
         console.log('[meshtastic]', 'No recent data from device, assuming disconnected')
         disconnect(false)
       }
-    }, 10000)
+    }, 30000)
   }
 
   connection.events.onFromRadio.subscribe((e) => {
