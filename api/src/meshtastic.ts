@@ -223,7 +223,8 @@ export async function connect(address?: string) {
         'onMessagePacket',
         'onDetectionSensorPacket',
         'onTraceRoutePacket',
-        'onRoutingPacket'
+        'onRoutingPacket',
+        'onNeighborInfoPacket'
       ].includes(event)
     ) {
       continue
@@ -270,6 +271,17 @@ export async function connect(address?: string) {
   connection.events.onRoutingPacket.subscribe((e) => {
     let { id, data } = copy(e)
     if (id) packets.upsert({ id, routing: data })
+  })
+
+  /** NEIGHBORINFO_APP */
+  connection.events.onNeighborInfoPacket.subscribe((e) => {
+    let { id, data } = copy(e)
+    if (id) packets.upsert({ id, neighbors: data?.neighbors || [] })
+    if (data?.neighbors) {
+      for (let neighbor of data.neighbors) {
+        nodes.upsert({ num: neighbor.nodeId, snr: neighbor.snr, lastHeard: Date.now() / 1000 })
+      }
+    }
   })
 
   // Attempt to connect to the specified MeshTastic Node

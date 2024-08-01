@@ -91,6 +91,10 @@
             <div class="bg-purple-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
               {[packet.to, ...packet?.trace?.route, packet.from].map((id) => getNodeName(id)).join(' -> ')}
             </div>
+          {:else if packet.neighbors?.length}
+            <div class="bg-fuchsia-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
+              {packet.neighbors.map(({ nodeId }) => getNodeName(nodeId)).join(', ')}
+            </div>
           {/if}
         </div>
       {/if}

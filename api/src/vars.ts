@@ -151,4 +151,10 @@ export type MeshPacket = {
   routing?: {
     errorReason: string
   }
+  neighbors?: {
+    nodeId: number
+    snr: number
+    lastRxTime: number
+    nodeBroadcastIntervalSecs: number
+  }[]
 }
