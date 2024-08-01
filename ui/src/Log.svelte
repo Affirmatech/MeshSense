@@ -4,6 +4,7 @@
   import { scrollToBottom } from './lib/util'
   import Modal from './lib/Modal.svelte'
   import { messageDestination } from './Message.svelte'
+  import { tick } from 'svelte'
 
   function getNodeName(id: number) {
     if (id == broadcastId) return 'all'
@@ -26,13 +27,45 @@
   let selectedPacket: MeshPacket
   let filterText = ''
   let unseenMessages = false
+  let csvText: string
+  let csvTextElement: HTMLPreElement
 
   $: if ($packets) scrollToBottom(packetsDiv, false, (unseen) => (unseenMessages = unseen))
   $: messagesOnly, scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))
+  $: if (csvText) {
+    tick().then(selectCSV)
+  }
+
+  function selectCSV() {
+    window.getSelection().selectAllChildren(csvTextElement)
+  }
+
+  /** Generate CSV text based on the html content in the packetsDiv */
+  function generateCSV() {
+    try {
+      let log = []
+      log.push('Date,Nodes,Channel,SNR,RSSI,Type,Hops,Data')
+      for (let packetDiv of packetsDiv.children) {
+        if (packetDiv.children?.length < 7) continue
+        let line = []
+        for (let index of [0, 1, 2, 3, 4, 5, 6, 8]) {
+          line.push(`"${packetDiv.children[index]?.textContent.trim() || ''}"`)
+        }
+        log.push(line.join(','))
+      }
+      csvText = log.join('\n')
+    } catch (e) {
+      console.error('Unable to generate CSV', e)
+    }
+  }
 </script>
 
 <Modal title="Packet Detail" visible={selectedPacket != undefined}>
   <pre>{JSON.stringify(selectedPacket, undefined, 2)}</pre>
+</Modal>
+
+<Modal title="CSV Log" visible={csvText != undefined}>
+  <pre id="csvTextElement" bind:this={csvTextElement}>{csvText}</pre>
 </Modal>
 
 <Card title="Log" {...$$restProps} class="min-h-36">
@@ -47,7 +80,7 @@
     <div class="w-52"></div>
   </h2>
   <div bind:this={packetsDiv} class="p-1 px-2 text-sm overflow-auto grid h-full content-start overflow-x-hidden">
-    {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx, filterText)).slice(-200) || [] as packet}
+    {#each $packets.filter((p) => shouldPacketBeShown(p, includeTx, filterText)) || [] as packet}
       {#if !messagesOnly || packet.message}
         <div class="flex gap-2 whitespace-nowrap">
           <div class="w-28">{packet.rxTime ? new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' }) : ''}</div>
@@ -116,6 +149,7 @@
     <label class="flex gap-1"
       >Filter <input class="rounded bg-black text-blue-300 font-bold px-2 w-20" type="text" bind:value={filterText} />
       {#if filterText}<button on:click={() => (filterText = '')} class="btn text-sm !py-0">Clear</button>{/if}
+      <button class="btn btn-sm text-xs" on:click={() => generateCSV()}>CSV</button>
       {#if unseenMessages}<button class="btn !py-0 bottom-10" on:click={() => scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))}>Jump to new messages</button>{/if}
     </label>
   </h2>
