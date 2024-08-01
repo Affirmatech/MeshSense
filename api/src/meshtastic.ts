@@ -91,7 +91,7 @@ export async function connect(address?: string) {
 
   connectionStatus.set('connecting')
   channels.set([])
-  // updateTimeout()
+  updateTimeout()
 
   //   DeviceRestarting = 1,
   //   DeviceDisconnected = 2,
