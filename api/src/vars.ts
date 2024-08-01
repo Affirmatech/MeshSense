@@ -11,7 +11,7 @@ export let currentTime = new State<number>('currentTime', Date.now(), { hideLog:
 export let myNodeNum = new State<number>('myNodeNum')
 export let broadcastId = 4294967295
 export let myNodeMetadata = new State<DeviceMetadata>('myNodeMetadata')
-export let accessKey = new State<string>('accessKey', '', { persist: true, hideLog: true })
+export let accessKey = new State<string>('accessKey', undefined, { persist: true, hideLog: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string

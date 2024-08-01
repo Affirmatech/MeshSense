@@ -36,7 +36,6 @@
       {connectionIcons[$connectionStatus]}
       <input disabled={$connectionStatus != 'disconnected'} size="3" class="input w-full" type="text" bind:value={$address} placeholder="Device IP" />
     </div>
-
     <!-- Cancel Button -->
     {#if $hasAccess}
       <div class=" h-full grid grid-flow-col">

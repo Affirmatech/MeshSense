@@ -256,7 +256,14 @@ export async function connect(address?: string) {
   connection.events.onTraceRoutePacket.subscribe((e) => {
     let { id, data } = copy(e)
     if (id) packets.upsert({ id, trace: data })
-    if (e.from && data) nodes.upsert({ num: e.from, trace: data })
+    if (e.from && data) {
+      nodes.upsert({ num: e.from, trace: data })
+
+      // Update lastHeard of all nodes in the traceroute chain
+      for (let num of data.route) {
+        nodes.upsert({ num, lastHeard: Date.now() / 1000 })
+      }
+    }
   })
 
   /** ROUTING_APP */
