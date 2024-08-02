@@ -29,6 +29,7 @@
     <label>
       <div>Client Access Key</div>
       <input class="input" type="text" bind:value={$userKey} />
+      {#if $hasAccess}<span class="ml-1">✅</span>{/if}
     </label>
   {/if}
 </div>
