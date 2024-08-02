@@ -1,9 +1,10 @@
 import 'dotenv/config'
 import './lib/persistence'
-import { app, finalize } from './lib/server'
+import { app, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
-import { address, currentTime } from './vars'
+import { address, apiPort, currentTime, apiHostname } from './vars'
+import { hostname } from 'os'
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 app.post('/send', (req, res) => {
@@ -44,3 +45,6 @@ app.post('/disconnect', async (req, res) => {
 })
 
 finalize()
+
+apiHostname.set(hostname())
+apiPort.set((server.address() as any)?.port)

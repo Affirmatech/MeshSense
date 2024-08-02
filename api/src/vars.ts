@@ -13,6 +13,8 @@ export let broadcastId = 4294967295
 export let myNodeMetadata = new State<DeviceMetadata>('myNodeMetadata')
 export let accessKey = new State<string>('accessKey', undefined, { persist: true, hideLog: true })
 export let packetLimit = new State<number>('packetLimit', 500, { persist: true })
+export let apiHostname = new State<string>('apiHostname', undefined, { hideLog: true })
+export let apiPort = new State<string>('apiPort', undefined, { hideLog: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string

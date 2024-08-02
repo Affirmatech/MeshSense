@@ -46,7 +46,7 @@
           <div>Available bluetooth devices will appear on the left</div>
           <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
         </div>
-        <button class="absolute btn btn-sm right-0 top-0 text-xs opacity-80 m-2" on:click={() => showPage('Terms of Service')}>Terms of Use</button>
+        <button class="btn btn-sm h-6 font-normal grid place-content-center absolute m-2 top-0 right-0" on:click={() => showPage('Settings')}>⚙</button>
       </div>
     {/if}
     {#if !$expandedMap}
