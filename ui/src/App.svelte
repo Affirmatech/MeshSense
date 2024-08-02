@@ -12,6 +12,7 @@
   import Message from './Message.svelte'
   import { connectionStatus } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
+  import SettingsModal, { showPage } from './SettingsModal.svelte'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -25,6 +26,8 @@
 
 <UpdateStatus />
 
+<SettingsModal />
+
 <main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
   <div class="flex flex-col gap-2 content-start h-full overflow-auto">
     <Address class="shrink-0" />
@@ -33,7 +36,7 @@
     <Nodes {ol} class="grow" />
     <Message />
   </div>
-  <div id="content" class="grid grid-rows-[5fr_3fr] content-start h-full overflow-auto gap-2">
+  <div id="content" class="grid grid-rows-[5fr_3fr] content-start h-full overflow-auto gap-2 relative">
     {#if $connectionStatus == 'connected'}
       <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
     {:else}
@@ -43,6 +46,7 @@
           <div>Available bluetooth devices will appear on the left</div>
           <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
         </div>
+        <button class="absolute btn btn-sm right-0 top-0 text-xs opacity-80 m-2" on:click={() => showPage('Terms of Service')}>Terms of Use</button>
       </div>
     {/if}
     {#if !$expandedMap}

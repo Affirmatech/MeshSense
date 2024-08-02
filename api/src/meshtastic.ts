@@ -1,15 +1,15 @@
 import { HttpConnection, BleConnection } from '../meshtastic'
-import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packets } from './vars'
+import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 
-let packetLimit = 500
 let connection: HttpConnection | BleConnection
 let connectionIntended = false
 // address.subscribe(connect)
 
 packets.subscribe(() => {
-  while (packets.value?.length > packetLimit) packets.shift()
+  let limit = isNaN(packetLimit.value) ? 500 : packetLimit.value
+  while (packets.value?.length > limit) packets.shift()
 })
 
 connectionStatus.subscribe((value) => {
