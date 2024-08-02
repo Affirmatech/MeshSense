@@ -89,7 +89,7 @@
     status = 'Update Ready'
   })
 
-  // $: document.title = `Meshmagic ${$version ?? 'Development'}`
+  // $: document.title = `MeshSense ${$version ?? 'Development'}`
 
   function installUpdate() {
     axios.get('/installUpdate')
@@ -102,7 +102,7 @@
   <div class="fixed top-12 right-5 p-2 w-40 bg-slate-900 rounded-xl z-[99]">
     <div class="text-xs grid items-center h-10">
       {#if status == 'Update Ready'}
-        <button class="btn btn-xs btn-primary h-full" on:click={installUpdate}>Install Meshmagic Update</button>
+        <button class="btn btn-xs btn-primary h-full" on:click={installUpdate}>Install MeshSense Update</button>
       {:else}
         <div class="flex flex-col">
           {status}

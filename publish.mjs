@@ -14,7 +14,7 @@ let runCmd = (commandString) => new Promise((resolve, reject) => {
 
 if (!process.env.DEPLOY_LOCATION) {
   console.error('Please set environment variable DEPLOY_LOCATION.  Will check .env!')
-  console.error('Example: DEPLOY_LOCATION = "app@cloud:/path/download/meshmagic/"')
+  console.error('Example: DEPLOY_LOCATION = "app@cloud:/path/download/meshsense/"')
   process.exit(-1)
 }
 await runCmd(`rsync -av --include '${config.name}-arm64*' --exclude '*-unpacked' --exclude 'mac*' --exclude '*-mac.zip' --exclude '*-mac.zip.blockmap' --exclude '*arm64.dmg*' electron/dist/ ${process.env.DEPLOY_LOCATION}`)

@@ -1,4 +1,4 @@
-# meshmagic
+# MeshSense
 
 A minimal Electron application with TypeScript
 

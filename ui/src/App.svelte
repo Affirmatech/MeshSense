@@ -41,7 +41,7 @@
       <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
     {:else}
       <div class="grid items-center px-5 m-auto">
-        <div class="text-3xl font-bold text-white">Welcome to Meshmagic!</div>
+        <div class="text-3xl font-bold text-white">Welcome to MeshSense!</div>
         <div class="max-w-md mt-5 flex flex-col gap-4">
           <div>Available bluetooth devices will appear on the left</div>
           <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
