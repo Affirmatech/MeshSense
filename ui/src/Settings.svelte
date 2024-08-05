@@ -27,7 +27,7 @@
     </div>
   {:else}
     <label>
-      <div>Client Access Key</div>
+      <div class="font-bold">Client Access Key</div>
       <input class="input" type="text" bind:value={$userKey} />
       {#if $hasAccess}<span class="ml-1">✅</span>{/if}
     </label>

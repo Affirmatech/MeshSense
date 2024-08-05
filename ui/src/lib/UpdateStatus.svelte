@@ -1,6 +1,7 @@
 <script lang="ts">
   import axios from 'axios'
   import { events } from './wsc'
+  import { hasAccess } from './util'
 
   export let status = ''
   export let progress = 0
@@ -98,7 +99,7 @@
   // runExample()
 </script>
 
-{#if status}
+{#if status && $hasAccess}
   <div class="fixed top-12 right-5 p-2 w-40 bg-slate-900 rounded-xl z-[99]">
     <div class="text-xs grid items-center h-10">
       {#if status == 'Update Ready'}
