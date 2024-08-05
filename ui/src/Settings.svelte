@@ -1,5 +1,5 @@
 <script>
-  import { accessKey, apiHostname, apiPort, packetLimit } from 'api/src/vars'
+  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
 </script>
 
@@ -8,6 +8,16 @@
     <label>
       <div class="font-bold">Log Size Limit</div>
       <input class="input" type="text" bind:value={$packetLimit} />
+    </label>
+
+    <label>
+      <div class="font-bold">Message Prefix</div>
+      <input class="input" type="text" bind:value={$messagePrefix} />
+    </label>
+
+    <label>
+      <div class="font-bold">Message Suffix</div>
+      <input class="input" type="text" bind:value={$messageSuffix} />
     </label>
 
     <hr class="opacity-25" />

@@ -1,5 +1,5 @@
 import { HttpConnection, BleConnection } from '../meshtastic'
-import { NodeInfo, address, channels, connectionStatus, lastFromRadio, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
+import { NodeInfo, address, channels, connectionStatus, lastFromRadio, messagePrefix, messageSuffix, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 
@@ -294,6 +294,7 @@ export async function connect(address?: string) {
 
 export async function send({ message = '', destination, channel }) {
   if (connectionStatus.value != 'connected' || !message) return
+  message = `${messagePrefix.value || ''} ${message} ${messageSuffix.value || ''}`.trim()
   console.log('Sending', { message, destination, channel })
   return connection.sendText(message, destination, false, channel)
 }
