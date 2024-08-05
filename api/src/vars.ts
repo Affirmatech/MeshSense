@@ -11,12 +11,13 @@ export let currentTime = new State<number>('currentTime', Date.now(), { hideLog:
 export let myNodeNum = new State<number>('myNodeNum')
 export let broadcastId = 4294967295
 export let myNodeMetadata = new State<DeviceMetadata>('myNodeMetadata')
-export let accessKey = new State<string>('accessKey', undefined, { persist: true, hideLog: true })
+export let accessKey = new State<string>('accessKey', 'secret', { persist: true, hideLog: true })
 export let packetLimit = new State<number>('packetLimit', 500, { persist: true })
 export let apiHostname = new State<string>('apiHostname', undefined, { hideLog: true })
 export let apiPort = new State<string>('apiPort', undefined, { hideLog: true })
 export let messagePrefix = new State<string>('messagePrefix', undefined, { persist: true })
 export let messageSuffix = new State<string>('messageSuffix', undefined, { persist: true })
+export let allowRemoteMessaging = new State<boolean>('allowRemoteMessaging', false, { persist: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string

@@ -10,9 +10,10 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
-  import { connectionStatus } from 'api/src/vars'
+  import { allowRemoteMessaging, connectionStatus } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
   import SettingsModal, { showPage } from './SettingsModal.svelte'
+  import { hasAccess } from './lib/util'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -34,7 +35,9 @@
     <Bluetooth class="shrink-0" />
     <!-- <Channels class="shrink-0" /> -->
     <Nodes {ol} class="grow" />
-    <Message />
+    {#if window.location.hostname == 'localhost' || $hasAccess || $allowRemoteMessaging}
+      <Message />
+    {/if}
   </div>
   <div id="content" class="grid grid-rows-[5fr_3fr] content-start h-full overflow-auto gap-2 relative">
     {#if $connectionStatus == 'connected'}

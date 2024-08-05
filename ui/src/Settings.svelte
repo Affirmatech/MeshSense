@@ -1,5 +1,5 @@
 <script>
-  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix } from 'api/src/vars'
+  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
 </script>
 
@@ -18,6 +18,11 @@
     <label>
       <div class="font-bold">Message Suffix</div>
       <input class="input" type="text" bind:value={$messageSuffix} />
+    </label>
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$allowRemoteMessaging} />
+      <div class="font-bold">Allow remote connections to send messages</div>
     </label>
 
     <hr class="opacity-25" />
