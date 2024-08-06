@@ -3,9 +3,24 @@ import './lib/persistence'
 import { app, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
-import { address, apiPort, currentTime, apiHostname } from './vars'
+import { address, apiPort, currentTime, apiHostname, accessKey } from './vars'
 import { hostname } from 'os'
+import intercept from 'intercept-stdout'
 setInterval(() => currentTime.set(Date.now()), 15000)
+
+let consoleLog = []
+let logSize = 1000
+
+intercept(
+  (text) => {
+    consoleLog.push(text)
+    while (consoleLog.length >= logSize) consoleLog.shift()
+  },
+  (err) => {
+    consoleLog.push(err)
+    while (consoleLog.length >= logSize) consoleLog.shift()
+  }
+)
 
 app.post('/send', (req, res) => {
   let message = req.body.message
@@ -42,6 +57,11 @@ app.post('/disconnect', async (req, res) => {
   console.log('[express]', '/disconnect')
   disconnect()
   return res.sendStatus(200)
+})
+
+app.get('/consoleLog', async (req, res) => {
+  if (req.query.accessKey != accessKey.value && req.hostname.toLowerCase() != 'localhost') return res.sendStatus(403)
+  return res.json(consoleLog)
 })
 
 finalize()

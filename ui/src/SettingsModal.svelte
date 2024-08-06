@@ -13,19 +13,23 @@
   import { license } from './gpl3'
   import Settings from './Settings.svelte'
   import { writable } from 'svelte/store'
+  import { hasAccess } from './lib/util'
+  import SystemLog from './SystemLog.svelte'
 </script>
 
 <Modal title="MeshSense" bind:visible={$showConfigModal}>
   <div class="grid grid-rows-[auto_1fr] gap-2">
     <!-- Sidebar -->
     <div class="flex gap-1">
-      {#each ['Settings', 'Terms of Service'] as category}
-        <button on:click={() => ($modalPage = category)} class="btn btn-sm h-8 w-32 {$modalPage == category ? 'brightness-125' : 'grayscale'}">{category}</button>
+      {#each ['Settings', 'Terms of Service', 'System Log'] as category}
+        <button class:hidden={category == 'System Log' && !$hasAccess} on:click={() => ($modalPage = category)} class="btn btn-sm h-8 w-32 {$modalPage == category ? 'brightness-125' : 'grayscale'}"
+          >{category}</button
+        >
       {/each}
     </div>
 
     <!-- Content -->
-    <div class="p-2">
+    <div class="p-2 grid h-full">
       {#if $modalPage == 'Settings'}
         <Settings />
       {:else if $modalPage == 'Terms of Service'}
@@ -36,6 +40,12 @@
           <pre class="overflow-auto h-80 rounded ring bg-black/20 mr-10 p-4">{license}</pre>
           <div>For requests related to the GPL, please <a href="https://affirmatech.com/contact?product=MeshSense">contact us</a> and we will accomodate your request.</div>
         </div>
+      {:else if $modalPage == 'System Log'}
+        {#if $hasAccess}
+          <SystemLog />
+        {:else}
+          <div>Please enter Access Key in Settings to view system log.</div>
+        {/if}
       {/if}
     </div>
   </div>

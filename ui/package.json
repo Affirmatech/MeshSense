@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-basic-ssl": "^1.1.0",
+    "ansi_up": "^6.0.2",
     "api": "file:../api",
     "axios": "^1.7.2",
     "eventemitter3": "^5.0.1",
