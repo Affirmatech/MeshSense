@@ -25,6 +25,6 @@
 </script>
 
 <div class="flex flex-col gap-4">
-  <pre bind:this={logElement} class="whitespace-pre-line overflow-auto h-80 rounded ring bg-black/20 mr-10 p-4">{#each log as line}{@html ansi.ansi_to_html(line)}{/each}</pre>
+  <pre bind:this={logElement} class="whitespace-pre-line overflow-auto h-80 rounded ring bg-black/20 p-4">{#each log as line}{@html ansi.ansi_to_html(line)}{/each}</pre>
   <button class="btn btn-sm" on:click={getLog}>Refresh</button>
 </div>
