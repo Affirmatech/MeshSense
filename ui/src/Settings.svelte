@@ -28,7 +28,11 @@
     <hr class="opacity-25" />
   {/if}
 
-  <div>For your convienience, MeshSense can be remotely accessed using the following address: <a class="w-full" href="http://{$apiHostname}:{$apiPort}">http://{$apiHostname}:{$apiPort}</a></div>
+  <div>
+    For your convienience, MeshSense can be remotely accessed using the following address: <a class="w-full" target="_blank" rel="noreferrer" href="http://{$apiHostname}:{$apiPort}"
+      >http://{$apiHostname}:{$apiPort}</a
+    >
+  </div>
 
   {#if window.location.hostname == 'localhost'}
     <label class="">
