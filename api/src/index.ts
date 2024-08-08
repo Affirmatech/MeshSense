@@ -13,11 +13,11 @@ let logSize = 1000
 
 intercept(
   (text) => {
-    if (text.includes('Possible EventTarget memory leak detected')) return
     consoleLog.push(text)
     while (consoleLog.length >= logSize) consoleLog.shift()
   },
   (err) => {
+    if (err.includes('Possible EventTarget memory leak detected')) return
     consoleLog.push(err)
     while (consoleLog.length >= logSize) consoleLog.shift()
   }
