@@ -1,5 +1,5 @@
 <script>
-  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging } from 'api/src/vars'
+  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
 </script>
 
@@ -23,6 +23,11 @@
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$allowRemoteMessaging} />
       <div class="font-bold">Allow remote connections to send messages</div>
+    </label>
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$autoConnectOnStartup} />
+      <div class="font-bold">Connect to node on startup</div>
     </label>
 
     <hr class="opacity-25" />

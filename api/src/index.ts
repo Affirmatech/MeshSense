@@ -3,7 +3,7 @@ import './lib/persistence'
 import { app, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
-import { address, apiPort, currentTime, apiHostname, accessKey } from './vars'
+import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
 setInterval(() => currentTime.set(Date.now()), 15000)
@@ -68,3 +68,5 @@ finalize()
 
 apiHostname.set(hostname())
 apiPort.set((server.address() as any)?.port)
+
+if (autoConnectOnStartup.value && address.value) connect(address.value)
