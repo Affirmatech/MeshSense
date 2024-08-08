@@ -49,9 +49,9 @@
 
       <option disabled>== Nodes ==</option>
       {#each [...$filteredNodes].sort((a, b) => {
-        return (a.user?.shortName || String(a.user?.id)).localeCompare(b.user?.shortName || String(b.user?.id))
+        return (a.user?.shortName || String(a.num)).localeCompare(b.user?.shortName || String(b.num))
       }) as node}
-        <option value={node.num}>{node.user?.shortName || node.user?.id}</option>
+        <option value={node.num}>{node.user?.shortName || node.num}</option>
       {/each}
     </select>
   </h2>
