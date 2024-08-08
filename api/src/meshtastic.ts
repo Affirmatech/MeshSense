@@ -238,7 +238,7 @@ export async function connect(address?: string) {
   function updateTimeout() {
     if (connectionStatus.value == 'connected') return
 
-    console.log('[meshtastic]', 'Updating timeout')
+    // console.log('[meshtastic]', 'Updating timeout')
     clearTimeout(connection['timeout'])
     connection['timeout'] = setTimeout(() => {
       if (connectionStatus.value != 'connected') {
