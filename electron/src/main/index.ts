@@ -57,7 +57,10 @@ app.whenReady().then(async () => {
   apiProcess = utilityProcess.fork(apiPath, process.argv, { stdio: 'pipe' })
   apiProcess.stdout?.on('data', (e) => process.stdout.write(e))
   apiProcess.stderr?.on('data', (e) => process.stderr.write(e))
-  apiProcess.on('exit', () => console.log('API PROCESS EXITED!'))
+  apiProcess.on('exit', (code) => {
+    console.log('API PROCESS EXITED!', code)
+    app.exit(code)
+  })
 
   function createWindowOnServerListening(e: any) {
     if (String(e).startsWith('Server listening')) {
