@@ -42,6 +42,7 @@
     "eventemitter3": "^5.0.1",
     "exit-hook": "^4.0.0",
     "express": "^4.19.2",
+    "get-port": "^7.1.0",
     "http-proxy-middleware": "^3.0.0",
     "intercept-stdout": "^0.1.2",
     "key-file-storage": "^2.3.3",

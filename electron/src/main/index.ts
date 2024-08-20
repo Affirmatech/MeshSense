@@ -51,7 +51,7 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   console.log(`DIRNAME`, __dirname)
-  let apiPath = join(__dirname, '../../resources/api/index.cjs').replace('app.asar', 'app.asar.unpacked')
+  let apiPath = join(__dirname, '../../resources/api/index.mjs').replace('app.asar', 'app.asar.unpacked')
   console.log(`API_PATH`, apiPath)
 
   apiProcess = utilityProcess.fork(apiPath, process.argv, { stdio: 'pipe' })

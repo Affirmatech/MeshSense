@@ -7,6 +7,7 @@ import { State } from './state'
 // import { store } from './persistence'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import { staticDirectory } from './paths'
+import getPort from 'get-port'
 
 // async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
 //   return new Promise((success, fail) => {
@@ -47,7 +48,7 @@ export let app: Express = express()
 // export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
 
 // HTTP
-export let server = app.listen(Number(process.env.PORT) || 5920)
+export let server = app.listen(Number(process.env.PORT) || (await getPort({ port: 5920 })))
 export let wss = new WebSocketHTTPServer(server, { path: '/ws' })
 
 process.on('unhandledRejection', (reason, promise) => {
