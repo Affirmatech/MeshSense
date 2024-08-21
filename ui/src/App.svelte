@@ -10,7 +10,7 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
-  import { allowRemoteMessaging, connectionStatus } from 'api/src/vars'
+  import { allowRemoteMessaging, connectionStatus, version } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
   import SettingsModal, { showPage } from './SettingsModal.svelte'
   import { hasAccess } from './lib/util'
@@ -49,7 +49,10 @@
           <div>Available bluetooth devices will appear on the left</div>
           <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
         </div>
-        <button class="btn btn-sm h-6 font-normal grid place-content-center absolute m-2 top-0 right-0" on:click={() => showPage('Settings')}>⚙</button>
+        <div class="font-normal absolute m-2 top-0 right-0 flex gap-2 items-center">
+          <div class="text-xs text-white/50 pr-2 font-bold">MeshSense {$version}</div>
+          <button class="btn btn-sm h-6 grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
+        </div>
       </div>
     {/if}
     {#if !$expandedMap}
