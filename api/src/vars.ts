@@ -19,6 +19,7 @@ export let messagePrefix = new State<string>('messagePrefix', undefined, { persi
 export let messageSuffix = new State<string>('messageSuffix', undefined, { persist: true })
 export let allowRemoteMessaging = new State<boolean>('allowRemoteMessaging', false, { persist: true })
 export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', true, { persist: true })
+export let enableTLS = new State<boolean>('enableTLS', false, { persist: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string

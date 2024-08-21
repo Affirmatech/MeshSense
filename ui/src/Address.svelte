@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { connectionStatus, address } from 'api/src/vars'
+  import { connectionStatus, address, enableTLS } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { smallMode } from './Nodes.svelte'
   import { hasAccess } from './lib/util'
@@ -38,15 +38,17 @@
     </div>
     <!-- Cancel Button -->
     {#if $hasAccess}
-      <div class=" h-full grid grid-flow-col">
-        {#if $connectionStatus == 'disconnected'}
-          <button class="btn w-full h-full">Connect</button>
-        {:else if $connectionStatus == 'connected'}
-          <button type="button" class="btn w-full h-full" on:click={disconnect}>Disconnect</button>
-        {:else if ['searching', 'connecting', 'configuring', 'reconnecting'].includes($connectionStatus)}
-          <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
-        {/if}
-      </div>
+      {#if $connectionStatus == 'disconnected'}
+        <label class="select-none btn cursor-pointer text-center text-sm">
+          TLS
+          <input type="checkbox" bind:checked={$enableTLS} />
+        </label>
+        <button class="btn w-full h-full col-span-full saturate-150">Connect</button>
+      {:else if $connectionStatus == 'connected'}
+        <button type="button" class="btn w-full h-full" on:click={disconnect}>Disconnect</button>
+      {:else if ['searching', 'connecting', 'configuring', 'reconnecting'].includes($connectionStatus)}
+        <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
+      {/if}
     {/if}
   </form>
 </Card>

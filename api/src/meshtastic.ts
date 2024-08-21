@@ -1,5 +1,9 @@
+/**
+ * https://js.meshtastic.org/
+ */
+
 import { HttpConnection, BleConnection } from '../meshtastic'
-import { NodeInfo, address, channels, connectionStatus, lastFromRadio, messagePrefix, messageSuffix, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
+import { NodeInfo, address, channels, connectionStatus, enableTLS, lastFromRadio, messagePrefix, messageSuffix, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 
@@ -289,7 +293,10 @@ export async function connect(address?: string) {
   if (connection instanceof BleConnection) {
     // console.log(bluetoothDevices[address])
     await connection.connect({ device: bluetoothDevices[address] })
-  } else await connection.connect({ address, fetchInterval: 2000 })
+  } else {
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
+    await connection.connect({ address, fetchInterval: 2000, tls: enableTLS.value })
+  }
 }
 
 export async function send({ message = '', destination, channel }) {
