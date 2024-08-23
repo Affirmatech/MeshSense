@@ -74,6 +74,7 @@ app.whenReady().then(async () => {
   apiProcess.stdout?.on('data', createWindowOnServerListening)
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
 
+  // autoUpdater.channel = 'beta'
   autoUpdater.on('checking-for-update', () => {
     apiProcess.postMessage({ event: 'checking-for-update', body: 'Checking for update' })
   })

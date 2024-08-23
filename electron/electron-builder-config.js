@@ -1,3 +1,7 @@
+var pjson = require('./package.json')
+let channel = pjson.version.match(/-(?<channel>\w*).*/)?.groups?.channel
+let channelString = channel ? `-${channel}` : ''
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -5,6 +9,7 @@
 const config = {
   appId: 'com.affirmatech.meshsense',
   productName: 'MeshSense',
+  // generateUpdatesFilesForAllChannels: true,
   directories: {
     buildResources: 'build'
   },
@@ -18,6 +23,7 @@ const config = {
   ],
   asarUnpack: ['resources/**'],
   win: {
+    artifactName: '${name}' + channelString + '-${arch}.${ext}',
     executableName: 'MeshSense',
     signingHashAlgorithms: ['sha256'],
     publisherName: ['Affirmatech Inc.', 'Affirmatech Incorporated'],
@@ -26,12 +32,13 @@ const config = {
     certificateSubjectName: 'Affirmatech Incorporated'
   },
   nsis: {
-    artifactName: '${name}-setup-${arch}.${ext}',
+    artifactName: '${name}' + channelString + '-${arch}.${ext}',
     shortcutName: '${productName}',
     uninstallDisplayName: '${productName}',
     createDesktopShortcut: true
   },
   mac: {
+    artifactName: '${name}' + channelString + '-${arch}.${ext}',
     notarize: {
       teamId: `${process.env.APPLE_TEAM_ID}`
     },
@@ -43,7 +50,7 @@ const config = {
     ]
   },
   dmg: {
-    artifactName: '${name}-${arch}.${ext}'
+    artifactName: '${name}' + channelString + '-${arch}.${ext}'
   },
   linux: {
     target: ['AppImage'],
@@ -51,7 +58,7 @@ const config = {
     category: 'Utility'
   },
   appImage: {
-    artifactName: '${name}-${arch}.${ext}'
+    artifactName: '${name}' + channelString + '-${arch}.${ext}'
   },
   npmRebuild: false,
   publish: {
