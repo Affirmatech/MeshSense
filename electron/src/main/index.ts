@@ -23,7 +23,7 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     console.log('[electron] Checking for updates on channel', autoUpdater.channel)
-    // autoUpdater.checkForUpdates()
+    autoUpdater.checkForUpdates()
     setInterval(() => {
       autoUpdater.checkForUpdates()
     }, 7.2e6)
@@ -74,15 +74,15 @@ app.whenReady().then(async () => {
 
   apiProcess.stdout?.on('data', createWindowOnServerListening)
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
-  apiProcess.postMessage({ event: 'updateChannel', body: autoUpdater.channel })
+  // apiProcess.postMessage({ event: 'updateChannel', body: autoUpdater.channel })
 
   apiProcess.on('message', (e) => {
     console.log('[api to electron]', e)
     if (e.event == 'installUpdate') autoUpdater.quitAndInstall()
-    if (e.event == 'setUpdateChannel') {
-      console.log('NEW CHANNEL', e.body)
+    else if (e.event == 'checkUpdate') autoUpdater.checkForUpdates()
+    else if (e.event == 'setUpdateChannel') {
+      console.log('[electron] Set update channel', e.body)
       autoUpdater.channel = e.body
-      autoUpdater.checkForUpdates()
     }
   })
 

@@ -98,10 +98,10 @@ app.get('/state', (_, res) => res.json(State.getStateData()))
 let parentPort = process['parentPort']
 
 parentPort?.on('message', (e) => {
-  console.log('[electron]', e)
+  console.log('[electron to api]', e)
   if (e.data.event == 'version') version.set(e.data.body)
   if (e.data.event == 'updateChannel') {
-    updateChannel.set(e.data.body)
+    if (e.data.body) updateChannel.set(e.data.body)
   }
   wss?.send(e.data.event, e.data.body)
 })
@@ -112,6 +112,11 @@ updateChannel.subscribe((v) => {
 
 app.get('/installUpdate', (req, res) => {
   parentPort?.postMessage({ event: 'installUpdate' })
+  res.sendStatus(200)
+})
+
+app.get('/checkUpdate', (req, res) => {
+  parentPort?.postMessage({ event: 'checkUpdate' })
   res.sendStatus(200)
 })
 

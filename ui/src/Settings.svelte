@@ -6,6 +6,8 @@
   import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
   import { State } from 'api/src/lib/state'
+  import { tick } from 'svelte'
+  import axios from 'axios'
 </script>
 
 <div class="flex flex-col gap-3">
@@ -39,8 +41,10 @@
       <input
         type="checkbox"
         checked={$updateChannel == 'beta'}
-        on:change={(e) => {
+        on:change={async (e) => {
           e.currentTarget.checked ? ($updateChannel = 'beta') : ($updateChannel = 'latest')
+          await tick()
+          axios.get('/checkUpdate')
         }}
       />
       <div class="font-bold">MeshSense Beta Updates</div>

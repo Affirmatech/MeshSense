@@ -9,7 +9,7 @@ let channelString = channel ? `-${channel}` : ''
 const config = {
   appId: 'com.affirmatech.meshsense',
   productName: 'MeshSense',
-  // generateUpdatesFilesForAllChannels: true,
+  generateUpdatesFilesForAllChannels: true,
   directories: {
     buildResources: 'build'
   },
