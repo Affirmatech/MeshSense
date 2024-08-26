@@ -42,7 +42,7 @@ export class State<T = any> {
 
   constructor(name: string, value?: T, flags: StateFlags = {}) {
     if (Object.hasOwn(State.states, name)) {
-      console.info(`State '${name}' is already defined`)
+      // console.info(`State '${name}' is already defined`)
       return State.states[name]
     }
     State.states[name] = this

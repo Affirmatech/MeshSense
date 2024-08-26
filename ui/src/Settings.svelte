@@ -1,6 +1,11 @@
+<script context="module">
+  export let updateChannel = new State('updateChannel', undefined)
+</script>
+
 <script>
   import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
+  import { State } from 'api/src/lib/state'
 </script>
 
 <div class="flex flex-col gap-3">
@@ -28,6 +33,17 @@
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$autoConnectOnStartup} />
       <div class="font-bold">Connect to node on startup</div>
+    </label>
+
+    <label class="flex gap-2 items-center">
+      <input
+        type="checkbox"
+        checked={$updateChannel == 'beta'}
+        on:change={(e) => {
+          e.currentTarget.checked ? ($updateChannel = 'beta') : ($updateChannel = 'latest')
+        }}
+      />
+      <div class="font-bold">MeshSense Beta Updates</div>
     </label>
 
     <hr class="opacity-25" />

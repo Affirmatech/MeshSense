@@ -22,7 +22,8 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    autoUpdater.checkForUpdates()
+    console.log('[electron] Checking for updates on channel', autoUpdater.channel)
+    // autoUpdater.checkForUpdates()
     setInterval(() => {
       autoUpdater.checkForUpdates()
     }, 7.2e6)
@@ -73,6 +74,17 @@ app.whenReady().then(async () => {
 
   apiProcess.stdout?.on('data', createWindowOnServerListening)
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
+  apiProcess.postMessage({ event: 'updateChannel', body: autoUpdater.channel })
+
+  apiProcess.on('message', (e) => {
+    console.log('[api to electron]', e)
+    if (e.event == 'installUpdate') autoUpdater.quitAndInstall()
+    if (e.event == 'setUpdateChannel') {
+      console.log('NEW CHANNEL', e.body)
+      autoUpdater.channel = e.body
+      autoUpdater.checkForUpdates()
+    }
+  })
 
   // autoUpdater.channel = 'beta'
   autoUpdater.on('checking-for-update', () => {
@@ -92,11 +104,6 @@ app.whenReady().then(async () => {
   })
   autoUpdater.on('update-downloaded', (e) => {
     apiProcess.postMessage({ event: 'update-downloaded', body: e })
-  })
-
-  apiProcess.on('message', (e) => {
-    console.log('GOT message from API', e)
-    if (e.event == 'installUpdate') autoUpdater.quitAndInstall()
   })
 
   // Set app user model id for windows

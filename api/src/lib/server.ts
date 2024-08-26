@@ -34,6 +34,8 @@ import getPort from 'get-port'
 // }
 
 export let version = new State('version', '')
+export let updateChannel = new State('updateChannel', undefined, { persist: true })
+
 export let app: Express = express()
 // let originalKeys = store['keys']
 
@@ -96,9 +98,16 @@ app.get('/state', (_, res) => res.json(State.getStateData()))
 let parentPort = process['parentPort']
 
 parentPort?.on('message', (e) => {
-  console.log('Electron Message', e)
+  console.log('[electron]', e)
   if (e.data.event == 'version') version.set(e.data.body)
+  if (e.data.event == 'updateChannel') {
+    updateChannel.set(e.data.body)
+  }
   wss?.send(e.data.event, e.data.body)
+})
+
+updateChannel.subscribe((v) => {
+  parentPort?.postMessage({ event: 'setUpdateChannel', body: v })
 })
 
 app.get('/installUpdate', (req, res) => {
