@@ -1,6 +1,7 @@
-import { accessKey, apiHostname, nodes, type NodeInfo } from 'api/src/vars'
+import { accessKey, apiHostname, lastFromRadio, nodes, packets, type NodeInfo } from 'api/src/vars'
 import { tick } from 'svelte'
-import { derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
+import { enableAudioAlerts } from '../Settings.svelte'
 
 export const userKey = writable(localStorage.getItem('userKey') || '')
 userKey.subscribe((value) => localStorage.setItem('userKey', value))
@@ -54,3 +55,9 @@ export function getCoordinates(node: NodeInfo | number) {
 function getNodeById(num: number) {
   return nodes.value.find((n) => n.num == num)
 }
+
+export let audioNewMessage = new Audio('/audioNewMessage.mp3')
+
+packets.on('upsert', (e) => {
+  if (get(enableAudioAlerts) && e[0].message) audioNewMessage.play()
+})

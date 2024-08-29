@@ -1,5 +1,10 @@
 <script context="module">
+  import { entries, get, set } from 'idb-keyval'
   export let updateChannel = new State('updateChannel', undefined)
+  export let enableAudioAlerts = writable((await get('enableAudioAlerts')) ?? true)
+  enableAudioAlerts.subscribe((v) => {
+    set('enableAudioAlerts', v)
+  })
 </script>
 
 <script>
@@ -8,9 +13,14 @@
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
   import axios from 'axios'
+  import { writable } from 'svelte/store'
 </script>
 
 <div class="flex flex-col gap-3">
+  <label class="flex gap-2">
+    <input type="checkbox" bind:checked={$enableAudioAlerts} />
+    <div class="font-bold">Enable Audio Alerts</div>
+  </label>
   {#if $hasAccess}
     <label>
       <div class="font-bold">Log Size Limit</div>

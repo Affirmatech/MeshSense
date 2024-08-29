@@ -3,7 +3,6 @@
   import Address from './Address.svelte'
   // import ServiceWorker from './lib/ServiceWorker.svelte'
   import { WebSocketClient } from './lib/wsc'
-  import Channels from './Channels.svelte'
   import Log from './Log.svelte'
   import Nodes, { smallMode } from './Nodes.svelte'
   import Map, { expandedMap } from './Map.svelte'
