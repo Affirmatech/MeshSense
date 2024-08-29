@@ -40,7 +40,17 @@
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
-  <pre>{JSON.stringify(selectedNode, undefined, 2)}</pre>
+  <div class="flex items-center bg-black/20 rounded gap-2">
+    <h2 class="rounded">Name</h2>
+    <div class="grow">{selectedNode?.user?.longName}</div>
+
+    <h2 class="rounded">Node Num</h2>
+    <div class="grow">{String(selectedNode?.num)}</div>
+
+    <h2 class="rounded">User ID</h2>
+    <div class="grow">{String(selectedNode?.user?.id)}</div>
+  </div>
+  <pre class="mt-2 overflow-auto rounded p-2 h-full bg-black/20">{JSON.stringify(selectedNode, undefined, 2)}</pre>
 </Modal>
 
 <Card title="Nodes" {...$$restProps}>
@@ -143,9 +153,9 @@
 
             <button title="Traceroute" on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button>
 
-            {#if node.user?.hwModel}
+            <!-- {#if node.user?.hwModel}
               <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
-            {/if}
+            {/if} -->
 
             <button
               class="h-7 w-5"
