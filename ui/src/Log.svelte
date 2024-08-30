@@ -27,12 +27,13 @@
   let selectedPacket: MeshPacket
   let filterText = ''
   let unseenMessages = false
+  let showCsvModal = false
   let csvText: string
   let csvTextElement: HTMLPreElement
 
   $: if ($packets) scrollToBottom(packetsDiv, false, (unseen) => (unseenMessages = unseen))
   $: messagesOnly, scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))
-  $: if (csvText) {
+  $: if (showCsvModal) {
     tick().then(selectCSV)
   }
 
@@ -53,6 +54,7 @@
         }
         log.push(line.join(','))
       }
+      showCsvModal = true
       csvText = log.join('\n')
     } catch (e) {
       console.error('Unable to generate CSV', e)
@@ -64,7 +66,7 @@
   <pre>{JSON.stringify(selectedPacket, undefined, 2)}</pre>
 </Modal>
 
-<Modal title="CSV Log" visible={csvText != undefined}>
+<Modal title="CSV Log" bind:visible={showCsvModal}>
   <pre id="csvTextElement" bind:this={csvTextElement}>{csvText}</pre>
 </Modal>
 
