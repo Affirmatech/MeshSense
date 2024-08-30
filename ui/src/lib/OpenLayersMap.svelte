@@ -118,7 +118,9 @@
           return feature
         })
       }),
-      style: { 'stroke-width': 4, 'stroke-color': 'rgba(50,50,150, 0.6)' }
+      style: { 'stroke-width': 4, 'stroke-color': 'rgba(50,50,150, 0.6)' },
+
+      renderBuffer: 100000
     })
 
     map.addLayer(layers[layerName])
