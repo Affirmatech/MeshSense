@@ -5,6 +5,7 @@
 
   export let status = ''
   export let progress = 0
+  export let version = ''
 
   let exampleMessages = [
     {
@@ -79,6 +80,7 @@
 
   events.on('update-available', (e) => {
     status = 'New update!'
+    version = e.version
   })
 
   events.on('download-progress', (e) => {
@@ -88,6 +90,7 @@
 
   events.on('update-downloaded', (e) => {
     status = 'Update Ready'
+    version = e.version
   })
 
   // $: document.title = `MeshSense ${$version ?? 'Development'}`
@@ -96,19 +99,21 @@
     axios.get('/installUpdate')
   }
 
-  // runExample()
+  //runExample()
 </script>
 
 {#if status && $hasAccess}
   <div class="fixed top-12 right-5 p-2 w-40 bg-slate-900 rounded-xl z-[99]">
-    <div class="text-xs grid items-center h-10">
+    <div class="text-xs grid items-center gap-1">
       {#if status == 'Update Ready'}
-        <button class="btn btn-xs btn-primary h-full" on:click={installUpdate}>Install MeshSense Update</button>
+        <button class="btn btn-xs btn-primary grow py-2" on:click={installUpdate}>Install<br />MeshSense {version || ''}</button>
+        <!-- <button class="btn btn-xs btn-primary saturate-50" on:click={() => (status = '')}>Changelog</button> -->
+        <button class="btn btn-xs btn-primary saturate-50" on:click={() => (status = '')}>Later</button>
       {:else}
-        <div class="flex flex-col">
+        <div class="flex flex-col gap-1">
           {status}
           {#if progress > 0}
-            <progress class="progress" value={progress} max="100" />
+            <progress class="progress rounded" value={progress} max="100" />
           {/if}
         </div>
       {/if}
