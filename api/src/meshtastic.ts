@@ -228,7 +228,8 @@ export async function connect(address?: string) {
         'onDetectionSensorPacket',
         'onTraceRoutePacket',
         'onRoutingPacket',
-        'onNeighborInfoPacket'
+        'onNeighborInfoPacket',
+        'onStoreForwardPacket' // Not parsed
       ].includes(event)
     ) {
       continue
