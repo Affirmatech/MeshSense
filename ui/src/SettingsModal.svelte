@@ -20,12 +20,14 @@
 <Modal title="MeshSense" bind:visible={$showConfigModal}>
   <div class="grid grid-rows-[auto_1fr] gap-2">
     <!-- Sidebar -->
-    <div class="flex gap-1">
+    <div class="flex gap-1 flex-wrap items-center">
       {#each ['Settings', 'Terms of Service', 'System Log'] as category}
         <button class:hidden={category == 'System Log' && !$hasAccess} on:click={() => ($modalPage = category)} class="btn btn-sm h-8 w-32 {$modalPage == category ? 'brightness-125' : 'grayscale'}"
           >{category}</button
         >
       {/each}
+      <a class="p-4 py-1 underline text-center" target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a>
+      <a class="p-4 py-1 underline text-center" target="_blank" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation">Donate</a>
     </div>
 
     <!-- Content -->
