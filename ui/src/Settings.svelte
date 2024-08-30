@@ -1,7 +1,8 @@
 <script context="module">
   import { entries, get, set } from 'idb-keyval'
   export let updateChannel = new State('updateChannel', undefined)
-  export let enableAudioAlerts = writable((await get('enableAudioAlerts')) ?? true)
+  export let enableAudioAlerts = writable()
+  get('enableAudioAlerts').then((v) => enableAudioAlerts.set(v ?? true))
   enableAudioAlerts.subscribe((v) => {
     set('enableAudioAlerts', v)
   })
