@@ -98,7 +98,9 @@
           }
           return feature
         })
-      })
+      }),
+      updateWhileAnimating: true,
+      updateWhileInteracting: true
     })
 
     map.addLayer(layers[layerName])
@@ -120,7 +122,9 @@
       }),
       style: { 'stroke-width': 4, 'stroke-color': 'rgba(50,50,150, 0.6)' },
 
-      renderBuffer: 100000
+      renderBuffer: 100000,
+      updateWhileAnimating: true,
+      updateWhileInteracting: true
     })
 
     map.addLayer(layers[layerName])
