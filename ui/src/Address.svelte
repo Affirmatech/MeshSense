@@ -21,6 +21,10 @@
   function disconnect() {
     axios.post('/disconnect')
   }
+
+  let spinnerAngle = 0
+
+  $: if ($lastFromRadio && $connectionStatus == 'configuring') spinnerAngle = (spinnerAngle + 8) % 360
 </script>
 
 <Card title="Address" {...$$restProps}>
@@ -28,6 +32,9 @@
     <div class="grow">Address</div>
     {#if $connectionStatus}
       <div class="h-full text-right w-full text-yellow-300 font-normal text-sm mt-1 capitalize">{$connectionStatus}</div>
+      {#if $connectionStatus == 'configuring'}
+        <div style="transform: rotate({spinnerAngle}deg);">⌛</div>
+      {/if}
     {/if}
   </h2>
   <form on:submit|preventDefault={connect} class="grid {$smallMode ? 'grid-cols-1' : 'grid-cols-[1fr_auto]'} p-2 gap-1 items-center text-sm">
