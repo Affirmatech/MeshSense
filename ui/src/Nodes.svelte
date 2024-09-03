@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import { currentTime, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
+  import { currentTime, myNodeMetadata, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { getCoordinates, hasAccess, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
@@ -40,15 +40,28 @@
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
-  <div class="flex items-center bg-black/20 rounded gap-2">
-    <h2 class="rounded">Name</h2>
-    <div class="grow">{selectedNode?.user?.longName}</div>
+  <div class="flex items-center gap-2 flex-wrap">
+    <div class="flex items-center bg-black/20 rounded gap-2 grow">
+      <h2 class="rounded">Name</h2>
+      <div class="grow">{selectedNode?.user?.longName}</div>
+    </div>
 
-    <h2 class="rounded">Node Num</h2>
-    <div class="grow">{String(selectedNode?.num)}</div>
+    <div class="flex items-center bg-black/20 rounded gap-2 grow">
+      <h2 class="rounded">Node Num</h2>
+      <div class="grow">{String(selectedNode?.num)}</div>
+    </div>
 
-    <h2 class="rounded">User ID</h2>
-    <div class="grow">{String(selectedNode?.user?.id)}</div>
+    <div class="flex items-center bg-black/20 rounded gap-2 grow">
+      <h2 class="rounded">User ID</h2>
+      <div class="grow">{String(selectedNode?.user?.id)}</div>
+    </div>
+
+    {#if selectedNode?.num == $myNodeNum}
+      <div class="flex items-center bg-black/20 rounded gap-2 grow">
+        <h2 class="rounded">Firmware</h2>
+        <div class="grow">{$myNodeMetadata?.firmwareVersion}</div>
+      </div>
+    {/if}
   </div>
   <pre class="mt-2 overflow-auto rounded p-2 h-full bg-black/20">{JSON.stringify(selectedNode, undefined, 2)}</pre>
 </Modal>

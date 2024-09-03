@@ -50,17 +50,5 @@
         <button type="button" class="btn w-full h-full" on:click={disconnect}>Cancel</button>
       {/if}
     {/if}
-    {#if $myNodeMetadata?.firmwareVersion}
-      <div class="grid gap-1 text-xs col-span-2 {$smallMode ? '' : 'grid-cols-2'}">
-        <div class="flex gap-2 items-center bg-black/30 rounded">
-          <h2 class="rounded">Node #</h2>
-          <div class="text-xs">{$myNodeNum}</div>
-        </div>
-        <div class="flex gap-2 items-center bg-black/30 rounded">
-          <h2 class="rounded">FW</h2>
-          <div class="text-xs">{$myNodeMetadata?.firmwareVersion}</div>
-        </div>
-      </div>
-    {/if}
   </form>
 </Card>
