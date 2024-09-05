@@ -29,9 +29,12 @@
   let layers: Record<string, Layer> = {}
 
   export let center = undefined
-  export let zoom = center ? 12 : 5
+  export let zoom = 12
 
-  if (!center) center = [-90.3242479, 39.5167587]
+  if (!center || (center[0] == 0 && center[1] == 0)) {
+    center = [-90.3242479, 39.5167587]
+    zoom = 4
+  }
 
   // $: if ($lastUpdate && map) {
   // 	plotPoints($lastUpdate.aid)
@@ -109,6 +112,7 @@
   export function plotLines(layerName: string, data: number[][][]) {
     if (layers[layerName]) map.removeLayer(layers[layerName])
 
+    // console.log('[OLM] plotLines', data)
     layers[layerName] = new VectorLayer({
       source: new Vector({
         features: data.map((points) => {
@@ -153,6 +157,7 @@
 
   onMount(() => {
     map = new Map({ target: mapElement })
+    // console.log('[OLM] Creating Map', { center, zoom })
     map.setView(
       new View({
         center,

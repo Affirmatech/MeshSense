@@ -23,7 +23,8 @@
       pointsWithCoords
         .filter((n) => n.trace || n.hopsAway == 0)
         .map((n) => {
-          return [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
+          let list = [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
+          return list.filter((coords) => !(coords[0] == 0 && coords[1] == 0))
         })
     )
 

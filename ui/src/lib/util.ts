@@ -49,6 +49,7 @@ export function scrollToBottom(element: HTMLElement, force?, notifyUnseen: (reco
 
 export function getCoordinates(node: NodeInfo | number) {
   if (typeof node == 'number') node = getNodeById(node)
+  if (!node?.position?.longitudeI) return [0, 0]
   return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
 }
 
