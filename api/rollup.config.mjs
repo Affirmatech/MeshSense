@@ -38,15 +38,15 @@ export default defineConfig({
   output: {
     // dir: 'dist',
     // sourcemap: true,
-    // file: 'dist/index.cjs',
-    // format: 'cjs',
-    file: 'dist/index.mjs',
-    format: 'es',
+    file: 'dist/index.cjs',
+    format: 'cjs',
+    // file: 'dist/index.mjs',
+    // format: 'es',
     plugins: [
-      terser({
-        keep_classnames: true,
-        mangle: false
-      })
+      // terser({
+      //   keep_classnames: true,
+      //   mangle: false
+      // })
     ]
   },
   external: externals,
@@ -63,11 +63,12 @@ export default defineConfig({
     }),
     commonjs({
       ignore: externals,
-      // ignoreDynamicRequires: true,   // Should be commented
+      ignoreDynamicRequires: true,   // Should be commented   // Uncommented for serialport
       transformMixedEsModules: true, // Not sure about this
-      // dynamicRequireTargets: [
-      //   'node_modules/better-sqlite3/build/Release/better_sqlite3.node'
-      // ]
+      dynamicRequireTargets: [
+        // 'node_modules/@serialport/bindings-cpp/prebuilds/win32-x64/node.napi.node'
+        // 'node_modules/better-sqlite3/build/Release/better_sqlite3.node'
+      ],
 
       // Possible fix?
       ignoreGlobal: true

@@ -8,6 +8,7 @@ import { State } from './state'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import { staticDirectory } from './paths'
 import getPort from 'get-port'
+import { IncomingMessage, Server, ServerResponse } from 'http'
 
 // async function createCertificate(options: pem.CertificateCreationOptions, originalKeys?: any): Promise<pem.CertificateCreationResult> {
 //   return new Promise((success, fail) => {
@@ -33,94 +34,99 @@ import getPort from 'get-port'
 //   })
 // }
 
-export let version = new State('version', '')
-export let updateChannel = new State('updateChannel', undefined, { persist: true })
-
-export let app: Express = express()
 // let originalKeys = store['keys']
 
 /** Create Self Signed Certificate */
 // let keys = await createCertificate({ days: 365 * 5, selfSigned: true }, originalKeys)
 // store['keys'] = keys
 
-/** Begin Listening for connections */
-
 // HTTPS
 // let httpsServer = https.createServer({ key: keys.serviceKey, cert: keys.certificate }, app)
 // export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
-
-// HTTP
-export let server = app.listen(Number(process.env.PORT) || (await getPort({ port: 5920 })))
-export let wss = new WebSocketHTTPServer(server, { path: '/ws' })
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error(promise)
 })
 
+export let version = new State('version', '')
+export let updateChannel = new State('updateChannel', undefined, { persist: true })
+
+export let app: Express = express()
 app.use(express.json({ limit: '500mb' }))
 
-State.subscribe(({ state, action, args }) => {
-  wss.send('state', { name: state.name, action, args }, { skip: state.flags.socket })
-})
+export let server: Server<typeof IncomingMessage, typeof ServerResponse>
+export let wss: WebSocketHTTPServer
 
-wss.msg.on('state', ({ name, action, args }, socket) => {
-  State.states[name].flags.socket = socket
-  State.states[name].call(action, args)
-  delete State.states[name].flags.socket
-})
+async function initSever() {
+  /** Begin Listening for connections */
+  server = app.listen(Number(process.env.PORT) || (await getPort({ port: 5920 })))
+  wss = new WebSocketHTTPServer(server, { path: '/ws' })
 
-wss.on('connection', (socket) => {
-  wss.send('initState', State.getStateData(), { to: socket })
-})
+  State.subscribe(({ state, action, args }) => {
+    wss.send('state', { name: state.name, action, args }, { skip: state.flags.socket })
+  })
 
-// Enable CORS (https://stackoverflow.com/a/18311469)
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  wss.msg.on('state', ({ name, action, args }, socket) => {
+    State.states[name].flags.socket = socket
+    State.states[name].call(action, args)
+    delete State.states[name].flags.socket
+  })
 
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+  wss.on('connection', (socket) => {
+    wss.send('initState', State.getStateData(), { to: socket })
+  })
 
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
+  // Enable CORS (https://stackoverflow.com/a/18311469)
+  app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*')
 
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', 1)
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
 
-  // Pass to next layer of middleware
-  next()
-})
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
 
-app.get('/state', (_, res) => res.json(State.getStateData()))
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', 1)
 
-// Electron Hook if present
-let parentPort = process['parentPort']
+    // Pass to next layer of middleware
+    next()
+  })
 
-parentPort?.on('message', (e) => {
-  console.log('[electron to api]', e)
-  if (e.data.event == 'version') version.set(e.data.body)
-  if (e.data.event == 'updateChannel') {
-    if (e.data.body) updateChannel.set(e.data.body)
-  }
-  wss?.send(e.data.event, e.data.body)
-})
+  app.get('/state', (_, res) => res.json(State.getStateData()))
 
-updateChannel.subscribe((v) => {
-  parentPort?.postMessage({ event: 'setUpdateChannel', body: v })
-})
+  // Electron Hook if present
+  let parentPort = process['parentPort']
 
-app.get('/installUpdate', (req, res) => {
-  parentPort?.postMessage({ event: 'installUpdate' })
-  res.sendStatus(200)
-})
+  parentPort?.on('message', (e) => {
+    console.log('[electron to api]', e)
+    if (e.data.event == 'version') version.set(e.data.body)
+    if (e.data.event == 'updateChannel') {
+      if (e.data.body) updateChannel.set(e.data.body)
+    }
+    wss?.send(e.data.event, e.data.body)
+  })
 
-app.get('/checkUpdate', (req, res) => {
-  parentPort?.postMessage({ event: 'checkUpdate' })
-  res.sendStatus(200)
-})
+  updateChannel.subscribe((v) => {
+    parentPort?.postMessage({ event: 'setUpdateChannel', body: v })
+  })
+
+  app.get('/installUpdate', (req, res) => {
+    parentPort?.postMessage({ event: 'installUpdate' })
+    res.sendStatus(200)
+  })
+
+  app.get('/checkUpdate', (req, res) => {
+    parentPort?.postMessage({ event: 'checkUpdate' })
+    res.sendStatus(200)
+  })
+
+}
 
 export async function createRoutes(callback: (app: Express) => void) {
+  await initSever()
   await callback(app)
   finalize()
 }

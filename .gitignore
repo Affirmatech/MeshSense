@@ -3,5 +3,7 @@ node_modules
 .store
 api/dist
 api/static
+api/prebuilds
 electron/resources/api
+electron/resources/prebuilds
 electron-builder.env

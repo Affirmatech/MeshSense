@@ -23,7 +23,6 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
-    "electron-updater": "^6.2.1",
     "env-paths": "^3.0.0",
     "key-file-storage": "^2.3.3"
   },
@@ -31,13 +30,14 @@
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@types/node": "^22.5.0",
-    "electron": "^32.0.1",
-    "electron-builder": "^24.13.3",
+    "@types/node": "^22.5.4",
+    "electron": "^32.0.2",
+    "electron-builder": "^25.0.5",
+    "electron-updater": "^6.3.4",
     "electron-vite": "^2.3.0",
-    "eslint": "^9.9.0",
+    "eslint": "^9.9.1",
     "prettier": "^3.3.3",
     "typescript": "^5.5.4",
-    "vite": "^5.4.2"
+    "vite": "^5.4.3"
   }
 }
