@@ -65,7 +65,7 @@ export async function beginScanning(targetId?: string) {
 }
 
 export function stopScanning() {
-  console.log('[bluetooth] Stop Scanning')
+  if (scanning) console.log('[bluetooth] Stop Scanning')
   exitScanning = true
   scanning = false
 }

@@ -4,11 +4,12 @@
   import { address, connectionStatus } from 'api/src/vars'
   import { smallMode } from './Nodes.svelte'
   import axios from 'axios'
+  import { hasAccess } from './lib/util'
 
   let bluetoothDeviceList = new State<{ id: string; name: string }[]>('bluetoothDeviceList', [])
 </script>
 
-{#if $connectionStatus == 'disconnected'}
+{#if $connectionStatus == 'disconnected' && $hasAccess}
   <Card title="BLE Devices" {...$$restProps}>
     <div class="text-sm p-2 flex flex-col gap-1">
       {#if $bluetoothDeviceList.length == 0}
