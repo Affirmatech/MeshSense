@@ -2,7 +2,8 @@
  * https://js.meshtastic.org/
  */
 
-import { HttpConnection, BleConnection } from '@meshtastic/js'
+// import { HttpConnection, BleConnection } from '@meshtastic/js'
+import { HttpConnection, BleConnection } from '../meshtastic'
 import { NodeInfo, address, channels, connectionStatus, enableTLS, lastFromRadio, messagePrefix, messageSuffix, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
