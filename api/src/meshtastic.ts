@@ -250,7 +250,7 @@ export async function connect(address?: string) {
         console.log('[meshtastic]', 'No recent data from device, assuming disconnected')
         disconnect(false)
       }
-    }, 30000)
+    }, 120000)
   }
 
   connection.events.onFromRadio.subscribe((e) => {
