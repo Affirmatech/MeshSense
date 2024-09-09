@@ -20,6 +20,7 @@
       {#each $bluetoothDeviceList as { id, name }}
         <button
           class="btn"
+          class:hidden={name.startsWith('Unknown or Unsupported Device')}
           on:click={() => {
             $address = id
             axios.post('/connect', { address: id })
