@@ -29,7 +29,8 @@ function copy(obj: any) {
 
 function validateMACAddress(macAddress: string): boolean {
   const pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
-  return pattern.test(macAddress)
+  const macPattern = /^([^/W]*-){4}[^/W]{12}$/
+  return pattern.test(macAddress) || pattern.test(macAddress)
 }
 
 function disableReconnect() {
