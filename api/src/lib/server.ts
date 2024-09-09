@@ -45,7 +45,7 @@ import { IncomingMessage, Server, ServerResponse } from 'http'
 // export let server = httpsServer.listen(Number(process.env.PORT) || 5920)
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error(promise)
+  console.error(String(reason))
 })
 
 export let version = new State('version', '')
@@ -122,7 +122,6 @@ async function initSever() {
     parentPort?.postMessage({ event: 'checkUpdate' })
     res.sendStatus(200)
   })
-
 }
 
 export async function createRoutes(callback: (app: Express) => void) {
