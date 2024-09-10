@@ -30,7 +30,7 @@ function copy(obj: any) {
 function validateMACAddress(macAddress: string): boolean {
   const pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
   const macPattern = /^([^/W]*-){4}[^/W]{12}$/
-  return pattern.test(macAddress) || pattern.test(macAddress)
+  return pattern.test(macAddress) || macPattern.test(macAddress)
 }
 
 function disableReconnect() {
@@ -86,10 +86,10 @@ export async function connect(address?: string) {
     while (!bluetoothDevices[address] && connectionStatus.value == 'searching') {
       await new Promise((resolve) => setTimeout(resolve, 100))
     }
+    stopScanning()
 
     /** If device never showed up, bail */
     if (!bluetoothDevices[address]) return
-    stopScanning()
   } else {
     /** HTTP Endpoint */
     connection = new HttpConnection()
@@ -292,7 +292,7 @@ export async function connect(address?: string) {
   })
 
   // Attempt to connect to the specified MeshTastic Node
-  console.log('[meshtastic] Connecting to Node', address)
+  console.log('[meshtastic] Connecting to Node', address, connection instanceof BleConnection ? 'via Bluetooth' : 'via IP')
   if (connection instanceof BleConnection) {
     // console.log(bluetoothDevices[address])
     await connection.connect({ device: bluetoothDevices[address] })
