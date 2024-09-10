@@ -47,6 +47,10 @@
         <div class="max-w-md mt-5 flex flex-col gap-4">
           <div>Available bluetooth devices will appear on the left</div>
           <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect</div>
+          <div>
+            For additional information, take a look at our <a target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a> and
+            <a target="_blank" href="https://affirmatech.com/meshsense/bluetooth">Bluetooth Tips</a>
+          </div>
         </div>
         <div class="font-normal absolute m-2 top-0 right-0 flex gap-2 items-center">
           <div class="text-xs text-white/50 pr-2 font-bold">MeshSense {$version}</div>
