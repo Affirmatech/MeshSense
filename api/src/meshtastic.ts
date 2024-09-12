@@ -86,10 +86,10 @@ export async function connect(address?: string) {
     while (!bluetoothDevices[address] && connectionStatus.value == 'searching') {
       await new Promise((resolve) => setTimeout(resolve, 100))
     }
-    stopScanning()
 
     /** If device never showed up, bail */
     if (!bluetoothDevices[address]) return
+    stopScanning()
   } else {
     /** HTTP Endpoint */
     connection = new HttpConnection()
