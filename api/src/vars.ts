@@ -20,6 +20,10 @@ export let messageSuffix = new State<string>('messageSuffix', undefined, { persi
 export let allowRemoteMessaging = new State<boolean>('allowRemoteMessaging', false, { persist: true })
 export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', true, { persist: true })
 export let enableTLS = new State<boolean>('enableTLS', false, { persist: true })
+export let automaticTraceroutes = new State<boolean>('automaticTraceroutes', true, { persist: true })
+
+/** Measured in minutes */
+export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 15, { persist: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string

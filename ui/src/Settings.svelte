@@ -9,7 +9,7 @@
 </script>
 
 <script>
-  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup } from 'api/src/vars'
+  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup, automaticTraceroutes, tracerouteRateLimit } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
@@ -36,6 +36,16 @@
     <label>
       <div class="font-bold">Message Suffix</div>
       <input class="input" type="text" bind:value={$messageSuffix} />
+    </label>
+
+    <label>
+      <div class="font-bold">Traceroute Rate Limit (Minutes per Node)</div>
+      <input class="input" type="number" bind:value={$tracerouteRateLimit} />
+    </label>
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$automaticTraceroutes} />
+      <div class="font-bold">Automatically send Traceroutes to active nodes when missing or when hops change</div>
     </label>
 
     <label class="flex gap-2">

@@ -4,13 +4,38 @@
 
 // import { HttpConnection, BleConnection } from '@meshtastic/js'
 import { HttpConnection, BleConnection } from '../meshtastic'
-import { NodeInfo, address, channels, connectionStatus, enableTLS, lastFromRadio, messagePrefix, messageSuffix, myNodeMetadata, myNodeNum, nodes, packetLimit, packets } from './vars'
+import {
+  NodeInfo,
+  address,
+  channels,
+  connectionStatus,
+  enableTLS,
+  lastFromRadio,
+  messagePrefix,
+  messageSuffix,
+  myNodeMetadata,
+  myNodeNum,
+  nodes,
+  packetLimit,
+  packets,
+  tracerouteRateLimit
+} from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 
 let connection: HttpConnection | BleConnection
 let connectionIntended = false
 // address.subscribe(connect)
+
+/** Tracks when nodes were last requested a traceroute: `traceRouteLog[nodeNum]` */
+let traceRouteLog: Record<number, number> = {}
+
+/** Returns `true` if the node has not recently had a traceroute sent to it based on `tracerouteRateLimit` */
+function isTracerouteAvailable(nodeNum: number) {
+  if (!traceRouteLog[nodeNum]) return true
+  if (Date.now() - traceRouteLog[nodeNum] > tracerouteRateLimit.value * 60000) return true
+  return false
+}
 
 packets.subscribe(() => {
   let limit = isNaN(packetLimit.value) ? 500 : packetLimit.value
@@ -152,7 +177,7 @@ export async function connect(address?: string) {
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
       if (updates.hopsAway == 0) updates.trace = null
       if (updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
-        traceRoute(updates.num)
+        if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
 
       nodes.upsert(updates)
@@ -310,6 +335,7 @@ export async function send({ message = '', destination, channel }) {
 }
 
 export async function traceRoute(destination: number) {
+  traceRouteLog[destination] = Date.now()
   console.log('[Meshtastic] Requesting Traceroute for', destination)
   packets.push({
     from: myNodeNum.value,
