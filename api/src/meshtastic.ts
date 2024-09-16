@@ -7,6 +7,7 @@ import { HttpConnection, BleConnection } from '../meshtastic'
 import {
   NodeInfo,
   address,
+  automaticTraceroutes,
   channels,
   connectionStatus,
   enableTLS,
@@ -33,7 +34,9 @@ let traceRouteLog: Record<number, number> = {}
 /** Returns `true` if the node has not recently had a traceroute sent to it based on `tracerouteRateLimit` */
 function isTracerouteAvailable(nodeNum: number) {
   if (!traceRouteLog[nodeNum]) return true
-  if (Date.now() - traceRouteLog[nodeNum] > tracerouteRateLimit.value * 60000) return true
+  let lastTracerouteRelativeTime = Date.now() - traceRouteLog[nodeNum]
+  if (lastTracerouteRelativeTime > tracerouteRateLimit.value * 60000) return true
+  console.log(`[meshtastic] Traceroute to ${nodeNum} already sent ${(lastTracerouteRelativeTime / 60000).toFixed(1)} minutes ago`)
   return false
 }
 
@@ -176,7 +179,7 @@ export async function connect(address?: string) {
 
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
       if (updates.hopsAway == 0) updates.trace = null
-      if (updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
+      if (automaticTraceroutes.value && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
         if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
 
