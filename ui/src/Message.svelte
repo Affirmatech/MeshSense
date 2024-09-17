@@ -4,12 +4,14 @@
 </script>
 
 <script lang="ts">
-  import { channels } from 'api/src/vars'
+  import { channels, messagePrefix, messageSuffix } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { filteredNodes, smallMode } from './Nodes.svelte'
   import axios from 'axios'
 
   let inputElement: HTMLInputElement
+
+  $: maxLength = 230 - $messagePrefix?.length - $messageSuffix?.length
 
   let message = ''
 
@@ -58,7 +60,7 @@
 
   <form on:submit|preventDefault={send} class="p-2 flex flex-col gap-1 text-sm">
     <div class="flex gap-1" class:flex-col={$smallMode}>
-      <input bind:this={inputElement} class="input w-full" size="3" type="text" bind:value={message} />
+      <input maxlength={maxLength} bind:this={inputElement} class="input w-full" size="3" type="text" bind:value={message} />
       <button class="btn">Send</button>
     </div>
   </form>
