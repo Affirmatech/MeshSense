@@ -45,7 +45,7 @@
 
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$automaticTraceroutes} />
-      <div class="font-bold">Automatically send Traceroutes to active nodes when missing or when hops change</div>
+      <div class="font-bold">Automatically send Traceroute requests to active nodes when missing or when hops change</div>
     </label>
 
     <label class="flex gap-2">
@@ -70,6 +70,8 @@
       />
       <div class="font-bold">MeshSense Beta Updates</div>
     </label>
+
+    <button class="btn !mr-auto" on:click={() => axios.get('/checkUpdate')}>Check for updates</button>
 
     <hr class="opacity-25" />
   {/if}
