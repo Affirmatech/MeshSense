@@ -1,6 +1,8 @@
 node_modules
 .env
+.prettierrc.yaml
 .store
+.vscode
 api/dist
 api/static
 api/prebuilds
