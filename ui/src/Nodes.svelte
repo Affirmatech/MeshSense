@@ -102,7 +102,7 @@
               </div>
             {:else}
               <!-- Hops -->
-              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway ?? '?'}</div>
+              <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
             {/if}
           </div>
         {:else}
@@ -159,12 +159,14 @@
             </div>
 
             <!-- Hops -->
-            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : node.hopsAway ?? '?'}</div>
+            <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
 
             <button on:click={() => (selectedNode = node)}>🔍</button>
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->
 
-            <button title="Traceroute" on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button>
+            {#if node.num != $myNodeNum}
+              <button title="Traceroute" on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button>
+            {/if}
 
             <!-- {#if node.user?.hwModel}
               <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
