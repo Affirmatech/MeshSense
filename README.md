@@ -1,8 +1,6 @@
 
 # MeshSense
 
----
-
 **MeshSense** is a simple, [open-source](https://github.com/Affirmatech/MeshSense) application that monitors, maps and graphically displays all the vital stats of your area's Meshtastic network including connected nodes, signal reports, trace routes and more!
 
 ![](https://affirmatech.com/meshsense.png)
