@@ -179,7 +179,7 @@ export async function connect(address?: string) {
 
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
       if (updates.hopsAway == 0) updates.trace = null
-      if (automaticTraceroutes.value && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
+      else if (automaticTraceroutes.value && originalNodeRecord.position?.latitudeI && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
         if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
 
