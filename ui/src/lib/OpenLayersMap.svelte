@@ -136,7 +136,8 @@
 
   export function flyTo(long, lat) {
     map.getView().animate({
-      center: [long, lat]
+      center: [long, lat],
+      zoom: 15
     })
   }
 

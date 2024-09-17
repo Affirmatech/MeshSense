@@ -172,17 +172,26 @@
               <button class="h-7 w-5 fill-blue-500" title={node.user?.hwModel}><Microchip /></button>
             {/if} -->
 
-            <button
-              class="h-7 w-5"
-              title="Request Position"
-              on:click={(e) => {
-                axios.post('/requestPosition', { destination: node.num })
-                if (!e.ctrlKey && node.position?.latitudeI) {
+            {#if node.position?.latitudeI}
+              <button
+                class="h-7 w-5"
+                title="Fly To"
+                on:click={(e) => {
                   let [long, lat] = getCoordinates(node)
                   ol.flyTo(long, lat)
-                }
-              }}>{node.position?.latitudeI ? '🌐' : '📡'}</button
-            >
+                }}
+                >🌐
+              </button>
+            {:else}
+              <button
+                class="h-7 w-5"
+                title="Request Position"
+                on:click={(e) => {
+                  axios.post('/requestPosition', { destination: node.num })
+                }}
+                >📡
+              </button>
+            {/if}
           </div>
         {/if}
       </div>
