@@ -130,6 +130,12 @@
                 {node.rssi || '-'}
               </div>
             {/if}
+            <!-- Channel Utilization % -->
+            {#if node.deviceMetrics?.channelUtilization}
+              <div class="text-sm w-10 shrink-0 text-center bg-black/20 rounded h-5">
+                {(node.deviceMetrics?.channelUtilization).toFixed(0)}%ch
+              </div>
+            {/if}
           </div>
 
           <div class="flex gap-1.5 items-center">
