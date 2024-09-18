@@ -259,6 +259,7 @@ export async function connect(address?: string) {
         'onTraceRoutePacket',
         'onRoutingPacket',
         'onNeighborInfoPacket',
+        'onSimulatorPacket',
         'onStoreForwardPacket' // Not parsed
       ].includes(event)
     ) {
@@ -317,6 +318,11 @@ export async function connect(address?: string) {
         nodes.upsert({ num: neighbor.nodeId, snr: neighbor.snr, lastHeard: Date.now() / 1000 })
       }
     }
+  })
+
+  /** SIMULATOR_APP */
+  connection.events.onSimulatorPacket.subscribe((e) => {
+    packets.upsert({ id: e.id, message: copy(e) })
   })
 
   // Attempt to connect to the specified MeshTastic Node
