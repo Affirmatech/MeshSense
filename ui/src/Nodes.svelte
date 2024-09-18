@@ -22,7 +22,7 @@
   $: if ($nodes.length) showInactive, filterNodes()
 
   function filterNodes() {
-    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= 3.6e6)
+    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= $nodeInactiveTimer * 60 * 1000)
 
     $filteredNodes = $nodes
       .filter((node) => showInactive || !$inactiveNodes.some((inactive) => node.num == inactive.num))
