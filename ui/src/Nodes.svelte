@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import { currentTime, myNodeMetadata, myNodeNum, nodes, type NodeInfo } from 'api/src/vars'
+  import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { getCoordinates, hasAccess, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
@@ -19,10 +19,10 @@
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: if ($nodes.length) showInactive, filterNodes()
+  $: if ($nodes.length) showInactive, $nodeInactiveTimer, filterNodes()
 
   function filterNodes() {
-    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= $nodeInactiveTimer * 60 * 1000)
+    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
 
     $filteredNodes = $nodes
       .filter((node) => showInactive || !$inactiveNodes.some((inactive) => node.num == inactive.num))

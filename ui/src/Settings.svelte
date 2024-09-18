@@ -9,7 +9,19 @@
 </script>
 
 <script>
-  import { accessKey, apiHostname, apiPort, packetLimit, messagePrefix, messageSuffix, allowRemoteMessaging, autoConnectOnStartup, automaticTraceroutes, tracerouteRateLimit } from 'api/src/vars'
+  import {
+    accessKey,
+    apiHostname,
+    apiPort,
+    packetLimit,
+    messagePrefix,
+    messageSuffix,
+    allowRemoteMessaging,
+    autoConnectOnStartup,
+    automaticTraceroutes,
+    tracerouteRateLimit,
+    nodeInactiveTimer
+  } from 'api/src/vars'
   import { hasAccess, userKey } from './lib/util'
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
@@ -23,29 +35,38 @@
     <div class="font-bold">Enable Audio Alerts</div>
   </label>
   {#if $hasAccess}
-    <label>
-      <div class="font-bold">Log Size Limit</div>
-      <input class="input" type="text" bind:value={$packetLimit} />
-    </label>
+    <div class="flex flex-wrap gap-3">
+      <label>
+        <div class="font-bold">Log Size Limit</div>
+        <input class="input w-28" type="text" bind:value={$packetLimit} />
+      </label>
 
-    <label>
-      <div class="font-bold">Message Prefix</div>
-      <input class="input" type="text" bind:value={$messagePrefix} />
-    </label>
+      <label>
+        <div class="font-bold">Message Prefix</div>
+        <input class="input w-36" type="text" bind:value={$messagePrefix} />
+      </label>
 
-    <label>
-      <div class="font-bold">Message Suffix</div>
-      <input class="input" type="text" bind:value={$messageSuffix} />
-    </label>
+      <label>
+        <div class="font-bold">Message Suffix</div>
+        <input class="input w-36" type="text" bind:value={$messageSuffix} />
+      </label>
+    </div>
 
-    <label>
-      <div class="font-bold">Traceroute Rate Limit (Minutes per Node)</div>
-      <input class="input" type="number" bind:value={$tracerouteRateLimit} />
-    </label>
+    <hr class="opacity-25" />
 
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$automaticTraceroutes} />
       <div class="font-bold">Automatically send Traceroute requests to active nodes when missing or when hops change</div>
+    </label>
+
+    <label>
+      <div class="font-bold">Traceroute Rate Limit (Minutes per Node)</div>
+      <input class="input w-28" type="number" bind:value={$tracerouteRateLimit} />
+    </label>
+
+    <label>
+      <div class="font-bold">Minutes of inactivity to mark node inactive</div>
+      <input class="input w-28" type="number" bind:value={$nodeInactiveTimer} />
     </label>
 
     <label class="flex gap-2">
@@ -69,9 +90,8 @@
         }}
       />
       <div class="font-bold">MeshSense Beta Updates</div>
+      <button class="btn !mr-auto" on:click={() => axios.get('/checkUpdate')}>Check for updates</button>
     </label>
-
-    <button class="btn !mr-auto" on:click={() => axios.get('/checkUpdate')}>Check for updates</button>
 
     <hr class="opacity-25" />
   {/if}
