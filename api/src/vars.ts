@@ -24,6 +24,7 @@ export let automaticTraceroutes = new State<boolean>('automaticTraceroutes', tru
 
 /** Measured in minutes */
 export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 15, { persist: true })
+export let nodeInactiveTimer = new State<number>('nodeInactiveTimer', 60, { persist: true })
 
 export type DeviceMetadata = {
   firmwareVersion: string
