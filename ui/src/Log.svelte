@@ -133,13 +133,13 @@
           {/if}
         </div>
       {/if}
-      {#if packet.message}
+      {#if packet.message?.show}
         <div class="bg-blue-500/20 rounded px-1 ring-1 my-0.5 text-sm w-fit">
           {#if packet.to == broadcastId}
             <button on:click={() => ($messageDestination = packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
           {/if}
           <button class="font-bold" on:click={() => ($messageDestination = packet.from)}>{getNodeName(packet.from)}:</button>
-          {packet.message.data}
+          {packet.message.readable ?? packet.message.data}
         </div>
       {/if}
       <!-- <div>{JSON.stringify(packet)}</div> -->

@@ -213,7 +213,9 @@ export async function connect(address?: string) {
 
   /** TEXT_MESSAGE_APP */
   connection.events.onMessagePacket.subscribe((e) => {
-    packets.upsert({ id: e.id, message: copy(e) })
+    let message = copy(e)
+    message.show = true
+    packets.upsert({ id: message.id, message })
   })
 
   /** TELEMETRY_APP */
@@ -322,7 +324,13 @@ export async function connect(address?: string) {
 
   /** SIMULATOR_APP */
   connection.events.onSimulatorPacket.subscribe((e) => {
-    packets.upsert({ id: e.id, message: copy(e) })
+    let message = copy(e)
+    message.decoded = String.fromCharCode.apply(null, Object.values(message.data))
+    if (message.decoded.includes('\x01')) {
+      message.show = true
+      message.readable = message.decoded.replace(/[^\x20-\x7E]/g, '')
+    }
+    packets.upsert({ id: message.id, message })
   })
 
   // Attempt to connect to the specified MeshTastic Node

@@ -47,6 +47,9 @@ export type Message = {
   to: number
   channel: number
   data: string
+  show?: boolean
+  decoded?: string
+  readable?: string
 }
 
 export type User = {
