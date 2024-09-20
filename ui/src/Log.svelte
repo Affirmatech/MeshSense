@@ -67,7 +67,7 @@
 <Card title="Log" {...$$restProps} class="min-h-36">
   <h2 slot="title" class="flex gap-2 font-bold rounded-t px-2">
     <div class="w-28">Date</div>
-    <div class="w-40 whitespace-nowrap overflow-hidden">Nodes</div>
+    <div class="w-44 whitespace-nowrap overflow-hidden">Nodes</div>
     <div class="w-7">Ch</div>
     <div class="w-10">SNR</div>
     <div class="w-10">RSSI</div>
@@ -82,7 +82,7 @@
           <div class="w-28">{packet.rxTime ? new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' }) : ''}</div>
 
           <!-- Nodes -->
-          <div class="w-40 flex gap-1 overflow-hidden">
+          <div class="w-44 flex gap-1 overflow-hidden">
             <div class="">
               <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" />
               {getNodeNameById(packet.from)}

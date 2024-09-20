@@ -66,7 +66,7 @@ packets.on('upsert', (e) => {
 export function getNodeNameById(id: number) {
   if (id == broadcastId) return 'all'
   let node = nodes.value.find((node) => node.num == id)
-  return getNodeName(node)
+  return node ? getNodeName(node) : `!${id.toString(16)}`
 }
 
 export function getNodeName(node: NodeInfo) {
