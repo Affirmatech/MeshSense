@@ -326,7 +326,7 @@ export async function connect(address?: string) {
   connection.events.onSimulatorPacket.subscribe((e) => {
     let message = copy(e)
     message.decoded = String.fromCharCode.apply(null, Object.values(message.data))
-    if (message.decoded.includes('\x01')) {
+    if (message.decoded.includes('\x01\x12')) {
       message.show = true
       message.readable = message.decoded.replace(/[^\x20-\x7E]/g, '')
     }
