@@ -60,5 +60,5 @@ function getNodeById(num: number) {
 export let audioNewMessage = new Audio(`${import.meta.env.VITE_PATH || ''}/audioNewMessage.mp3`)
 
 packets.on('upsert', (e) => {
-  if (get(enableAudioAlerts) && e[0].message) audioNewMessage.play()
+  if (get(enableAudioAlerts) && e[0].message?.show) audioNewMessage.play()
 })
