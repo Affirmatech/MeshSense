@@ -1,4 +1,4 @@
-import { accessKey, apiHostname, lastFromRadio, nodes, packets, type NodeInfo } from 'api/src/vars'
+import { accessKey, apiHostname, broadcastId, lastFromRadio, nodes, packets, type NodeInfo } from 'api/src/vars'
 import { tick } from 'svelte'
 import { derived, get, writable } from 'svelte/store'
 import { enableAudioAlerts } from '../Settings.svelte'
@@ -62,3 +62,13 @@ export let audioNewMessage = new Audio(`${import.meta.env.VITE_PATH || ''}/audio
 packets.on('upsert', (e) => {
   if (get(enableAudioAlerts) && e[0].message?.show) audioNewMessage.play()
 })
+
+export function getNodeNameById(id: number) {
+  if (id == broadcastId) return 'all'
+  let node = nodes.value.find((node) => node.num == id)
+  return getNodeName(node)
+}
+
+export function getNodeName(node: NodeInfo) {
+  return node?.user?.shortName || node?.user?.id || '!' + node?.num?.toString(16)
+}

@@ -8,19 +8,19 @@
   import { filteredNodes } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
-  import { getCoordinates } from './lib/util'
+  import { getCoordinates, getNodeName } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
 
   export let ol: OpenLayersMap = undefined
 
-  $: pointsWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0))
+  $: nodesWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0))
 
   $: if (ol) {
     let myNodeCoords = getCoordinates($myNodeNum)
 
     ol.plotLines(
       'routes',
-      pointsWithCoords
+      nodesWithCoords
         .filter((n) => n.trace || n.hopsAway == 0)
         .map((n) => {
           let list = [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
@@ -30,13 +30,13 @@
 
     ol.plotPoints(
       'nodes',
-      pointsWithCoords.map((n) => {
+      nodesWithCoords.map((n) => {
         let [lon, lat] = getCoordinates(n)
         return {
           lat,
           lon,
           icon: `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}`,
-          description: n?.user?.shortName || String(n.num)
+          description: getNodeName(n)
         }
       })
     )

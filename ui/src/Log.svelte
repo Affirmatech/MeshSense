@@ -1,20 +1,14 @@
 <script lang="ts">
   import { broadcastId, channels, myNodeNum, nodes, packets, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { scrollToBottom } from './lib/util'
+  import { getNodeNameById, scrollToBottom } from './lib/util'
   import Modal from './lib/Modal.svelte'
   import { messageDestination } from './Message.svelte'
   import { tick } from 'svelte'
 
-  function getNodeName(id: number) {
-    if (id == broadcastId) return 'all'
-    let node = nodes.value.find((node) => node.num == id)
-    return node?.user?.shortName || node?.user?.id || String(id)
-  }
-
   function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
     if (filterText) {
-      if (!(getNodeName(packet.from).toLowerCase().includes(filterText.toLowerCase()) || getNodeName(packet.to).toLowerCase().includes(filterText.toLowerCase()))) return false
+      if (!(getNodeNameById(packet.from).toLowerCase().includes(filterText.toLowerCase()) || getNodeNameById(packet.to).toLowerCase().includes(filterText.toLowerCase()))) return false
     }
     if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
     if (!includeTx && packet.decoded?.portnum == 'ROUTING_APP') return false
@@ -89,10 +83,13 @@
 
           <!-- Nodes -->
           <div class="w-40 flex gap-1 overflow-hidden">
-            <div class=""><img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" /> {getNodeName(packet.from)}</div>
+            <div class="">
+              <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" />
+              {getNodeNameById(packet.from)}
+            </div>
             {#if packet.to != 4294967295}
               <div>to</div>
-              <div class="">{getNodeName(packet.to)}</div>
+              <div class="">{getNodeNameById(packet.to)}</div>
             {/if}
           </div>
           <div class="w-7">{packet.channel}</div>
@@ -124,11 +121,11 @@
             </div>
           {:else if packet.trace}
             <div class="bg-purple-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
-              {[packet.to, ...packet?.trace?.route, packet.from].map((id) => getNodeName(id)).join(' -> ')}
+              {[packet.to, ...packet?.trace?.route, packet.from].map((id) => getNodeNameById(id)).join(' -> ')}
             </div>
           {:else if packet.neighbors?.length}
             <div class="bg-fuchsia-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
-              {packet.neighbors.map(({ nodeId }) => getNodeName(nodeId)).join(', ')}
+              {packet.neighbors.map(({ nodeId }) => getNodeNameById(nodeId)).join(', ')}
             </div>
           {/if}
         </div>
@@ -138,7 +135,7 @@
           {#if packet.to == broadcastId}
             <button on:click={() => ($messageDestination = packet.channel)} class="font-bold text-white">{channels.value[packet.channel]?.settings?.name || 'Primary'}</button>
           {/if}
-          <button class="font-bold" on:click={() => ($messageDestination = packet.from)}>{getNodeName(packet.from)}:</button>
+          <button class="font-bold" on:click={() => ($messageDestination = packet.from)}>{getNodeNameById(packet.from)}:</button>
           {packet.message.readable ?? packet.message.data}
         </div>
       {/if}

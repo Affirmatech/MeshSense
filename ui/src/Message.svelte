@@ -8,6 +8,7 @@
   import Card from './lib/Card.svelte'
   import { filteredNodes, smallMode } from './Nodes.svelte'
   import axios from 'axios'
+  import { getNodeName } from './lib/util'
 
   let inputElement: HTMLInputElement
 
@@ -51,9 +52,9 @@
 
       <option disabled>== Nodes ==</option>
       {#each [...$filteredNodes].sort((a, b) => {
-        return (a.user?.shortName || String(a.num)).localeCompare(b.user?.shortName || String(b.num))
+        return getNodeName(a).localeCompare(getNodeName(b))
       }) as node}
-        <option value={node.num}>{node.user?.shortName || node.num}</option>
+        <option value={node.num}>{getNodeName(node)}</option>
       {/each}
     </select>
   </h2>
