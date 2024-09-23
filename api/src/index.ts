@@ -6,13 +6,18 @@ import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } f
 import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
+import { createWriteStream } from 'fs'
+import { dataDirectory } from './lib/paths'
+import { join } from 'path'
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 let consoleLog = []
 let logSize = 1000
 
+let lastLogStream = createWriteStream(join(dataDirectory, 'lastLog.txt'))
 intercept(
   (text) => {
+    lastLogStream.write(text)
     consoleLog.push(text)
     while (consoleLog.length >= logSize) consoleLog.shift()
   },
@@ -24,7 +29,6 @@ intercept(
 )
 
 createRoutes((app) => {
-
   app.post('/send', (req, res) => {
     let message = req.body.message
     let destination = req.body.destination
@@ -68,10 +72,8 @@ createRoutes((app) => {
     return res.json(consoleLog)
   })
 
-  
   apiHostname.set(hostname())
   apiPort.set((server.address() as any)?.port)
-  
+
   if (autoConnectOnStartup.value && address.value) connect(address.value)
 })
-
