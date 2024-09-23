@@ -132,8 +132,13 @@
             {/if}
             <!-- Channel Utilization % -->
             {#if node.deviceMetrics?.channelUtilization}
-              <div class="text-sm w-10 shrink-0 text-center bg-black/20 rounded h-5">
-                {(node.deviceMetrics?.channelUtilization).toFixed(0)}%ch
+              {let $thisNodeChUasINT    = Math.floor(node.deviceMetrics?.channelUtilization);
+               let $thisNodeChUcolorbar = ($thisNodeChUasINT < 15 ? 'green' : $thisNodeChUasINT < 25 ? 'yellow' : 'red')}
+              <div title="{$thisNodeChUasINT}% Channel Utilization"
+                class="absolute w-1.5 rounded bottom-1 top-1 right-0.5 overflow-hidden border border-white/20 flex flex-col"
+              >
+                <div class="grow"></div>
+                <div class="bg-green-500" style="height: {$thisNodeChUasINT}%;"></div>
               </div>
             {/if}
           </div>
