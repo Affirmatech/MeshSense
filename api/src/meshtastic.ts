@@ -344,11 +344,11 @@ export async function connect(address?: string) {
   }
 }
 
-export async function send({ message = '', destination, channel }) {
+export async function send({ message = '', destination, channel, wantAck = true }) {
   if (connectionStatus.value != 'connected' || !message) return
   message = `${messagePrefix.value || ''} ${message} ${messageSuffix.value || ''}`.trim()
-  console.log('Sending', { message, destination, channel })
-  return connection.sendText(message, destination, false, channel)
+  console.log('Sending', { message, destination, channel, wantAck })
+  return connection.sendText(message, destination, wantAck, channel)
 }
 
 export async function traceRoute(destination: number) {

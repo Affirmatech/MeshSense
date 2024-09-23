@@ -18,7 +18,7 @@ export let apiPort = new State<string>('apiPort', undefined, { hideLog: true })
 export let messagePrefix = new State<string>('messagePrefix', undefined, { persist: true })
 export let messageSuffix = new State<string>('messageSuffix', undefined, { persist: true })
 export let allowRemoteMessaging = new State<boolean>('allowRemoteMessaging', false, { persist: true })
-export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', false, { persist: true })
+export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', true, { persist: true })
 export let enableTLS = new State<boolean>('enableTLS', false, { persist: true })
 export let automaticTraceroutes = new State<boolean>('automaticTraceroutes', true, { persist: true })
 
