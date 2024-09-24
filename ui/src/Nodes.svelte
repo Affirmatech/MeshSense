@@ -14,6 +14,7 @@
   import { writable } from 'svelte/store'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { messageDestination } from './Message.svelte'
+  import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
   export let showInactive = false
   let selectedNode: NodeInfo
@@ -81,7 +82,7 @@
     {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
-        class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {node.num == $myNodeNum ? 'bg-gradient-to-r ' : ''}  {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}"
+        class="relative bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {node.num == $myNodeNum ? 'bg-gradient-to-r ' : ''}  {Date.now() - node.lastHeard * 1000 < 3.6e6 ? '' : 'grayscale'}"
       >
         {#if $smallMode}
           <div title={node.user?.longName} class="flex items-center gap-1">
@@ -131,36 +132,7 @@
               </div>
             {/if}
             <!-- Channel Utilization % -->
-            {#if node?.deviceMetrics?.channelUtilization}
-              {#let channelUtilizationINT = Math.floor(node.deviceMetrics.channelUtilization)}
-                {#let scaledHeight = Math.min(channelUtilizationINT * 2, 100)}
-                {#let colorClass = 
-                  channelUtilizationINT < 15 ? 'green' : 
-                  channelUtilizationINT < 25 ? 'yellow' : 
-                  channelUtilizationINT < 35 ? 'orange' : 
-                  'red'
-                }
-                  <div 
-                    title="{channelUtilizationINT}% Observed Channel Utilization"
-                    class="absolute w-1.5 rounded bottom-1 top-1 right-0.5 overflow-hidden border border-white/20 flex flex-col"
-                    aria-label="Observed Channel Utilization: {channelUtilizationINT}%"
-                    aria-valuemin="0"
-                    aria-valuemax="50"
-                    aria-valuenow={channelUtilizationINT}
-                  >
-                    <div class="grow"></div>
-                    <div 
-                      class:bg-green-500={colorClass === 'green'}
-                      class:bg-yellow-500={colorClass === 'yellow'}
-                      class:bg-orange-500={colorClass === 'orange'}
-                      class:bg-red-500={colorClass === 'red'}
-                      style="height: {scaledHeight}%;"
-                    ></div>
-                  </div>
-                {/let}
-                {/let}
-              {/let}
-            {/if}
+            <ChannelUtilization {node} />
           </div>
 
           <div class="flex gap-1.5 items-center">
