@@ -153,7 +153,7 @@
             <!-- Battery -->
             <div class="text-sm font-normal bg-black/20 rounded p-1 min-w-11 h-7 text-center">
               {#if node.deviceMetrics?.batteryLevel === 101 // device using external power}
-                🔌
+                ⚡︎
               {:else}
                 {node.deviceMetrics?.batteryLevel || 0}%
               {/if}
