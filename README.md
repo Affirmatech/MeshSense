@@ -29,11 +29,11 @@ PORT=5921 npm run dev
 Leave the UI running and then also start the API service.  The `DEV_UI_URL` will tell the API to forward any unhandled route requests to the UI service and should use the same port as above.
 ```sh
 cd api
-DEV_UI_URL=http://localhost:5921
+export DEV_UI_URL=http://localhost:5921
 PORT=5920 npm run dev
 ```
 
-The `PORT` variables in the above are optional and will default to the values in the example, but ensure `DEV_UI_URL` is present with the correct port if changed.
+The `PORT` variables in the above are optional and will default to the values in the example, but ensure `DEV_UI_URL` is present with the correct port if changed.  These values may also be read from `.env` files `api/.env` and `ui/.env` respectively.
 
 The front-end should now be accessible by connecting to the **API** service in a browser.  Be careful not to connect to the UI service by accident.  http://localhost:5920/
 
