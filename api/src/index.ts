@@ -11,6 +11,10 @@ import { dataDirectory } from './lib/paths'
 import { join } from 'path'
 setInterval(() => currentTime.set(Date.now()), 15000)
 
+process.on('uncaughtException', (err, origin) => {
+  console.error('[system] Uncaught Exception', err)
+})
+
 let consoleLog = []
 let logSize = 1000
 

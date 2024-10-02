@@ -15,28 +15,32 @@ const bluetooth = new Bluetooth({ scanTime: 10 })
 export async function scanForDevice() {
   if (exitScanning) return
 
-  // console.log('scanning...')
+  console.log('[bluetooth] scanning...')
 
-  let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.warn(e))
-  // let device = await bluetooth.requestDevice({ filters: [{ services: [Constants.ServiceUuid] }] }).catch((e) => console.error(e))
-  // let device = await bluetooth.requestDevice({ filters: [{ serviceData: [] }] }).catch((e) => console.error(e))
-  // let device = await bluetooth
-  //   .requestDevice({
-  //     filters: [{ services: ['00001801-0000-1000-8000-00805f9b34fb'] }, { services: ['6ba1b218-15a8-461f-9fa8-5dcae273eafd'] }, { services: ['0000180f-0000-1000-8000-00805f9b34fb'] }]
-  //   })
-  //   .catch((e) => console.error(e))
+  try {
+    let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.warn(e))
+    // let device = await bluetooth.requestDevice({ filters: [{ services: [Constants.ServiceUuid] }] }).catch((e) => console.error(e))
+    // let device = await bluetooth.requestDevice({ filters: [{ serviceData: [] }] }).catch((e) => console.error(e))
+    // let device = await bluetooth
+    //   .requestDevice({
+    //     filters: [{ services: ['00001801-0000-1000-8000-00805f9b34fb'] }, { services: ['6ba1b218-15a8-461f-9fa8-5dcae273eafd'] }, { services: ['0000180f-0000-1000-8000-00805f9b34fb'] }]
+    //   })
+    //   .catch((e) => console.error(e))
 
-  // device.gatt.disconnect()
+    // device.gatt.disconnect()
 
-  if (device) {
-    console.log('[bluetooth] Device Detected |', device.id, device.name)
-    bluetoothDevices[device.id] = device
-    let { id, name } = device
-    bluetoothDeviceList.upsert({ id, name })
-    if (id == deviceTargetId) stopScanning()
+    if (device) {
+      console.log('[bluetooth] Device Detected |', device.id, device.name)
+      bluetoothDevices[device.id] = device
+      let { id, name } = device
+      bluetoothDeviceList.upsert({ id, name })
+      if (id == deviceTargetId) stopScanning()
+    }
+
+    if (!exitScanning) setTimeout(scanForDevice, 500)
+  } catch (e) {
+    console.error('[bluetooth], Error encountered during scan', e)
   }
-
-  if (!exitScanning) setTimeout(scanForDevice, 500)
 }
 
 export async function beginScanning(targetId?: string) {
@@ -57,6 +61,7 @@ export async function beginScanning(targetId?: string) {
     console.warn('[bluetooth] Unable to detect Bluetooth adapters')
   }
 
+  console.log('[bluetooth] Adapter available:', adapterAvailable)
   if (adapterAvailable) {
     scanning = true
     exitScanning = false
