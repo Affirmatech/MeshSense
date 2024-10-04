@@ -72,7 +72,10 @@ app.whenReady().then(async () => {
     }
   }
 
-  apiProcess.stdout?.on('data', createWindowOnServerListening)
+  console.log('[electron] Arguments', process.argv)
+  if (!process.argv.includes('--headless')) {
+    apiProcess.stdout?.on('data', createWindowOnServerListening)
+  }
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
   // apiProcess.postMessage({ event: 'updateChannel', body: autoUpdater.channel })
 
