@@ -9,6 +9,9 @@ export default defineConfig({
   server: {
     port: process.env.PORT || '5921'
   },
+  build: {
+    sourcemap: true
+  },
   // plugins: [basicSsl(), svelte()]
   plugins: [svelte()]
 })
