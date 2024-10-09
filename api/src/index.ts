@@ -76,6 +76,12 @@ createRoutes((app) => {
     return res.json(consoleLog)
   })
 
+  //** Set accessKey via environment variable */
+  if (process.env.ACCESS_KEY) {
+    accessKey.set(process.env.ACCESS_KEY)
+  }
+
+  //** Capture current hostname and port */
   apiHostname.set(hostname())
   apiPort.set((server.address() as any)?.port)
 
