@@ -27,6 +27,12 @@
   import { tick } from 'svelte'
   import axios from 'axios'
   import { writable } from 'svelte/store'
+
+  let clientKeyInput = $userKey
+
+  function applyClientKey() {
+    userKey.set(clientKeyInput)
+  }
 </script>
 
 <div class="flex flex-col gap-3">
@@ -105,7 +111,7 @@
   {#if window.location.hostname == 'localhost'}
     <label class="">
       <div class="font-bold">Privileged Access Key</div>
-      <input class="input" type="text" bind:value={$accessKey} />
+      <input class="input" type="password" bind:value={$accessKey} />
     </label>
     <div>This key of your choosing will be required to have access to certain features when connected remotely such as Connect and Disconnect.</div>
     <div>
@@ -113,10 +119,13 @@
       <span class="font-mono bg-black/20 px-2 rounded py-0.5">Client Access Key</span> to gain access.
     </div>
   {:else}
-    <label>
-      <div class="font-bold">Client Access Key</div>
-      <input class="input" type="text" bind:value={$userKey} />
-      {#if $hasAccess}<span class="ml-1">✅</span>{/if}
-    </label>
+    <form on:submit|preventDefault={applyClientKey}>
+      <label>
+        <div class="font-bold">Client Access Key</div>
+        <input class="input" type="password" bind:value={clientKeyInput} />
+        <button class="btn btn-small">Apply</button>
+        {#if $hasAccess}<span class="ml-1">✅</span>{/if}
+      </label>
+    </form>
   {/if}
 </div>
