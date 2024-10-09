@@ -5,7 +5,7 @@ import { enableAudioAlerts } from '../Settings.svelte'
 
 export const userKey = writable(localStorage.getItem('userKey') || '')
 userKey.subscribe((value) => localStorage.setItem('userKey', value))
-export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) => window.location.hostname == 'localhost' || !$accessKey || $accessKey == $userKey)
+export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) => window.location.hostname == 'localhost' || ($accessKey != '' && $accessKey == $userKey))
 window['userKey'] = userKey
 
 export function unixSecondsTimeAgo(seconds) {
