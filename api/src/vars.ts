@@ -93,6 +93,7 @@ export type DeviceMetrics = {
   voltage: number
   channelUtilization: number
   airUtilTx: number
+  uptimeSeconds?: number
 }
 
 export type NodeInfo = {
@@ -132,7 +133,7 @@ export type MeshPacket = {
   channel: number
   encrypted?: string
   decoded?: any
-  payloadVariant: any
+  payloadVariant?: any
   // {
   // case: 'decoded',
   // value: Data {
@@ -150,11 +151,13 @@ export type MeshPacket = {
   rxSnr: number
   hopLimit: number
   wantAck: boolean
-  priority: number
+  priority: any
   rxRssi: number
-  delayed: number
+  delayed: any
   viaMqtt: boolean
   hopStart: number
+  publicKey?: string
+  pkiEncrypted?: boolean
   data?: string
   message?: Message
   deviceMetrics?: DeviceMetrics

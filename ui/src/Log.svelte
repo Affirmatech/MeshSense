@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { broadcastId, channels, myNodeNum, nodes, packets, type MeshPacket } from 'api/src/vars'
+  import { broadcastId, channels, myNodeNum, nodes, packets, version, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { getNodeNameById, scrollToBottom } from './lib/util'
+  import { getNodeNameById, scrollToBottom, testPacket } from './lib/util'
   import Modal from './lib/Modal.svelte'
   import { messageDestination } from './Message.svelte'
   import { tick } from 'svelte'
@@ -87,7 +87,7 @@
               <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" />
               {getNodeNameById(packet.from)}
             </div>
-            {#if packet.to != 4294967295}
+            {#if packet.to && packet.to != 4294967295}
               <div>to</div>
               <div class="">{getNodeNameById(packet.to)}</div>
             {/if}
@@ -150,6 +150,9 @@
       {#if filterText}<button on:click={() => (filterText = '')} class="btn text-sm !py-0">Clear</button>{/if}
       <button class="btn btn-sm text-xs" on:click={() => generateCSV()}>CSV</button>
       {#if unseenMessages}<button class="btn !py-0 bottom-10" on:click={() => scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))}>Jump to new messages</button>{/if}
+      {#if !$version}
+        <button class="btn text-xs" on:click={testPacket}>Test Packet</button>
+      {/if}
     </label>
   </h2>
 </Card>

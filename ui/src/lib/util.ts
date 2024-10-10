@@ -83,10 +83,48 @@ packets.on('upsert', (e) => {
 
 export function getNodeNameById(id: number) {
   if (id == broadcastId) return 'all'
+  if (id == undefined) return 'unknown'
   let node = nodes.value.find((node) => node.num == id)
-  return node ? getNodeName(node) : `!${id.toString(16)}`
+  return node ? getNodeName(node) : `!${id?.toString(16)}`
 }
 
 export function getNodeName(node: NodeInfo) {
   return node?.user?.shortName || node?.user?.id || '!' + node?.num?.toString(16)
+}
+
+export function testPacket() {
+  packets.push({
+    from: 2171857383,
+    to: 4294967295,
+    channel: 0,
+    decoded: {
+      portnum: 'TELEMETRY_APP',
+      payload: 'DTHrB2cSFQhlFXnpgkAd6LSBPyXxhoc/KNjmCA==',
+      wantResponse: false,
+      dest: 0,
+      source: 0,
+      requestId: 0,
+      replyId: 0,
+      emoji: 0
+    },
+    id: 1727925148,
+    rxTime: 1728572132,
+    rxSnr: 6,
+    hopLimit: 7,
+    wantAck: false,
+    priority: 'UNSET',
+    rxRssi: -84,
+    delayed: 'NO_DELAY',
+    viaMqtt: false,
+    hopStart: 7,
+    publicKey: '',
+    pkiEncrypted: false,
+    deviceMetrics: {
+      batteryLevel: 101,
+      voltage: 4.091000080108643,
+      channelUtilization: 1.0133333206176758,
+      airUtilTx: 1.0588055849075317,
+      uptimeSeconds: 144216
+    }
+  })
 }
