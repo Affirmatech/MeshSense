@@ -72,10 +72,10 @@
     {#if !$smallMode}
       <label class="text-sm font-normal"
         >Inactive
-        <input type="checkbox" bind:checked={showInactive} />
+        <input title="Toggle Inactive Nodes" type="checkbox" bind:checked={showInactive} />
       </label>
     {/if}
-    <button on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
+    <button title="Reduce/Exapnd Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
     {#each $filteredNodes as node (node.num)}
@@ -94,13 +94,13 @@
 
             {#if node.snr && node.hopsAway == 0}
               <!-- SNR -->
-              <div class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
+              <div title="SNR" class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
                 {node.snr}
                 <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
               </div>
 
               <!-- RSSI -->
-              <div class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
+              <div title="RSSI" class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
                 {node.rssi || '-'}
               </div>
             {:else}
@@ -117,21 +117,21 @@
               >{node.user?.longName || '!' + node.num?.toString(16)}</button
             >
             {#if typeof node.user?.role == 'string' && node.user?.role?.includes('ROUTER')}
-              <div class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
+              <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
             {/if}
             {#if typeof node.user?.role == 'string' && node.user?.role?.includes('CLIENT')}
-              <div class="bg-blue-500/50 rounded px-1 font-bold">C</div>
+              <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold">C</div>
             {/if}
             <div class="grow"></div>
             <!-- SNR -->
             {#if node.snr && node.hopsAway == 0}
-              <div class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
+              <div title="SNR" class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
                 {node.snr}
                 <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
               </div>
 
               <!-- RSSI -->
-              <div class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
+              <div title="RSSI" class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
                 {node.rssi || '-'}
               </div>
             {/if}
@@ -139,7 +139,7 @@
 
           <div class="flex gap-1.5 items-center">
             <!-- Shortname -->
-            <button on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || '?'}</button>
+            <button title="Short Name" on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded p-1 w-12 text-center overflow-hidden">{node.user?.shortName || '?'}</button>
 
             <!-- Last Heard -->
             {#key $currentTime}
@@ -147,11 +147,11 @@
             {/key}
 
             <!-- Voltage -->
-            <div class="text-sm font-normal bg-black/20 rounded p-1 w-10 h-7 text-center">
+            <div title="Voltage" class="text-sm font-normal bg-black/20 rounded p-1 w-10 h-7 text-center">
               {(node.deviceMetrics?.voltage || 0).toFixed(1)}V
             </div>
             <!-- Battery -->
-            <div class="text-sm font-normal bg-black/20 rounded p-1 min-w-11 h-7 text-center">
+            <div title="Battery Level" class="text-sm font-normal bg-black/20 rounded p-1 min-w-11 h-7 text-center">
               {node.deviceMetrics?.batteryLevel || 0}%
               <div
                 class="h-0.5"
@@ -166,7 +166,7 @@
             <!-- Hops -->
             <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded p-1 w-6 h-7 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
 
-            <button on:click={() => (selectedNode = node)}>🔍</button>
+            <button title="Node Detail" on:click={() => (selectedNode = node)}>🔍</button>
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->
 
             {#if node.num != $myNodeNum}
