@@ -22,7 +22,7 @@
     tracerouteRateLimit,
     nodeInactiveTimer
   } from 'api/src/vars'
-  import { hasAccess, userKey } from './lib/util'
+  import { hasAccess, userKey, blockUserKey } from './lib/util'
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
   import axios from 'axios'
@@ -115,10 +115,10 @@
     </label>
     <div>This key of your choosing will be required to have access to certain features when connected remotely such as Connect and Disconnect.</div>
     <div>
-      Enter this key into
+      Remote users will enter this key into
       <span class="font-mono bg-black/20 px-2 rounded py-0.5">Client Access Key</span> to gain access.
     </div>
-  {:else}
+  {:else if !$blockUserKey}
     <form on:submit|preventDefault={applyClientKey}>
       <label>
         <div class="font-bold">Client Access Key</div>
@@ -127,5 +127,7 @@
         {#if $hasAccess}<span class="ml-1">✅</span>{/if}
       </label>
     </form>
+  {:else}
+    <div>The client access key entered is incorrect. Please verify the key matches exactly including case-sensitive characters.</div>
   {/if}
 </div>

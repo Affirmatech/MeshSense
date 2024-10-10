@@ -3,10 +3,28 @@ import { tick } from 'svelte'
 import { derived, get, writable } from 'svelte/store'
 import { enableAudioAlerts } from '../Settings.svelte'
 
+export let blockUserKey = writable(false)
 export const userKey = writable(localStorage.getItem('userKey') || '')
-userKey.subscribe((value) => localStorage.setItem('userKey', value))
+
 export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) => window.location.hostname == 'localhost' || ($accessKey != '' && $accessKey == $userKey))
-window['userKey'] = userKey
+
+let failedUserKeyAttempts = 0
+userKey.subscribe(async (value) => {
+  await tick()
+
+  if (get(hasAccess)) {
+    failedUserKeyAttempts = 0
+  } else {
+    failedUserKeyAttempts += 1
+    blockUserKey.set(true)
+    setTimeout(() => {
+      blockUserKey.set(false)
+    }, Math.min(1000 * failedUserKeyAttempts, 10000))
+  }
+
+  console.log({ failedUserKeyAttempts })
+  localStorage.setItem('userKey', value)
+})
 
 export function unixSecondsTimeAgo(seconds) {
   return seconds ? timeAgo(Date.now() / 1000 - seconds) : ''
