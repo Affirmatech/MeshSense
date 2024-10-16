@@ -3,12 +3,13 @@ import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
-import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup } from './vars'
+import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup, meshSenseNewsDate } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
 import { createWriteStream } from 'fs'
 import { dataDirectory } from './lib/paths'
 import { join } from 'path'
+import axios from 'axios'
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 process.on('uncaughtException', (err, origin) => {
@@ -84,6 +85,23 @@ createRoutes((app) => {
   //** Capture current hostname and port */
   apiHostname.set(hostname())
   apiPort.set((server.address() as any)?.port)
+
+  // ** Check News Update */
+  function checkForNews() {
+    console.log('[news] Checking for news')
+    axios
+      .get('https://affirmatech.com/meshSenseNewsDate')
+      .then((newDate) => {
+        if (meshSenseNewsDate.value < newDate.data) {
+          meshSenseNewsDate.set(newDate.data)
+        }
+      })
+      .catch(() => {
+        console.log('[news] Unable to get latest news')
+      })
+  }
+
+  checkForNews()
 
   if (autoConnectOnStartup.value && address.value) connect(address.value)
 })

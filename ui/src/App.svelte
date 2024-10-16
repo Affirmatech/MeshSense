@@ -13,6 +13,7 @@
   import UpdateStatus from './lib/UpdateStatus.svelte'
   import SettingsModal, { showPage } from './SettingsModal.svelte'
   import { hasAccess } from './lib/util'
+  import News, { newsVisible } from './News.svelte'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -23,12 +24,11 @@
 </script>
 
 <!-- <ServiceWorker /> -->
-
 <UpdateStatus />
-
 <SettingsModal />
 
 <main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
+  <News />
   <div class="flex flex-col gap-2 content-start h-full overflow-auto">
     <Address class="shrink-0" />
     <Bluetooth class="shrink-0" />
@@ -54,6 +54,7 @@
         </div>
         <div class="font-normal absolute m-2 top-0 right-0 flex gap-2 items-center">
           <div class="text-xs text-white/50 pr-2 font-bold">MeshSense {$version}</div>
+          <button class="btn btn-sm h-6 grid place-content-center" on:click={() => newsVisible.set(true)}>📰</button>
           <button class="btn btn-sm h-6 grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
         </div>
       </div>

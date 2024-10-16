@@ -21,6 +21,7 @@ export let allowRemoteMessaging = new State<boolean>('allowRemoteMessaging', fal
 export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', true, { persist: true })
 export let enableTLS = new State<boolean>('enableTLS', false, { persist: true })
 export let automaticTraceroutes = new State<boolean>('automaticTraceroutes', true, { persist: true })
+export let meshSenseNewsDate = new State<number>('meshSenseNewsDate', 0, { persist: true })
 
 /** Measured in minutes */
 export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 15, { persist: true })

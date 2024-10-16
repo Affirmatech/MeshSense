@@ -26,6 +26,7 @@
           >{category}</button
         >
       {/each}
+      <a class="p-4 py-1 underline text-center" target="_blank" href="https://affirmatech.com/meshsense/news">News</a>
       <a class="p-4 py-1 underline text-center" target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a>
       <a class="p-4 py-1 underline text-center" target="_blank" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation">Donate</a>
     </div>

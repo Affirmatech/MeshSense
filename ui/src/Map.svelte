@@ -10,6 +10,7 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { getCoordinates, getNodeName } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
+  import { newsVisible } from './News.svelte'
 
   export let ol: OpenLayersMap = undefined
 
@@ -56,6 +57,7 @@
     <a href="https://affirmatech.com" target="_blank" rel="noopener" class="text-xs text-white/50 pr-2 font-normal">by Affirmatech</a>
     <a title="Support MeshSense" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:text-white" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation">♥</a
     >
+    <button class="btn btn-sm h-6 grid place-content-center" on:click={() => newsVisible.set(true)}>📰</button>
     <button class="btn btn-sm h-6 font-normal grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
   </h2>
   <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />

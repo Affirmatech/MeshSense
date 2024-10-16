@@ -1,6 +1,7 @@
 <script lang="ts">
   export let visible = false
   export let title = ''
+  export let fillHeight = false
   import { fade, scale } from 'svelte/transition'
 
   function handleKeydown(e: KeyboardEvent) {
@@ -19,6 +20,7 @@
     transition:scale={{ duration: 500, start: 0.8 }}
     id="popover-default"
     role="tooltip"
+    class:h-full={fillHeight}
     class="{$$restProps.class || ''} fixed z-20 w-[80%] left-[10%] top-[10%] max-h-[80%] flex flex-col
     text-sm transition-opacity duration-300 border rounded-lg shadow-sm text-gray-400 border-gray-600 bg-gray-800"
   >

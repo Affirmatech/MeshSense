@@ -22,7 +22,7 @@ userKey.subscribe(async (value) => {
     }, Math.min(1000 * failedUserKeyAttempts, 10000))
   }
 
-  console.log({ failedUserKeyAttempts })
+  // console.log({ failedUserKeyAttempts })
   localStorage.setItem('userKey', value)
 })
 
