@@ -152,21 +152,14 @@
             </div>
             <!-- Battery -->
             <div title="Battery Level" class="text-sm font-normal bg-black/20 rounded p-1 min-w-11 h-7 text-center">
-              {#if node.deviceMetrics?.batteryLevel === 101}
-                <!-- device using external power -->
-                ⚡︎
-              {:else}
-                {node.deviceMetrics?.batteryLevel || 0}%
-              {/if}
+              {node.deviceMetrics?.batteryLevel || 0}%
               <div
                 class="h-0.5"
-                style="width: {node.deviceMetrics?.batteryLevel || 0}%; background-color: {node.deviceMetrics?.batteryLevel === 101
-                  ? 'steelblue'
-                  : node.deviceMetrics?.batteryLevel >= 70
-                    ? 'green'
-                    : node.deviceMetrics?.batteryLevel >= 30
-                      ? 'yellow'
-                      : 'red'};"
+                style="width: {node.deviceMetrics?.batteryLevel || 0}%; background-color: {node.deviceMetrics?.batteryLevel >= 70
+                  ? 'green'
+                  : node.deviceMetrics?.batteryLevel >= 30
+                    ? 'yellow'
+                    : 'red'};"
               ></div>
             </div>
 
