@@ -7,6 +7,16 @@ import { autoUpdater } from 'electron-updater'
 let apiProcess: Electron.UtilityProcess
 let apiPort: any = 9999
 
+/** asnyc needed for updateCheckLoop to allow electron to launch main window */
+async function updateCheckLoop() {
+  console.log('[electron] Checking for updates on channel', autoUpdater.channel)
+  autoUpdater.checkForUpdates()
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 7.2e6)
+  // autoUpdater.checkForUpdatesAndNotify({ title: 'MeshSense', body: 'MeshSense has an update!' })
+}
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -22,12 +32,6 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    console.log('[electron] Checking for updates on channel', autoUpdater.channel)
-    autoUpdater.checkForUpdates()
-    setInterval(() => {
-      autoUpdater.checkForUpdates()
-    }, 7.2e6)
-    // autoUpdater.checkForUpdatesAndNotify({ title: 'MeshSense', body: 'MeshSense has an update!' })
     mainWindow.show()
   })
 
@@ -73,7 +77,7 @@ app.whenReady().then(async () => {
   }
 
   console.log('[electron] Arguments', process.argv)
-  if (!process.argv.includes('--headless')) {
+  if (!process.env['HEADLESS']) {
     apiProcess.stdout?.on('data', createWindowOnServerListening)
   }
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
@@ -129,6 +133,11 @@ app.whenReady().then(async () => {
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+  updateCheckLoop()
+  // setTimeout(() => {
+  //   autoUpdater.quitAndInstall()
+  // }, 3000)
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common

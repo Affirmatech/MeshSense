@@ -50,6 +50,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 export let version = new State('version', '')
 export let updateChannel = new State('updateChannel', undefined, { persist: true })
+export let updateStatus = new State('updateStatus', {})
 
 export let app: Express = express()
 app.use(express.json({ limit: '500mb' }))
@@ -100,13 +101,16 @@ async function initSever() {
   // Electron Hook if present
   let parentPort = process['parentPort']
 
-  parentPort?.on('message', (e) => {
+  parentPort?.on('message', (e: any) => {
     console.log('[electron to api]', e)
-    if (e.data.event == 'version') version.set(e.data.body)
-    if (e.data.event == 'updateChannel') {
+    if (e.data.event == 'version') {
+      version.set(e.data.body)
+    } else if (e.data.event == 'updateChannel') {
       if (e.data.body) updateChannel.set(e.data.body)
+    } else if (['update-available', 'download-progress', 'update-downloaded'].includes(e.data.event)) {
+      updateStatus.set(e.data)
     }
-    wss?.send(e.data.event, e.data.body)
+    // wss?.send(e.data.event, e.data.body)
   })
 
   updateChannel.subscribe((v) => {
