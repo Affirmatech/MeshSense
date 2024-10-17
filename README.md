@@ -8,7 +8,11 @@ MeshSense directly connects to your Meshtastic node via Bluetooth or WiFi and co
 
 ## Headless Usage
 
-To run MeshSense without a GUI, use the `--headless` command line flag when starting. Additionally the `ACCESS_KEY` environment variable can be used to specify the privileged access key for remote connections to gain full permissions.
+To run MeshSense without a GUI, use the `HEADLESS=1` environment variable when starting. Additionally the `ACCESS_KEY` environment variable can be used to specify the privileged access key for remote connections to gain full permissions.
+
+```sh
+HEADLESS=1 ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage
+```
 
 ## Development Setup
 
