@@ -18,5 +18,5 @@
 </script>
 
 <Modal title="Here's the latest in MeshSense!" bind:visible={$newsVisible} fillHeight={true}>
-  <iframe title="MeshSense News" src="https://affirmatech.com/meshsense/news?contentOnly=1" class="grow h-full w-full"></iframe>
+  <iframe title="MeshSense News" src="https://affirmatech.com/meshsense/news?contentOnly=1&?timestamp={Date.now()}" class="grow h-full w-full"></iframe>
 </Modal>
