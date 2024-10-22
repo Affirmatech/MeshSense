@@ -30,14 +30,14 @@
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@electron-toolkit/eslint-config-ts": "^2.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@types/node": "^22.5.4",
-    "electron": "^32.0.2",
-    "electron-builder": "^25.0.5",
-    "electron-updater": "^6.3.4",
+    "@types/node": "^22.7.8",
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8",
+    "electron-updater": "^6.3.9",
     "electron-vite": "^2.3.0",
-    "eslint": "^9.9.1",
+    "eslint": "^9.13.0",
     "prettier": "^3.3.3",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.3"
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9"
   }
 }
