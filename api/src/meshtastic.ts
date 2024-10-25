@@ -8,6 +8,7 @@ import {
   NodeInfo,
   address,
   automaticTraceroutes,
+  broadcastId,
   channels,
   connectionStatus,
   enableTLS,
@@ -303,7 +304,7 @@ export async function connect(address?: string) {
 
       // Update lastHeard of all nodes in the traceroute chain
       for (let num of data.route) {
-        nodes.upsert({ num, lastHeard: Date.now() / 1000 })
+        if (num != broadcastId) nodes.upsert({ num, lastHeard: Date.now() / 1000 })
       }
     }
   })
