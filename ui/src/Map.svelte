@@ -60,5 +60,13 @@
     <button class="btn btn-sm h-6 grid place-content-center" on:click={() => newsVisible.set(true)}>📰</button>
     <button class="btn btn-sm h-6 font-normal grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
   </h2>
-  <OpenLayersMap bind:this={ol} center={getCoordinates($myNodeNum)} />
+  <OpenLayersMap
+    bind:this={ol}
+    center={JSON.parse(localStorage.getItem('mapCenter')) ?? getCoordinates($myNodeNum)}
+    zoom={JSON.parse(localStorage.getItem('mapZoom'))}
+    onMove={(center, zoom) => {
+      localStorage.setItem('mapCenter', JSON.stringify(center))
+      localStorage.setItem('mapZoom', JSON.stringify(zoom))
+    }}
+  />
 </Card>

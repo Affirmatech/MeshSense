@@ -18,6 +18,7 @@
   import { descending } from 'ol/array'
   import Text from 'ol/style/Text'
   import type { LoadingStrategy } from 'ol/source/Vector'
+  import type { Coordinate } from 'ol/coordinate'
 
   useGeographic()
   let dispatch = createEventDispatcher()
@@ -30,6 +31,7 @@
 
   export let center = undefined
   export let zoom = 12
+  export let onMove: (center: Coordinate, zoom: number) => void = undefined
 
   if (!center || (center[0] == 0 && center[1] == 0)) {
     center = [-90.3242479, 39.5167587]
@@ -170,6 +172,10 @@
         source: new OSM()
       })
     ])
+
+    map.on('moveend', (e) => {
+      if (onMove) onMove(map.getView().getCenter(), map.getView().getZoom())
+    })
     // plotLocations()
   })
 </script>
