@@ -5,9 +5,9 @@
 </script>
 
 <script lang="ts">
-  import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, type NodeInfo } from 'api/src/vars'
+  import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, pendingTraceroutes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { getCoordinates, getNodeName, hasAccess, unixSecondsTimeAgo } from './lib/util'
+  import { getCoordinates, getNodeName, getNodeNameById, hasAccess, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
   import axios from 'axios'
   import Modal from './lib/Modal.svelte'
@@ -177,7 +177,13 @@
             <!-- <button class="h-7 w-5" on:click={() => send(prompt('Enter message to send'), node.num)}>🗨</button> -->
 
             {#if node.num != $myNodeNum}
-              <button title="Traceroute" on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button>
+              <button
+                class="{node.hopsAway == 0 || node.trace?.route ? 'border bg-blue-600/30' : ''} px-0.5 rounded-md border-blue-600/80 {$pendingTraceroutes.includes(node.num)
+                  ? 'hue-rotate-90 animate-pulse'
+                  : ''}"
+                title="Traceroute {node.hopsAway == 0 ? 'Direct' : ''}{node?.trace ? [$myNodeNum, ...node?.trace?.route, node?.num].map((id) => getNodeNameById(id)).join(' -> ') : ''}"
+                on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button
+              >
             {/if}
 
             <!-- {#if node.user?.hwModel}

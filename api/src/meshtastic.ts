@@ -19,6 +19,7 @@ import {
   nodes,
   packetLimit,
   packets,
+  pendingTraceroutes,
   tracerouteRateLimit
 } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
@@ -30,6 +31,8 @@ let connectionIntended = false
 
 /** Tracks when nodes were last requested a traceroute: `traceRouteLog[nodeNum]` */
 let traceRouteLog: Record<number, number> = {}
+
+let globalTracerouteRateLimitSec = 30
 
 /** Returns `true` if the node has not recently had a traceroute sent to it based on `tracerouteRateLimit` */
 function isTracerouteAvailable(nodeNum: number) {
@@ -351,9 +354,19 @@ export async function send({ message = '', destination, channel, wantAck = true 
   return connection.sendText(message, destination, wantAck, channel)
 }
 
-export async function traceRoute(destination: number) {
+export function traceRoute(destination: number) {
   traceRouteLog[destination] = Date.now()
-  console.log('[Meshtastic] Requesting Traceroute for', destination)
+  if (!pendingTraceroutes.value.includes(destination)) {
+    pendingTraceroutes.push(destination)
+    if (!queueProcessing) processTraceRoutes()
+  }
+}
+
+let queueProcessing = false
+async function processTraceRoutes() {
+  queueProcessing = true
+  let destination = pendingTraceroutes.value[0]
+  console.log('[Meshtastic] Sending Traceroute for', destination)
   packets.push({
     from: myNodeNum.value,
     to: destination,
@@ -361,7 +374,11 @@ export async function traceRoute(destination: number) {
     channel: '',
     decoded: { portnum: 'TRACEROUTE' }
   } as any)
-  return connection.traceRoute(destination)
+  connection.traceRoute(destination)
+  pendingTraceroutes.shift()
+  setTimeout(() => {
+    pendingTraceroutes.value.length ? processTraceRoutes() : (queueProcessing = false)
+  }, globalTracerouteRateLimitSec * 1000)
 }
 
 export async function requestPosition(destination: number) {

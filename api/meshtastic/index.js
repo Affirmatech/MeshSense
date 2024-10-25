@@ -7878,7 +7878,7 @@ var MeshDevice = class {
         this.events.onNodeInfoPacket.dispatch(
           decodedMessage.payloadVariant.value
         );
-        if (decodedMessage.payloadVariant.value.position) {
+        if (decodedMessage.payloadVariant.value?.position) {
           this.events.onPositionPacket.dispatch({
             id: decodedMessage.id,
             rxTime: /* @__PURE__ */ new Date(),
