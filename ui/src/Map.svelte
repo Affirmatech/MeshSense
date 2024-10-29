@@ -14,7 +14,7 @@
 
   export let ol: OpenLayersMap = undefined
 
-  $: nodesWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0))
+  $: nodesWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0) || n.approximatePosition)
 
   $: if (ol) {
     let myNodeCoords = getCoordinates($myNodeNum)
@@ -36,7 +36,7 @@
         return {
           lat,
           lon,
-          icon: `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}`,
+          icon: n.position?.latitudeI ? `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}` : '/circle-help.svg',
           description: getNodeName(n)
         }
       })

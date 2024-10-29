@@ -25,6 +25,7 @@ import {
 } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
+import * as geolib from 'geolib'
 
 let connection: HttpConnection | BleConnection
 let connectionIntended = false
@@ -183,7 +184,7 @@ export async function connect(address?: string) {
 
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
       if (updates.hopsAway == 0) updates.trace = null
-      else if (automaticTraceroutes.value && originalNodeRecord.position?.latitudeI && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
+      else if (automaticTraceroutes.value && originalNodeRecord?.position?.latitudeI && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
         if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
 
@@ -304,7 +305,9 @@ export async function connect(address?: string) {
 
       // Update lastHeard of all nodes in the traceroute chain
       for (let num of data.route) {
-        if (num != broadcastId) nodes.upsert({ num, lastHeard: Date.now() / 1000 })
+        // if (num != broadcastId) {
+        nodes.upsert({ num, lastHeard: Date.now() / 1000, approximatePosition: getApproximatePosition(num) })
+        // }
       }
     }
   })
@@ -367,7 +370,7 @@ let queueProcessing = false
 async function processTraceRoutes() {
   queueProcessing = true
   let destination = pendingTraceroutes.value[0]
-  console.log('[Meshtastic] Sending Traceroute for', destination)
+  console.log('[meshtastic] Sending Traceroute for', destination)
   packets.push({
     from: myNodeNum.value,
     to: destination,
@@ -400,4 +403,78 @@ export async function deleteNodes(nodeList: NodeInfo[]) {
     console.error(e)
   }
   deleteInProgress = false
+}
+
+function getNodeById(num: number) {
+  return nodes.value.find((n) => n.num == num) || ({ num } as NodeInfo)
+}
+
+export function getApproximatePosition(num: number) {
+  let connectedNodes = nodes.value.filter((node) => node.trace?.route?.includes(num))
+  if (connectedNodes.length == 0) return null
+
+  let sourceNode = getNodeById(myNodeNum.value)
+
+  let possibleCoordinates = []
+  // Check each trace route where this node is in the path
+  for (let node of connectedNodes) {
+    // For a given trace route, whereabouts is this node located?
+    let coord = estimatePositionFromTrace(num, [sourceNode, ...node.trace?.route?.map(getNodeById), node])
+    if (coord) possibleCoordinates.push(coord)
+  }
+
+  // Average out all possible coordinates
+  console.log('[meshtastic] Approximate Location for', num, possibleCoordinates)
+  let center = geolib.getCenter(possibleCoordinates)
+  return center
+}
+
+export function getNodeCoordinates(node: NodeInfo) {
+  return {
+    latitude: node?.position?.latitudeI / 10000000,
+    longitude: node?.position?.longitudeI / 10000000
+  }
+}
+
+export function estimatePositionFromTrace(num: number, trace: NodeInfo[]) {
+  let indexOfTarget = trace.findIndex((n) => n?.num == num)
+  let peerCoordinates = []
+
+  let startNode: any, endNode: any
+
+  // console.log(
+  //   'Got trace',
+  //   trace.map((n) => n?.num)
+  // )
+  for (let index = indexOfTarget - 1; index >= 0; index--) {
+    if (trace[index]?.position?.latitudeI) {
+      startNode = { node: trace[index], distance: indexOfTarget - index }
+      // for (index; index < indexOfTarget; index++) {
+      //   peerCoordinates.push(getNodeCoordinates(trace[index]))
+      // }
+      break
+    }
+  }
+
+  // console.log('startNode', startNode?.node?.num, startNode?.distance, getNodeCoordinates(startNode?.node))
+  if (!startNode) return false
+
+  for (let index = indexOfTarget + 1; index <= trace.length; index++) {
+    if (trace[index]?.position?.latitudeI) {
+      endNode = { node: trace[index], distance: index - indexOfTarget }
+      // for (index; index > indexOfTarget; index--) {
+      //   peerCoordinates.push(getNodeCoordinates(trace[index]))
+      // }
+      break
+    }
+  }
+
+  // console.log('endNode', endNode?.node?.num, endNode?.distance, getNodeCoordinates(endNode?.node))
+  if (!endNode) return false
+
+  // Weight calculation if there are intermediary nodes without a known position
+  Array.from({ length: startNode.distance }, () => peerCoordinates.push(getNodeCoordinates(endNode.node)))
+  Array.from({ length: endNode.distance }, () => peerCoordinates.push(getNodeCoordinates(startNode.node)))
+
+  return geolib.getCenter(peerCoordinates)
 }

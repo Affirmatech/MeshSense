@@ -22,7 +22,7 @@ export let autoConnectOnStartup = new State<boolean>('autoConnectOnStartup', tru
 export let enableTLS = new State<boolean>('enableTLS', false, { persist: true })
 export let automaticTraceroutes = new State<boolean>('automaticTraceroutes', true, { persist: true })
 export let meshSenseNewsDate = new State<number>('meshSenseNewsDate', 0, { persist: true })
-export let pendingTraceroutes = new State<number[]>('pendingTraceroutes', [], { persist: false })
+export let pendingTraceroutes = new State<number[]>('pendingTraceroutes', [], { hideLog: true })
 
 /** Measured in minutes */
 export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 15, { persist: true })
@@ -111,6 +111,7 @@ export type NodeInfo = {
   deviceMetrics: DeviceMetrics
   rssi?: number
   trace?: { route: number[] }
+  approximatePosition?: { longitude: number; latitude: number }
 }
 
 export type ChannelSettings = {

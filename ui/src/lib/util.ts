@@ -67,12 +67,12 @@ export function scrollToBottom(element: HTMLElement, force?, notifyUnseen: (reco
 
 export function getCoordinates(node: NodeInfo | number) {
   if (typeof node == 'number') node = getNodeById(node)
-  if (!node?.position?.longitudeI) return [0, 0]
+  if (!node?.position?.longitudeI) return [node?.approximatePosition?.longitude, node?.approximatePosition?.latitude]
   return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
 }
 
 function getNodeById(num: number) {
-  return nodes.value.find((n) => n.num == num)
+  return nodes.value.find((n) => n.num == num) || ({ num } as NodeInfo)
 }
 
 export let audioNewMessage = new Audio(`${import.meta.env.VITE_PATH || ''}/audioNewMessage.mp3`)
