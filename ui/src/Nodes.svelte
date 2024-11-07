@@ -75,7 +75,7 @@
         <input title="Toggle Inactive Nodes" type="checkbox" bind:checked={showInactive} />
       </label>
     {/if}
-    <button title="Reduce/Exapnd Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
+    <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
     {#each $filteredNodes as node (node.num)}
