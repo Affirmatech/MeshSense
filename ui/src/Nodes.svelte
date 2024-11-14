@@ -116,11 +116,18 @@
             <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
               >{node.user?.longName || '!' + node.num?.toString(16)}</button
             >
-            {#if typeof node.user?.role == 'string' && node.user?.role?.includes('ROUTER')}
-              <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
-            {/if}
-            {#if typeof node.user?.role == 'string' && node.user?.role?.includes('CLIENT')}
-              <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold">C</div>
+            {#if typeof node.user?.role === 'string'}
+              {#if node.user.role === 'CLIENT'}
+                <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold">C</div>
+              {:else if node.user.role === 'CLIENT_MUTE'}
+                <div title="Client_Mute Node" class="bg-blue-500/50 rounded px-1 font-bold">CM🙊</div>
+              {:else if node.user.role.startsWith('CLIENT')}
+                <div title="Other Client Node" class="bg-blue-500/50 rounded px-1 font-bold">C</div>
+              {:else if node.user.role === 'ROUTER'}
+                <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
+              {:else if node.user.role.startsWith('ROUTER')}
+                <div title="Other Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
+              {/if}
             {/if}
             <div class="grow"></div>
             <!-- SNR -->
