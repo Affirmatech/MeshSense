@@ -125,6 +125,8 @@
                 <div title="Other Client Node" class="bg-blue-500/50 rounded px-1 font-bold">C</div>
               {:else if node.user.role === 'ROUTER'}
                 <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
+              {:else if node.user.role === 'ROUTER_CLIENT'}
+                <div title="Depreciated Router_Client Node" class="bg-blue-500/50 rounded px-1 font-bold">RC</div>
               {:else if node.user.role.startsWith('ROUTER')}
                 <div title="Other Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold">R</div>
               {/if}
