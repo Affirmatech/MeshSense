@@ -36,7 +36,7 @@
         return {
           lat,
           lon,
-          icon: n.position?.latitudeI ? `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}` : '/circle-help.svg',
+          icon: n.position?.latitudeI ? `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}` : `${import.meta.env.VITE_PATH || ''}/circle-help.svg`,
           description: getNodeName(n)
         }
       })

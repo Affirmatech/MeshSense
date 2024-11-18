@@ -226,8 +226,12 @@ export async function connect(address?: string) {
   /** TELEMETRY_APP */
   connection.events.onTelemetryPacket.subscribe((e) => {
     let { id, data } = copy(e)
-    packets.upsert({ id, deviceMetrics: data.deviceMetrics })
-    if (data.deviceMetrics) nodes.upsert({ num: e.from, deviceMetrics: data.deviceMetrics })
+    let telemetry: Record<string, any> = {}
+    for (let key of ['deviceMetrics', 'environmentMetrics', 'airQualityMetrics', 'powerMetrics', 'localStats', 'healthMetrics']) {
+      if (data[key]) telemetry[key] = data[key]
+    }
+    packets.upsert({ id, ...telemetry })
+    if (Object.keys(telemetry).length) nodes.upsert({ num: e.from, ...telemetry })
   })
 
   /** POSITION_APP */

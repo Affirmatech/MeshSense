@@ -208,6 +208,7 @@
                 class="h-7 w-5"
                 title="Fly To"
                 on:click={(e) => {
+                  if (e.shiftKey || e.ctrlKey) axios.post('/requestPosition', { destination: node.num })
                   let [long, lat] = getCoordinates(node)
                   ol.flyTo(long, lat)
                 }}
