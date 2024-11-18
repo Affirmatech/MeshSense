@@ -93,6 +93,8 @@ export async function disconnect(setIntent = true) {
 }
 
 export function reset() {
+  nodes.set([])
+  packets.set([])
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
   deleteInProgress = false
