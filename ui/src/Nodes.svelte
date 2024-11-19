@@ -25,7 +25,7 @@
     $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
 
     $filteredNodes = $nodes
-      .filter((node) => showInactive || !$inactiveNodes.some((inactive) => node.num == inactive.num))
+      .filter((node) => showInactive || node.num == $myNodeNum || !$inactiveNodes.some((inactive) => node.num == inactive.num))
       .sort((a, b) => {
         if (a.num === $myNodeNum) return -1
         if (b.num === $myNodeNum) return 1
@@ -81,10 +81,11 @@
     {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
-        class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {node.num == $myNodeNum ? 'bg-gradient-to-r ' : ''}  {Date.now() - node.lastHeard * 1000 <
-        ($nodeInactiveTimer ?? 60) * 60 * 1000
-          ? ''
-          : 'grayscale'}"
+        class="bg-blue-300/10 rounded px-1 py-0.5 flex flex-col gap-0.5 {node.num == $myNodeNum
+          ? 'bg-gradient-to-r '
+          : Date.now() - node.lastHeard * 1000 < ($nodeInactiveTimer ?? 60) * 60 * 1000
+            ? ''
+            : 'grayscale'}  "
       >
         {#if $smallMode}
           <div title={node.user?.longName} class="flex items-center gap-1">
