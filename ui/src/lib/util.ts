@@ -2,6 +2,7 @@ import { accessKey, apiHostname, broadcastId, lastFromRadio, nodes, packets, typ
 import { tick } from 'svelte'
 import { derived, get, writable } from 'svelte/store'
 import { enableAudioAlerts } from '../Settings.svelte'
+import axios from 'axios'
 
 export let blockUserKey = writable(false)
 export const userKey = writable(localStorage.getItem('userKey') || '')
@@ -71,7 +72,7 @@ export function getCoordinates(node: NodeInfo | number) {
   return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
 }
 
-function getNodeById(num: number) {
+export function getNodeById(num: number) {
   return nodes.value.find((n) => n.num == num) || ({ num } as NodeInfo)
 }
 
@@ -90,6 +91,14 @@ export function getNodeNameById(id: number) {
 
 export function getNodeName(node: NodeInfo) {
   return node?.user?.shortName || node?.user?.id || '!' + node?.num?.toString(16)
+}
+
+export function setPosition(latitude: number, longitude: number) {
+  let latitudeI = Math.round(latitude * 10000000)
+  let longitudeI = Math.round(longitude * 10000000)
+  let position = { latitudeI, longitudeI }
+  console.log('Updating position', position)
+  axios.post('/position', position, { timeout: 3000 })
 }
 
 export function testPacket() {

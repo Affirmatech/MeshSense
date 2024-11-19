@@ -3,7 +3,7 @@
  */
 
 // import { HttpConnection, BleConnection } from '@meshtastic/js'
-import { HttpConnection, BleConnection } from '../meshtastic'
+import { HttpConnection, BleConnection, Protobuf } from '../meshtastic'
 import {
   NodeInfo,
   address,
@@ -253,6 +253,7 @@ export async function connect(address?: string) {
   for (let event in connection.events) {
     if (
       [
+        'onPendingSettingsChange',
         'onUserPacket',
         'onFromRadio',
         'onNodeInfoPacket',
@@ -483,4 +484,43 @@ export function estimatePositionFromTrace(num: number, trace: NodeInfo[]) {
   Array.from({ length: endNode.distance }, () => peerCoordinates.push(getNodeCoordinates(startNode.node)))
 
   return geolib.getCenter(peerCoordinates)
+}
+
+export async function setPosition(position) {
+  position.time = Math.round(Date.now() / 1000)
+  position.precisionBits = position.precisionBits ?? 32
+  console.log('setPosition', position)
+  if (connectionStatus.value != 'connected' || !position) return
+  await connection.setChannel(
+    new Protobuf.Channel.Channel({
+      index: 0,
+      settings: {
+        moduleSettings: {
+          positionPrecision: position.precisionBits
+        }
+      }
+    })
+  )
+  await connection.setConfig(
+    new Protobuf.Config.Config({
+      payloadVariant: {
+        case: 'position',
+        value: { fixedPosition: false }
+      }
+    })
+  )
+
+  setTimeout(async () => {
+    let data = new Protobuf.Mesh.Position(position)
+    await connection.setPosition(data)
+
+    await connection.setConfig(
+      new Protobuf.Config.Config({
+        payloadVariant: {
+          case: 'position',
+          value: { fixedPosition: true }
+        }
+      })
+    )
+  }, 1000)
 }

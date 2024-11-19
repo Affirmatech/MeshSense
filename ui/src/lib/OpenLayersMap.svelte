@@ -6,7 +6,7 @@
   import { LineString, Point, Polygon } from 'ol/geom'
   import { createEventDispatcher, onMount } from 'svelte'
   import 'ol/ol.css'
-  import { fromLonLat } from 'ol/proj'
+  import { fromLonLat, toLonLat } from 'ol/proj'
   import type Layer from 'ol/layer/Layer'
   import VectorLayer from 'ol/layer/Vector'
   import Style from 'ol/style/Style'
@@ -32,6 +32,7 @@
   export let center = undefined
   export let zoom = 12
   export let onMove: (center: Coordinate, zoom: number) => void = undefined
+  export let onClick: (latitude: number, longitude: number) => void = undefined
 
   if (!center || (center[0] == 0 && center[1] == 0)) {
     center = [-90.3242479, 39.5167587]
@@ -177,6 +178,10 @@
       if (onMove) onMove(map.getView().getCenter(), map.getView().getZoom())
     })
     // plotLocations()
+    map.on('click', (e) => {
+      let point = map.getCoordinateFromPixel(e.pixel)
+      if (onClick) onClick(point[1], point[0])
+    })
   })
 </script>
 

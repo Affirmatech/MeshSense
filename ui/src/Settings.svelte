@@ -20,9 +20,11 @@
     autoConnectOnStartup,
     automaticTraceroutes,
     tracerouteRateLimit,
-    nodeInactiveTimer
+    nodeInactiveTimer,
+    myNodeMetadata,
+    myNodeNum
   } from 'api/src/vars'
-  import { hasAccess, userKey, blockUserKey } from './lib/util'
+  import { hasAccess, userKey, blockUserKey, getNodeById } from './lib/util'
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
   import axios from 'axios'
@@ -33,6 +35,10 @@
   function applyClientKey() {
     userKey.set(clientKeyInput)
   }
+
+  // let myNode = getNodeById($myNodeNum)
+  // let latitude = myNode?.position?.latitudeI / 10000000
+  // let longitude = myNode?.position?.longitudeI / 10000000
 </script>
 
 <div class="flex flex-col gap-3">
@@ -57,6 +63,28 @@
         <input class="input w-36" type="text" bind:value={$messageSuffix} />
       </label>
     </div>
+
+    <!-- 
+    <hr class="opacity-25" />
+
+    <form on:change={positionChange} class="grid gap-2 max-w-xs md:max-w-none md:grid-cols-2">
+      <input type="b">
+      <div class="flex gap-2">
+        <label class="grow">
+          <div class="font-bold">Latitude</div>
+          <input name="Latitude" class="input w-full" type="text" bind:value={latitude} />
+        </label>
+        <label class="grow">
+          <div class="font-bold">Longitude</div>
+          <input name="Longitude" class="input w-full" type="text" bind:value={longitude} />
+        </label>
+      </div>
+      <label>
+        <div class="font-bold">Precision</div>
+        <input title="Broadcast Precision" class="w-full" type="range" min="" max="32" bind:value={precision} />
+      </label>
+    </form>
+     -->
 
     <hr class="opacity-25" />
 

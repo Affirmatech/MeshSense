@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   import { writable } from 'svelte/store'
   export let expandedMap = writable(false)
+  export let setPositionMode = writable(false)
 </script>
 
 <script lang="ts">
@@ -8,7 +9,7 @@
   import { filteredNodes } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
-  import { getCoordinates, getNodeName } from './lib/util'
+  import { getCoordinates, getNodeName, getNodeNameById, setPosition } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
 
@@ -68,5 +69,17 @@
       localStorage.setItem('mapCenter', JSON.stringify(center))
       localStorage.setItem('mapZoom', JSON.stringify(zoom))
     }}
-  />
+    onClick={(latitude, longitude) => {
+      if ($setPositionMode) {
+        $setPositionMode = false
+        setPosition(latitude, longitude)
+      }
+    }}
+  ></OpenLayersMap>
+  {#if $setPositionMode}
+    <div class="absolute select-none top-10 left-10 bg-indigo-600/80 text-white p-3 py-1 rounded-lg">
+      Click on a new position for {getNodeNameById($myNodeNum)}
+      <button title="Cancel selecting a position" class="btn btn-sm ml-2 font-bold !text-red-200 !from-rose-500 !to-rose-800 rounded-full" on:click={() => ($setPositionMode = false)}>X</button>
+    </div>
+  {/if}
 </Card>

@@ -2,7 +2,7 @@ import 'dotenv/config'
 import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
 import './meshtastic'
-import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute } from './meshtastic'
+import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute, setPosition } from './meshtastic'
 import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup, meshSenseNewsDate } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
@@ -75,6 +75,12 @@ createRoutes((app) => {
   app.get('/consoleLog', async (req, res) => {
     if (req.query.accessKey != accessKey.value && req.hostname.toLowerCase() != 'localhost') return res.sendStatus(403)
     return res.json(consoleLog)
+  })
+
+  app.post('/position', async (req, res) => {
+    console.log('[express]', '/position', req.body)
+    setPosition(req.body)
+    return res.sendStatus(200)
   })
 
   //** Set accessKey via environment variable */
