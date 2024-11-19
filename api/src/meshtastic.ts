@@ -89,7 +89,7 @@ export async function disconnect(setIntent = true) {
     connection.disconnect()
     clearTimeout(connection['timeout'])
   }
-  reset()
+  if (setIntent) reset()
 }
 
 export function reset() {
