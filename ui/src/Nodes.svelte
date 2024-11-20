@@ -122,13 +122,13 @@
               {#if node.user.role === 'CLIENT'}
                 <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">C</div>
               {:else if node.user.role === 'CLIENT_MUTE'}
-                <div title="Client_Mute Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">CM🙊</div>
+                <div title="Client_Mute Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">CM</div>
               {:else if node.user.role.startsWith('CLIENT')}
                 <div title="Other Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">C</div>
               {:else if node.user.role === 'TRACKER'}
-                <div title="Tracker Node" class="bg-indigo-500/50 text-indigo-200 rounded px-1 font-bold cursor-help">T</div>
+                <div title="Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">T</div>
               {:else if node.user.role === 'SEONSOR'}
-                <div title="Sensor Node" class="bg-indigo-500/50 text-indigo-200 rounded px-1 font-bold cursor-help">S</div>
+                <div title="Sensor Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">S</div>
               {:else if node.user.role === 'ROUTER'}
                 <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">R</div>
               {:else if node.user.role === 'ROUTER_CLIENT'}
