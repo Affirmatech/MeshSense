@@ -16,13 +16,14 @@
   import { hasAccess } from './lib/util'
   import SystemLog from './SystemLog.svelte'
   import DeviceConfig from './DeviceConfig.svelte'
+  import Channels from './Channels.svelte'
 </script>
 
 <Modal title="MeshSense" bind:visible={$showConfigModal}>
   <div class="grid grid-rows-[auto_1fr] gap-2">
     <!-- Sidebar -->
     <div class="flex gap-1 -m-2 px-2 p-2 flex-wrap items-center border-b border-black/20 to-black/10 bg-gradient-to-b from-transparent">
-      {#each ['Settings', 'Device', 'Log', 'Legal'] as category}
+      {#each ['Settings', 'Device', 'Channels', 'Log', 'Legal'] as category}
         <button
           class:hidden={['Log', 'Device'].includes(category) && !$hasAccess}
           on:click={() => ($modalPage = category)}
@@ -53,6 +54,12 @@
           <DeviceConfig />
         {:else}
           <div>Please enter Access Key in Settings to view device config.</div>
+        {/if}
+      {:else if $modalPage == 'Channels'}
+        {#if $hasAccess}
+          <Channels />
+        {:else}
+          <div>Please enter Access Key in Settings to view channel config.</div>
         {/if}
       {/if}
     </div>

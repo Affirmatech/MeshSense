@@ -1,21 +1,13 @@
 <script lang="ts">
   import { channels } from 'api/src/vars'
-  import Card from './lib/Card.svelte'
-  import { smallMode } from './Nodes.svelte'
-  import { messageDestination } from './Message.svelte'
+  let selectedChannelIndex = 0
 </script>
 
-<Card title="Channels" {...$$restProps}>
-  <div class="gap-1 p-2 text-sm grid {$smallMode ? 'grid-cols-1' : 'grid-cols-2'}">
-    {#each $channels as channel}
-      {#if channel.role != 'DISABLED'}
-        <button
-          on:click={() => {
-            $messageDestination = channel.index
-          }}
-          class="btn whitespace-nowrap">{channel.index}: {channel.settings.name || (channel.settings?.psk?.toString() == 'AQ==' ? 'Long/Fast' : '')}</button
-        >
-      {/if}
+<div class="grid grid-cols-[auto_1fr] gap-1">
+  <div class="flex flex-col gap-1 overflow-auto h-80 p-0.5 pr-1">
+    {#each $channels as channel, channelIndex}
+      <button class:grayscale={channelIndex != selectedChannelIndex} class="btn w-36 text-sm" on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex}</button>
     {/each}
   </div>
-</Card>
+  <pre class="overflow-auto h-80 rounded ring bg-black/20 p-2 m-1 grow">{JSON.stringify($channels?.[selectedChannelIndex], undefined, 2) ?? ''}</pre>
+</div>
