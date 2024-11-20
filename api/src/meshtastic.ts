@@ -36,6 +36,8 @@ let traceRouteLog: Record<number, number> = {}
 
 let globalTracerouteRateLimitSec = 30
 
+export let deviceConfig: any = {}
+
 /** Returns `true` if the node has not recently had a traceroute sent to it based on `tracerouteRateLimit` */
 function isTracerouteAvailable(nodeNum: number) {
   if (!traceRouteLog[nodeNum]) return true
@@ -98,6 +100,7 @@ export function reset() {
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
   deleteInProgress = false
+  deviceConfig = {}
 }
 
 /**
@@ -247,6 +250,21 @@ export async function connect(address?: string) {
   connection.events.onDetectionSensorPacket.subscribe((e) => {
     let { id, data } = copy(e)
     packets.upsert({ id, detectionSensor: String(data) })
+  })
+
+  /** onChannelPacket */
+  connection.events.onChannelPacket.subscribe((e) => {
+    // Object.assign(deviceConfig, copy(e))
+    // deviceConfig
+    // console.log('CHANNEL', copy(e))
+  })
+
+  connection.events.onConfigPacket.subscribe((e) => {
+    Object.assign(deviceConfig, copy(e))
+  })
+
+  connection.events.onModuleConfigPacket.subscribe((e) => {
+    Object.assign(deviceConfig, copy(e))
   })
 
   // /** Subscribe to all events */

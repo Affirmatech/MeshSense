@@ -15,27 +15,26 @@
   import { writable } from 'svelte/store'
   import { hasAccess } from './lib/util'
   import SystemLog from './SystemLog.svelte'
+  import DeviceConfig from './DeviceConfig.svelte'
 </script>
 
 <Modal title="MeshSense" bind:visible={$showConfigModal}>
   <div class="grid grid-rows-[auto_1fr] gap-2">
     <!-- Sidebar -->
-    <div class="flex gap-1 flex-wrap items-center">
-      {#each ['Settings', 'Terms of Service', 'System Log'] as category}
-        <button class:hidden={category == 'System Log' && !$hasAccess} on:click={() => ($modalPage = category)} class="btn btn-sm h-8 w-32 {$modalPage == category ? 'brightness-125' : 'grayscale'}"
-          >{category}</button
+    <div class="flex gap-1 -m-2 px-2 p-2 flex-wrap items-center border-b border-black/20 to-black/10 bg-gradient-to-b from-transparent">
+      {#each ['Settings', 'Device', 'Log', 'Legal'] as category}
+        <button
+          class:hidden={['Log', 'Device'].includes(category) && !$hasAccess}
+          on:click={() => ($modalPage = category)}
+          class="btn btn-sm h-7 w-20 {$modalPage == category ? 'brightness-125' : 'grayscale'}">{category}</button
         >
       {/each}
-      <a class="p-4 py-1 underline text-center" target="_blank" href="https://affirmatech.com/meshsense/news">News</a>
-      <a class="p-4 py-1 underline text-center" target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a>
-      <a class="p-4 py-1 underline text-center" target="_blank" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation">Donate</a>
     </div>
-
     <!-- Content -->
-    <div class="p-2 grid h-full">
+    <div class="p-2 grid h-full overflow-auto">
       {#if $modalPage == 'Settings'}
         <Settings />
-      {:else if $modalPage == 'Terms of Service'}
+      {:else if $modalPage == 'Legal'}
         <div class="flex flex-col gap-4">
           <div class="font-bold">Usage Warranty</div>
           <div class="font-mono">Affirmatech, Inc. disclaims all liability for damages (consequential and otherwise) arising from the use of this product. No other warranty is given.</div>
@@ -43,11 +42,17 @@
           <pre class="overflow-auto h-80 rounded ring bg-black/20 mr-10 p-4">{license}</pre>
           <div>For requests related to the GPL, please <a href="https://affirmatech.com/contact?product=MeshSense">contact us</a> and we will accomodate your request.</div>
         </div>
-      {:else if $modalPage == 'System Log'}
+      {:else if $modalPage == 'Log'}
         {#if $hasAccess}
           <SystemLog />
         {:else}
           <div>Please enter Access Key in Settings to view system log.</div>
+        {/if}
+      {:else if $modalPage == 'Device'}
+        {#if $hasAccess}
+          <DeviceConfig />
+        {:else}
+          <div>Please enter Access Key in Settings to view device config.</div>
         {/if}
       {/if}
     </div>

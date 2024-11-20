@@ -3,7 +3,6 @@
   import { onDestroy, onMount, tick } from 'svelte'
   import { scrollToBottom, userKey } from './lib/util'
   import { AnsiUp } from 'ansi_up'
-  import { split } from 'postcss/lib/list'
 
   let ansi = new AnsiUp()
 

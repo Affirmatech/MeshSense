@@ -42,6 +42,12 @@
 </script>
 
 <div class="flex flex-col gap-3">
+  <div class="flex gap-1 flex-wrap items-center bg-white/5 rounded-lg p-1 px-3">
+    <div class="font-bold w-11">Links</div>
+    <a class="p-4 py-1 underline text-center text-blue-400 font-bold" target="_blank" href="https://affirmatech.com/meshsense/news">News</a>
+    <a class="p-4 py-1 underline text-center text-blue-400 font-bold" target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a>
+    <a class="p-4 py-1 underline text-center text-blue-400 font-bold" target="_blank" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation">Donate</a>
+  </div>
   <label class="flex gap-2">
     <input type="checkbox" bind:checked={$enableAudioAlerts} />
     <div class="font-bold">Enable Audio Alerts</div>
