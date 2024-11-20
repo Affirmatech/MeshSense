@@ -58,6 +58,24 @@ connectionStatus.subscribe((value) => {
   } else stopScanning()
 })
 
+let channelRoles = {
+  DISABLED: 0,
+  PRIMARY: 1,
+  SECONDARY: 2
+}
+
+channels.on('upsert', (args) => {
+  let channel = args[0]
+  /** Forward client updates to the device */
+  if (channels.flags.socket && channel?.index != undefined) {
+    console.log('Updating Channel', channel.index, channel)
+    let data = copy(channel)
+    data.role = channelRoles[channel.role] ?? channel.role
+    data.settings.psk = Buffer.from(channel.settings.psk, 'base64')
+    connection.setChannel(new Protobuf.Channel.Channel(data))
+  }
+})
+
 function copy(obj: any) {
   return JSON.parse(JSON.stringify(obj))
 }
@@ -97,6 +115,7 @@ export async function disconnect(setIntent = true) {
 export function reset() {
   nodes.set([])
   packets.set([])
+  channels.set([])
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
   deleteInProgress = false
