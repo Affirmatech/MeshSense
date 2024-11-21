@@ -46,7 +46,7 @@
       <option disabled>== Channels ==</option>
       {#each $channels as channel}
         {#if channel.role != 'DISABLED'}
-          <option value={channel.index}>{channel.settings.name || (channel.settings?.psk?.toString() == 'AQ==' ? 'Long/Fast' : '')}</option>
+          <option value={channel.index}>{channel.settings.name || `Channel ${channel.index}`}</option>
         {/if}
       {/each}
 

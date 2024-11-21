@@ -18,8 +18,8 @@
         class:-hue-rotate-60={channelIndex != selectedChannelIndex}
         class:saturate-50={channelIndex != selectedChannelIndex}
         class:saturate-0={channelIndex != selectedChannelIndex && channel.role == 'DISABLED'}
-        class="btn w-12 h-8 text-sm hue-rot"
-        on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex}</button
+        class="btn w-32 min-h-8 text-sm hue-rot"
+        on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex} {channel.settings?.name ? `- ${channel?.settings.name}` : ''}</button
       >
     {/each}
   </div>
