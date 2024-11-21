@@ -536,33 +536,33 @@ export async function setPosition(position: Position) {
     firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
     channels.upsert(firstChannel)
     await setChannel(firstChannel)
-    await sleep(500)
+    await sleep(1000)
   }
 
-  await connection.setConfig(
-    new Protobuf.Config.Config({
-      payloadVariant: {
-        case: 'position',
-        value: { fixedPosition: false }
-      }
-    })
-  )
+  // await connection.setConfig(
+  //   new Protobuf.Config.Config({
+  //     payloadVariant: {
+  //       case: 'position',
+  //       value: { fixedPosition: false }
+  //     }
+  //   })
+  // )
 
-  await sleep(500)
+  // await sleep(500)
   let data = new Protobuf.Mesh.Position(position)
   await connection.setPosition(data)
 
-  await sleep(500)
-  await connection.setConfig(
-    new Protobuf.Config.Config({
-      payloadVariant: {
-        case: 'position',
-        value: { fixedPosition: true }
-      }
-    })
-  )
+  // await sleep(500)
+  // await connection.setConfig(
+  //   new Protobuf.Config.Config({
+  //     payloadVariant: {
+  //       case: 'position',
+  //       value: { fixedPosition: true }
+  //     }
+  //   })
+  // )
 
-  deviceConfig.position.fixedPosition = true
+  // deviceConfig.position.fixedPosition = true
 }
 
 export async function setTime(seconds?: number) {
