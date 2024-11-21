@@ -116,12 +116,12 @@ export type NodeInfo = {
 
 export type ChannelSettings = {
   channelNum: number
-  psk: Uint8Array
+  psk: string
   name: string
   id: number
   uplinkEnabled: boolean
   downlinkEnabled: boolean
-  moduleSettings: { positionPrecision: number }
+  moduleSettings: { positionPrecision?: number }
 }
 
 export type Channel = {

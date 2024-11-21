@@ -5,7 +5,9 @@
 // import { HttpConnection, BleConnection } from '@meshtastic/js'
 import { HttpConnection, BleConnection, Protobuf } from '../meshtastic'
 import {
+  Channel,
   NodeInfo,
+  Position,
   address,
   automaticTraceroutes,
   broadcastId,
@@ -64,21 +66,17 @@ let channelRoles = {
   SECONDARY: 2
 }
 
+/** Forward client updates to the device */
 channels.on('upsert', (args) => {
   let channel = args[0]
-  /** Forward client updates to the device */
-  if (channels.flags.socket && channel?.index != undefined) {
-    console.log('Updating Channel', channel.index, channel)
-    let data = copy(channel)
-    data.role = channelRoles[channel.role] ?? channel.role
-    data.settings.psk = Buffer.from(channel.settings.psk, 'base64')
-    connection.setChannel(new Protobuf.Channel.Channel(data))
-  }
+  if (channels.flags.socket) setChannel(channel)
 })
 
 function copy(obj: any) {
   return JSON.parse(JSON.stringify(obj))
 }
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function validateMACAddress(macAddress: string): boolean {
   const pattern = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/
@@ -524,21 +522,23 @@ export function estimatePositionFromTrace(num: number, trace: NodeInfo[]) {
   return geolib.getCenter(peerCoordinates)
 }
 
-export async function setPosition(position) {
+export async function setPosition(position: Position) {
+  if (connectionStatus.value != 'connected' || !position) return
+
   position.time = Math.round(Date.now() / 1000)
   position.precisionBits = position.precisionBits ?? 32
+  position.locationSource = 1 // LOC_MANUAL
   console.log('setPosition', position)
-  if (connectionStatus.value != 'connected' || !position) return
-  await connection.setChannel(
-    new Protobuf.Channel.Channel({
-      index: 0,
-      settings: {
-        moduleSettings: {
-          positionPrecision: position.precisionBits
-        }
-      }
-    })
-  )
+
+  let firstChannel = channels.value?.[0]
+  if (firstChannel) {
+    firstChannel.settings.moduleSettings = firstChannel.settings.moduleSettings ?? {}
+    firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
+    channels.upsert(firstChannel)
+    await setChannel(firstChannel)
+    await sleep(500)
+  }
+
   await connection.setConfig(
     new Protobuf.Config.Config({
       payloadVariant: {
@@ -548,22 +548,34 @@ export async function setPosition(position) {
     })
   )
 
-  setTimeout(async () => {
-    let data = new Protobuf.Mesh.Position(position)
-    await connection.setPosition(data)
+  await sleep(500)
+  let data = new Protobuf.Mesh.Position(position)
+  await connection.setPosition(data)
 
-    await connection.setConfig(
-      new Protobuf.Config.Config({
-        payloadVariant: {
-          case: 'position',
-          value: { fixedPosition: true }
-        }
-      })
-    )
-  }, 1000)
+  await sleep(500)
+  await connection.setConfig(
+    new Protobuf.Config.Config({
+      payloadVariant: {
+        case: 'position',
+        value: { fixedPosition: true }
+      }
+    })
+  )
+
+  deviceConfig.position.fixedPosition = true
 }
 
 export async function setTime(seconds?: number) {
   console.log('[meshtastic]', 'Updating Device Time')
   return connection.setPosition(new Protobuf.Mesh.Position({ time: seconds }))
+}
+
+export async function setChannel(channel: Channel) {
+  if (channel?.index != undefined) {
+    console.log('Updating Channel', channel.index, channel)
+    let data = copy(channel)
+    data.role = channelRoles[channel.role] ?? channel.role
+    data.settings.psk = Buffer.from(channel.settings.psk, 'base64')
+    await connection.setChannel(new Protobuf.Channel.Channel(data))
+  }
 }
