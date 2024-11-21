@@ -8,10 +8,19 @@
   }
 </script>
 
-<div class="grid grid-cols-[auto_1fr] gap-2">
+<div class="grid grid-cols-[auto_1fr] gap-3">
   <div class="flex flex-col gap-1 overflow-auto h-80 p-0.5 pr-1">
     {#each $channels as channel, channelIndex}
-      <button class:grayscale={channelIndex != selectedChannelIndex} class="btn w-36 text-sm" on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex}</button>
+      <button
+        class:outline={channelIndex == selectedChannelIndex}
+        class:outline-1={channelIndex == selectedChannelIndex}
+        class:outline-blue-500={channelIndex == selectedChannelIndex}
+        class:-hue-rotate-60={channelIndex != selectedChannelIndex}
+        class:saturate-50={channelIndex != selectedChannelIndex}
+        class:saturate-0={channelIndex != selectedChannelIndex && channel.role == 'DISABLED'}
+        class="btn w-12 h-8 text-sm hue-rot"
+        on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex}</button
+      >
     {/each}
   </div>
   {#if selectedChannel}
