@@ -169,7 +169,7 @@ export async function connect(address?: string) {
       connectionStatus.set('connecting')
     } else if (e == 7) {
       connectionStatus.set('connected')
-      setTime()
+      // setTime()
       // } else if (e == 4) {
       // await disconnect()
     } else if (e == 2) {
@@ -565,6 +565,7 @@ export async function setPosition(position: Position) {
   // deviceConfig.position.fixedPosition = true
 }
 
+/** This is currently clearing position */
 export async function setTime(seconds?: number) {
   console.log('[meshtastic]', 'Updating Device Time')
   return connection.setPosition(new Protobuf.Mesh.Position({ time: seconds }))
