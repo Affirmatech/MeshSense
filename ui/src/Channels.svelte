@@ -12,13 +12,9 @@
   <div class="flex flex-col gap-1 overflow-auto h-80 p-0.5 pr-1">
     {#each $channels as channel, channelIndex}
       <button
-        class:outline={channelIndex == selectedChannelIndex}
-        class:outline-1={channelIndex == selectedChannelIndex}
-        class:outline-blue-500={channelIndex == selectedChannelIndex}
-        class:-hue-rotate-60={channelIndex != selectedChannelIndex}
-        class:saturate-50={channelIndex != selectedChannelIndex}
-        class:saturate-0={channelIndex != selectedChannelIndex && channel.role == 'DISABLED'}
-        class="btn w-32 min-h-8 text-sm hue-rot"
+        class="btn w-32 min-h-8 text-sm
+        {channelIndex == selectedChannelIndex ? 'outline outline-1 outline-blue-500' : '-hue-rotate-60 saturate-50'}
+        {channel.role == 'DISABLED' ? '!saturate-0' : ''}"
         on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex} {channel.settings?.name ? `- ${channel?.settings.name}` : ''}</button
       >
     {/each}
