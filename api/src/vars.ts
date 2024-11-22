@@ -98,6 +98,14 @@ export type DeviceMetrics = {
   uptimeSeconds?: number
 }
 
+export type EnvironmentMetrics = {
+  temperature: number
+  relativeHumidity: number
+  barometricPressure: number
+  gasResistance: number
+  iaq: number
+}
+
 export type NodeInfo = {
   num: number
   snr: number
@@ -108,7 +116,8 @@ export type NodeInfo = {
   isFavorite: boolean
   user: User
   position: Position
-  deviceMetrics: DeviceMetrics
+  deviceMetrics?: DeviceMetrics
+  environmentMetrics?: EnvironmentMetrics
   rssi?: number
   trace?: { route: number[] }
   approximatePosition?: { longitude: number; latitude: number }
@@ -164,6 +173,7 @@ export type MeshPacket = {
   data?: string
   message?: Message
   deviceMetrics?: DeviceMetrics
+  environmentMetrics?: EnvironmentMetrics
   position?: Position
   user?: User
   detectionSensor?: string

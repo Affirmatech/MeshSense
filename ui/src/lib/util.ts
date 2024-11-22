@@ -128,12 +128,30 @@ export function testPacket() {
     hopStart: 7,
     publicKey: '',
     pkiEncrypted: false,
-    deviceMetrics: {
-      batteryLevel: 101,
-      voltage: 4.091000080108643,
-      channelUtilization: 1.0133333206176758,
-      airUtilTx: 1.0588055849075317,
-      uptimeSeconds: 144216
+    // deviceMetrics: {
+    //   batteryLevel: 101,
+    //   voltage: 4.091000080108643,
+    //   channelUtilization: 1.0133333206176758,
+    //   airUtilTx: 1.0588055849075317,
+    //   uptimeSeconds: 144216
+    // }
+    environmentMetrics: {
+      temperature: 15.008466720581055,
+      relativeHumidity: 53.141929626464844,
+      barometricPressure: 1004.330810546875,
+      gasResistance: 624.9585571289062,
+      iaq: 133
+    }
+  })
+
+  nodes.upsert({
+    num: 2171857383,
+    environmentMetrics: {
+      temperature: 15.008466720581055,
+      relativeHumidity: 53.141929626464844,
+      barometricPressure: 1004.330810546875,
+      gasResistance: 624.9585571289062,
+      iaq: 133
     }
   })
 }
