@@ -239,21 +239,31 @@
           </div>
           {#if node.environmentMetrics}
             <div class="flex gap-1">
-              <div title="Temperature" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
-                {Math.round(node.environmentMetrics.temperature)} °C
-              </div>
-              <div title="Barometric Pressure" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
-                {Math.round(node.environmentMetrics.barometricPressure)} hPA
-              </div>
-              <div title="Gas Resistance" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
-                {Math.round(node.environmentMetrics.gasResistance)} MOhm
-              </div>
-              <div title="Relative Humidity" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
-                {Math.round(node.environmentMetrics.relativeHumidity)}%
-              </div>
-              <div title="Air Quality" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-16 h-6 text-center overflow-hidden">
-                {Math.round(node.environmentMetrics.iaq)} IAQ
-              </div>
+              {#if node.environmentMetrics.temperature}
+                <div title="Temperature" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
+                  {Math.round(node.environmentMetrics.temperature)} °C
+                </div>
+              {/if}
+              {#if node.environmentMetrics.barometricPressure}
+                <div title="Barometric Pressure" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
+                  {Math.round(node.environmentMetrics.barometricPressure)} hPA
+                </div>
+              {/if}
+              {#if node.environmentMetrics.relativeHumidity}
+                <div title="Relative Humidity" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
+                  {Math.round(node.environmentMetrics.relativeHumidity)}%
+                </div>
+              {/if}
+              {#if node.environmentMetrics.gasResistance}
+                <div title="Gas Resistance" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
+                  {Math.round(node.environmentMetrics.gasResistance)} MOhm
+                </div>
+              {/if}
+              {#if node.environmentMetrics.iaq}
+                <div title="Air Quality" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-16 h-6 text-center overflow-hidden">
+                  {Math.round(node.environmentMetrics.iaq)} IAQ
+                </div>
+              {/if}
             </div>
           {/if}
         {/if}
