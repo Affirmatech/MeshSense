@@ -66,6 +66,12 @@ let channelRoles = {
   SECONDARY: 2
 }
 
+let gpsModes = {
+  DISABLED: 0,
+  ENABLED: 1,
+  NOT_PRESENT: 2
+}
+
 /** Forward client updates to the device */
 channels.on('upsert', (args) => {
   let channel = args[0]
@@ -539,28 +545,23 @@ export async function setPosition(position: Position) {
     await sleep(500)
   }
 
-  await connection.setConfig(
-    new Protobuf.Config.Config({
-      payloadVariant: {
-        case: 'position',
-        value: { fixedPosition: false }
+  if (deviceConfig['position']) {
+    let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: false }
+    console.log('Sending Config Position', value)
+    connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
       }
-    })
-  )
 
   await sleep(500)
   let data = new Protobuf.Mesh.Position(position)
-  await connection.setPosition(data)
+  console.log('Sending Position', position)
+  connection.setPosition(data)
 
   await sleep(500)
-  await connection.setConfig(
-    new Protobuf.Config.Config({
-      payloadVariant: {
-        case: 'position',
-        value: { fixedPosition: true }
+  if (deviceConfig['position']) {
+    let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: true }
+    console.log('Sending Config Position', value)
+    connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
       }
-    })
-  )
 
   deviceConfig.position.fixedPosition = true
 }
