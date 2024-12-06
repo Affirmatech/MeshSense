@@ -22,7 +22,8 @@
     tracerouteRateLimit,
     nodeInactiveTimer,
     myNodeMetadata,
-    myNodeNum
+    myNodeNum,
+    meshMapForwarding
   } from 'api/src/vars'
   import { hasAccess, userKey, blockUserKey, getNodeById } from './lib/util'
   import { State } from 'api/src/lib/state'
@@ -132,6 +133,15 @@
       <div class="font-bold">MeshSense Beta Updates</div>
       <button class="btn !mr-auto" on:click={() => axios.get('/checkUpdate')}>Check for updates</button>
     </label>
+
+    <hr class="opacity-25" />
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$meshMapForwarding} />
+      <div class="font-bold">Share collected map data with global MeshSense Map 🌎</div>
+    </label>
+
+    <a class="border-2 text-white/80 border-blue-700 rounded p-2 bg-black/50 text-center" href="https://meshsense.affirmatech.com" target="_blank" rel="noreferrer">Open Global MeshSense Map</a>
 
     <hr class="opacity-25" />
   {/if}

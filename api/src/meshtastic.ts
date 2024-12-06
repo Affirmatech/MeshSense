@@ -15,6 +15,7 @@ import {
   connectionStatus,
   enableTLS,
   lastFromRadio,
+  meshMapForwarding,
   messagePrefix,
   messageSuffix,
   myNodeMetadata,
@@ -28,6 +29,7 @@ import {
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 import * as geolib from 'geolib'
+import axios from 'axios'
 
 let connection: HttpConnection | BleConnection
 let connectionIntended = false
@@ -39,6 +41,28 @@ let traceRouteLog: Record<number, number> = {}
 let globalTracerouteRateLimitSec = 30
 
 export let deviceConfig: any = {}
+
+let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com/'
+
+nodes.on('upsert', (args) => {
+  let value = args[0]
+  if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
+    let keys = Object.keys(value)
+    // if (keys.includes('lastHeard') && keys.length == 2) return  // Save some traffic by skipping a straight lastHeard update
+    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, value], { timeout: 3000 }).catch((e) => {
+      console.error('Unable to send to MeshMap', e?.reason)
+    })
+  }
+  // console.log(myNodeNum.value, value)
+})
+
+function uploadMyNode() {
+  if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
+    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, getNodeById(myNodeNum.value)], { timeout: 3000 }).catch((e) => {
+      console.error('Unable to send to MeshMap', e?.reason)
+    })
+  }
+}
 
 /** Returns `true` if the node has not recently had a traceroute sent to it based on `tracerouteRateLimit` */
 function isTracerouteAvailable(nodeNum: number) {
@@ -58,6 +82,12 @@ connectionStatus.subscribe((value) => {
   if (value == 'disconnected' || value == 'searching' || value == 'reconnecting') {
     beginScanning()
   } else stopScanning()
+
+  if (value == 'connected') uploadMyNode()
+})
+
+meshMapForwarding.subscribe((enabled) => {
+  if (enabled) uploadMyNode()
 })
 
 let channelRoles = {
@@ -534,7 +564,6 @@ export async function setPosition(position: Position) {
   position.time = Math.round(Date.now() / 1000)
   position.precisionBits = position.precisionBits ?? 32
   position.locationSource = 1 // LOC_MANUAL
-  console.log('setPosition', position)
 
   let firstChannel = channels.value?.[0]
   if (firstChannel) {
@@ -549,7 +578,7 @@ export async function setPosition(position: Position) {
     let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: false }
     console.log('Sending Config Position', value)
     connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
-      }
+  }
 
   await sleep(500)
   let data = new Protobuf.Mesh.Position(position)
@@ -561,7 +590,7 @@ export async function setPosition(position: Position) {
     let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: true }
     console.log('Sending Config Position', value)
     connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
-      }
+  }
 
   deviceConfig.position.fixedPosition = true
 }

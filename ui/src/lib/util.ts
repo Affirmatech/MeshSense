@@ -144,14 +144,14 @@ export function testPacket() {
     }
   })
 
-  nodes.upsert({
-    num: 2171857383,
-    environmentMetrics: {
-      temperature: 15.008466720581055,
-      relativeHumidity: 53.141929626464844,
-      barometricPressure: 1004.330810546875,
-      gasResistance: 624.9585571289062,
-      iaq: 133
-    }
-  })
+  // nodes.upsert({
+  //   num: 2171857383,
+  //   environmentMetrics: {
+  //     temperature: 15.008466720581055,
+  //     relativeHumidity: 53.141929626464844,
+  //     barometricPressure: 1004.330810546875,
+  //     gasResistance: 624.9585571289062,
+  //     iaq: 133
+  //   }
+  // })
 }
