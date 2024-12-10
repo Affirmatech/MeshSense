@@ -42,24 +42,21 @@ let globalTracerouteRateLimitSec = 30
 
 export let deviceConfig: any = {}
 
-let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com/'
+let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
 
 nodes.on('upsert', (args) => {
   let value = args[0]
-  if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
-    let keys = Object.keys(value)
-    // if (keys.includes('lastHeard') && keys.length == 2) return  // Save some traffic by skipping a straight lastHeard update
-    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, value], { timeout: 3000 }).catch((e) => {
-      console.error('Unable to send to MeshMap', e?.reason)
-    })
-  }
-  // console.log(myNodeNum.value, value)
+  sendToMeshMap(value)
 })
 
 function uploadMyNode() {
+  sendToMeshMap(getNodeById(myNodeNum.value))
+}
+
+function sendToMeshMap(nodeInfo) {
   if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
-    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, getNodeById(myNodeNum.value)], { timeout: 3000 }).catch((e) => {
-      console.error('Unable to send to MeshMap', e?.reason)
+    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, nodeInfo], { timeout: 3000 }).catch((e) => {
+      console.error(`Unable to send to ${meshMapForwardingURL}`, String(e))
     })
   }
 }
