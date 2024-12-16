@@ -6,6 +6,7 @@
 import { HttpConnection, BleConnection, Protobuf } from '../meshtastic'
 import {
   Channel,
+  MeshPacket,
   NodeInfo,
   Position,
   address,
@@ -24,7 +25,8 @@ import {
   packetLimit,
   packets,
   pendingTraceroutes,
-  tracerouteRateLimit
+  tracerouteRateLimit,
+  version
 } from './vars'
 import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
@@ -45,17 +47,18 @@ export let deviceConfig: any = {}
 let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
 
 nodes.on('upsert', (args) => {
-  let value = args[0]
-  sendToMeshMap(value)
+  let value = args[0] as NodeInfo
+  if (!value.viaMqtt) sendToMeshMap(value)
 })
 
 function uploadMyNode() {
   sendToMeshMap(getNodeById(myNodeNum.value))
 }
 
-function sendToMeshMap(nodeInfo) {
+function sendToMeshMap(updates: NodeInfo) {
   if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
-    axios.post(meshMapForwardingURL + '/node', [myNodeNum.value, nodeInfo], { timeout: 3000 }).catch((e) => {
+    // console.log('MeshMap Send', updates)
+    axios.post(meshMapForwardingURL + '/node', { source: myNodeNum.value, updates, version: version.value }, { timeout: 3000 }).catch((e) => {
       console.error(`Unable to send to ${meshMapForwardingURL}`, String(e))
     })
   }
@@ -223,10 +226,11 @@ export async function connect(address?: string) {
   })
 
   /** All packets */
-  connection.events.onMeshPacket.subscribe((e) => {
+  connection.events.onMeshPacket.subscribe((e: MeshPacket) => {
     if (e.from) {
       let updates: any = {
         num: e.from,
+        viaMqtt: e.viaMqtt,
         lastHeard: Date.now() / 1000
       }
 
@@ -244,6 +248,7 @@ export async function connect(address?: string) {
         if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
 
+      // console.log(updates)
       nodes.upsert(updates)
       packets.push(copy(e))
     }
