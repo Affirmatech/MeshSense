@@ -121,7 +121,7 @@ export type NodeInfo = {
   environmentMetrics?: EnvironmentMetrics
   rssi?: number
   trace?: { route: number[] }
-  approximatePosition?: { longitude: number; latitude: number }
+  approximatePosition?: { longitude: number; latitude: number } | false
 }
 
 export type ChannelSettings = {
