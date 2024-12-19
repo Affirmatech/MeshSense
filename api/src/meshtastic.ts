@@ -46,16 +46,26 @@ export let deviceConfig: any = {}
 
 let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
 
+function getMyNode() {
+  return getNodeById(myNodeNum.value)
+}
+
 function uploadMyNode() {
   sendToMeshMap(getNodeById(myNodeNum.value))
 }
 
-function sendToMeshMap(updates: Partial<NodeInfo> & { name?: string }) {
+function sendToMeshMap(updates: Partial<NodeInfo & { name?: string }>) {
   if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
     // console.log('MeshMap Send', updates)
-    axios.post(meshMapForwardingURL + '/node', { source: myNodeNum.value, updates, version: version.value }, { timeout: 3000 }).catch((e) => {
-      console.error(`Unable to send to ${meshMapForwardingURL}`, String(e))
-    })
+    axios
+      .post(
+        meshMapForwardingURL + '/node',
+        { source: myNodeNum.value, name: getMyNode()?.user?.shortName ?? '', updates, version: version.value ? version.value : process.env.VERSION },
+        { timeout: 3000 }
+      )
+      .catch((e) => {
+        console.log(`[meshtastic] Unable to send to ${meshMapForwardingURL}`, String(e), String(e.response?.data) ?? '')
+      })
   }
 }
 
@@ -271,8 +281,8 @@ export async function connect(address?: string) {
     let packet: Partial<MeshPacket>
     if (id) packet = packets.upsert({ id, user: data })
     if (from) {
-      nodes.upsert({ num: from, user: data })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: from, user: data })
+      let node = nodes.upsert({ num: from, user: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: from, user: data, name: node?.user?.shortName })
     }
   })
 
@@ -282,7 +292,8 @@ export async function connect(address?: string) {
     message.show = true
     let packet: Partial<MeshPacket>
     packet = packets.upsert({ id: message.id, message })
-    if (packet?.viaMqtt === false) sendToMeshMap({ num: message.from })
+    let node = getNodeById(packet.from)
+    if (packet?.viaMqtt === false) sendToMeshMap({ num: message.from, name: node?.user?.shortName })
   })
 
   /** TELEMETRY_APP */
@@ -294,8 +305,8 @@ export async function connect(address?: string) {
     }
     let packet = packets.upsert({ id, ...telemetry })
     if (Object.keys(telemetry).length) {
-      nodes.upsert({ num: e.from, ...telemetry })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, ...telemetry })
+      let node = nodes.upsert({ num: e.from, ...telemetry })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, ...telemetry, name: node?.user?.shortName })
     }
   })
 
@@ -306,7 +317,7 @@ export async function connect(address?: string) {
     if (id && data.latitudeI) packet = packets.upsert({ id, position: data })
     if (e.from && data.latitudeI) {
       let node = nodes.upsert({ num: e.from, position: data })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, position: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, position: data, name: node?.user?.shortName })
     }
   })
 
@@ -391,8 +402,8 @@ export async function connect(address?: string) {
     let packet: Partial<MeshPacket>
     if (id) packet = packets.upsert({ id, trace: data })
     if (e.from && data) {
-      nodes.upsert({ num: e.from, trace: data })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, trace: data })
+      let node = nodes.upsert({ num: e.from, trace: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, name: node?.user?.shortName, trace: data })
       // Update lastHeard of all nodes in the traceroute chain
       for (let num of data.route) {
         // if (num != broadcastId) {
