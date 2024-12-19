@@ -93,7 +93,7 @@
             {/if}
           </div>
           <div class="w-7">{packet.channel}</div>
-          <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxSnr || '' : ''}</div>
+          <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxSnr || '' : ''}{packet.viaMqtt ? 'MQTT' : ''}</div>
           <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxRssi || '' : ''}</div>
           <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
 

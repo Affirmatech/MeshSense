@@ -117,6 +117,7 @@ export class State<T = any> {
     if (match) Object.assign(match, value)
     else (this.value as any[]).push(value)
     this.notify('upsert', value, primaryKey)
+    return match ?? value
   }
 
   /** ```

@@ -46,16 +46,11 @@ export let deviceConfig: any = {}
 
 let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
 
-nodes.on('upsert', (args) => {
-  let value = args[0] as NodeInfo
-  if (!value.viaMqtt) sendToMeshMap(value)
-})
-
 function uploadMyNode() {
   sendToMeshMap(getNodeById(myNodeNum.value))
 }
 
-function sendToMeshMap(updates: NodeInfo) {
+function sendToMeshMap(updates: Partial<NodeInfo> & { name?: string }) {
   if (connectionStatus.value == 'connected' && meshMapForwarding.value) {
     // console.log('MeshMap Send', updates)
     axios.post(meshMapForwardingURL + '/node', { source: myNodeNum.value, updates, version: version.value }, { timeout: 3000 }).catch((e) => {
@@ -273,15 +268,21 @@ export async function connect(address?: string) {
   /** Update Node User data */
   connection.events.onUserPacket.subscribe((e) => {
     let { id, from, data } = copy(e)
-    if (id) packets.upsert({ id, user: data })
-    if (from) nodes.upsert({ num: from, user: data })
+    let packet: Partial<MeshPacket>
+    if (id) packet = packets.upsert({ id, user: data })
+    if (from) {
+      nodes.upsert({ num: from, user: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: from, user: data })
+    }
   })
 
   /** TEXT_MESSAGE_APP */
   connection.events.onMessagePacket.subscribe((e) => {
     let message = copy(e)
     message.show = true
-    packets.upsert({ id: message.id, message })
+    let packet: Partial<MeshPacket>
+    packet = packets.upsert({ id: message.id, message })
+    if (packet?.viaMqtt === false) sendToMeshMap({ num: message.from })
   })
 
   /** TELEMETRY_APP */
@@ -291,15 +292,22 @@ export async function connect(address?: string) {
     for (let key of ['deviceMetrics', 'environmentMetrics', 'airQualityMetrics', 'powerMetrics', 'localStats', 'healthMetrics']) {
       if (data[key]) telemetry[key] = data[key]
     }
-    packets.upsert({ id, ...telemetry })
-    if (Object.keys(telemetry).length) nodes.upsert({ num: e.from, ...telemetry })
+    let packet = packets.upsert({ id, ...telemetry })
+    if (Object.keys(telemetry).length) {
+      nodes.upsert({ num: e.from, ...telemetry })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, ...telemetry })
+    }
   })
 
   /** POSITION_APP */
   connection.events.onPositionPacket.subscribe((e) => {
     let { id, data } = copy(e)
-    if (id && data.latitudeI) packets.upsert({ id, position: data })
-    if (e.from && data.latitudeI) nodes.upsert({ num: e.from, position: data })
+    let packet: Partial<MeshPacket>
+    if (id && data.latitudeI) packet = packets.upsert({ id, position: data })
+    if (e.from && data.latitudeI) {
+      let node = nodes.upsert({ num: e.from, position: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, position: data })
+    }
   })
 
   /** DETECTION_SENSOR_APP */
@@ -380,10 +388,11 @@ export async function connect(address?: string) {
   /** TRACEROUTE_APP */
   connection.events.onTraceRoutePacket.subscribe((e) => {
     let { id, data } = copy(e)
-    if (id) packets.upsert({ id, trace: data })
+    let packet: Partial<MeshPacket>
+    if (id) packet = packets.upsert({ id, trace: data })
     if (e.from && data) {
       nodes.upsert({ num: e.from, trace: data })
-
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, trace: data })
       // Update lastHeard of all nodes in the traceroute chain
       for (let num of data.route) {
         // if (num != broadcastId) {

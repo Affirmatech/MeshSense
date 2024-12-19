@@ -137,6 +137,9 @@
                 <div title="Other Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">R</div>
               {/if}
             {/if}
+            {#if node.viaMqtt}
+              <div title="Node heard via MQTT" class="bg-rose-900/50 text-rose-200 rounded px-1 cursor-help text-xs">MQTT</div>
+            {/if}
             <div class="grow"></div>
             <!-- SNR -->
             {#if node.snr && node.hopsAway == 0}
