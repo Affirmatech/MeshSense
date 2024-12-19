@@ -17,6 +17,15 @@
 
   $: nodesWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0) || n.approximatePosition)
 
+  function getIconURL(node: NodeInfo) {
+    if (node.position?.latitudeI) {
+      if (node?.position?.altitude > 2743) return `${import.meta.env.VITE_PATH || ''}/airplane.svg`
+      else return `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${node.num}`
+    } else {
+      return `${import.meta.env.VITE_PATH || ''}/circle-help.svg`
+    }
+  }
+
   $: if (ol) {
     let myNodeCoords = getCoordinates($myNodeNum)
 
@@ -37,7 +46,7 @@
         return {
           lat,
           lon,
-          icon: n.position?.latitudeI ? `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${n.num}` : `${import.meta.env.VITE_PATH || ''}/circle-help.svg`,
+          icon: getIconURL(n),
           description: getNodeName(n)
         }
       })
