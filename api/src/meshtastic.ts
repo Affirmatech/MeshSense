@@ -250,6 +250,7 @@ export async function connect(address?: string) {
         })
       }
 
+      packets.push(copy(e))
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
       if (updates.hopsAway == 0) updates.trace = null
       else if (automaticTraceroutes.value && originalNodeRecord?.position?.latitudeI && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
@@ -258,7 +259,6 @@ export async function connect(address?: string) {
 
       // console.log(updates)
       nodes.upsert(updates)
-      packets.push(copy(e))
     }
   })
 
