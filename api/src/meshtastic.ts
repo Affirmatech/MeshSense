@@ -162,6 +162,7 @@ export function reset() {
   myNodeMetadata.set(undefined)
   deleteInProgress = false
   deviceConfig = {}
+  pendingTraceroutes.set([])
 }
 
 /**
@@ -250,15 +251,16 @@ export async function connect(address?: string) {
         })
       }
 
-      packets.push(copy(e))
       let originalNodeRecord = nodes.value.find((n) => n.num == updates.num)
+
+      let updatedNode = nodes.upsert(updates)
+      packets.push(copy(e))
+
+      // Check and send trace route if needed
       if (updates.hopsAway == 0) updates.trace = null
-      else if (automaticTraceroutes.value && originalNodeRecord?.position?.latitudeI && updates.hopsAway && (!originalNodeRecord.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
+      else if (automaticTraceroutes.value && updatedNode?.position?.latitudeI && updates.hopsAway && (!updatedNode.trace || originalNodeRecord?.hopsAway != updates.hopsAway)) {
         if (isTracerouteAvailable(updates.num)) traceRoute(updates.num)
       }
-
-      // console.log(updates)
-      nodes.upsert(updates)
     }
   })
 
