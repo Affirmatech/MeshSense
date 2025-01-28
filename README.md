@@ -19,8 +19,16 @@ HEADLESS=1 ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage
 To run MeshSense from the source code, first clone the MeshSense repo:
 
 ```sh
-git clone https://github.com/Affirmatech/MeshSense.git
+git clone --recurse-submodules https://github.com/Affirmatech/MeshSense.git
 cd MeshSense
+```
+
+Build `webbluetooth`
+
+```
+cd webbluetooth
+npm i
+npm run build:all
 ```
 
 The `update.mjs` script will install the dependencies for the `ui`, `api`, and `electron` directories.

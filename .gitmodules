@@ -1,0 +1,3 @@
+[submodule "api/webbluetooth"]
+	path = api/webbluetooth
+	url = git@github.com:Affirmatech/webbluetooth.git

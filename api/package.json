@@ -52,7 +52,6 @@
     "serialport": "^12.0.0",
     "ste-simple-events": "^3.0.11",
     "tslog": "^4.9.3",
-    "webbluetooth": "^3.2.1",
     "ws": "^8.18.0",
     "x11": "^2.3.0"
   }

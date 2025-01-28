@@ -1,6 +1,6 @@
-import { Bluetooth } from 'webbluetooth'
+import { Bluetooth } from '../../webbluetooth/dist'
 import { State } from './state'
-import { BluetoothDeviceImpl } from 'webbluetooth/dist/device'
+import { BluetoothDeviceImpl } from '../../webbluetooth/dist/device'
 import { createBluetooth } from 'node-ble'
 
 export let bluetoothDevices: Record<string, BluetoothDeviceImpl> = {}
