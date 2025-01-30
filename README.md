@@ -23,12 +23,13 @@ git clone --recurse-submodules https://github.com/Affirmatech/MeshSense.git
 cd MeshSense
 ```
 
-Build `webbluetooth`
+Build `webbluetooth` Dependency
 
 ```
 cd api/webbluetooth
 npm i
 npm run build:all
+cd ../..
 ```
 
 The `update.mjs` script will install the dependencies for the `ui`, `api`, and `electron` directories.
