@@ -26,7 +26,7 @@ cd MeshSense
 Build `webbluetooth`
 
 ```
-cd webbluetooth
+cd api/webbluetooth
 npm i
 npm run build:all
 ```
