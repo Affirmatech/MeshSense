@@ -14,7 +14,7 @@
       <button
         class="btn w-32 min-h-8 text-sm
         {channelIndex == selectedChannelIndex ? 'outline outline-1 outline-blue-500' : '-hue-rotate-60 saturate-50'}
-        {channel.role == 'DISABLED' ? '!saturate-0' : ''}"
+        {channel.role == 0 ? '!saturate-0' : ''}"
         on:click={() => (selectedChannelIndex = channelIndex)}>{channelIndex} {channel.settings?.name ? `- ${channel?.settings.name}` : ''}</button
       >
     {/each}
@@ -32,9 +32,9 @@
       <label class="flex gap-2 items-center">
         <div class="font-bold w-14">Role</div>
         <select class="input grow max-w-sm" bind:value={selectedChannel.role}>
-          <option value="DISABLED">Disabled</option>
-          <option value="PRIMARY">Primary</option>
-          <option value="SECONDARY">Secondary</option>
+          <option value={0}>Disabled</option>
+          <option value={1}>Primary</option>
+          <option value={2}>Secondary</option>
         </select>
       </label>
       <pre class="overflow-auto h-80 rounded ring bg-black/20 p-2 m-1 grow">{JSON.stringify($channels?.[selectedChannelIndex], undefined, 2) ?? ''}</pre>

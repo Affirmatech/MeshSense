@@ -10,8 +10,9 @@
     if (filterText) {
       if (!(getNodeNameById(packet.from).toLowerCase().includes(filterText.toLowerCase()) || getNodeNameById(packet.to).toLowerCase().includes(filterText.toLowerCase()))) return false
     }
-    if (!includeTx && packet.deviceMetrics && packet.from == $myNodeNum) return false
-    if (!includeTx && packet.decoded?.portnum == 'ROUTING_APP') return false
+    if (!includeTx && packet.from == $myNodeNum && !packet.data && !packet.message) return false
+    if (!includeTx && packet.data?.$typeName == 'meshtastic.Telemetry' && packet.from == $myNodeNum) return false
+    if (!includeTx && packet.data?.$typeName == 'meshtastic.Routing') return false
     return true
   }
 
@@ -54,6 +55,12 @@
       console.error('Unable to generate CSV', e)
     }
   }
+
+  function getType(packet: MeshPacket) {
+    if (packet.payloadVariant?.case == 'encrypted') return 'Encrypted'
+    if (packet.message) return 'Message'
+    return (packet.data?.variant?.value?.$typeName ?? packet.data?.$typeName)?.replace('meshtastic.', '')
+  }
 </script>
 
 <Modal title="Packet Detail" visible={selectedPacket != undefined}>
@@ -95,7 +102,7 @@
           <div class="w-7">{packet.channel}</div>
           <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxSnr || '' : ''}{packet.viaMqtt ? 'MQTT' : ''}</div>
           <div class="w-10">{packet.hopStart == packet.hopLimit ? packet.rxRssi || '' : ''}</div>
-          <div class="w-36">{packet.encrypted ? 'encrypted' : packet.decoded?.portnum}</div>
+          <div class="w-36">{getType(packet)}</div>
 
           <div class="w-10">
             {#if packet.hopStart}{packet.hopStart - packet.hopLimit} / {packet.hopStart}{/if}
@@ -103,25 +110,25 @@
           <div>
             <button on:click={() => (selectedPacket = packet)}>🔍</button>
           </div>
-          {#if packet.deviceMetrics}
+          {#if packet.data?.variant?.case == 'deviceMetrics'}
             <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">
-              {Number(packet.deviceMetrics.voltage).toFixed(1)}V {packet.deviceMetrics.batteryLevel}%
+              {Number(packet.data?.variant?.value?.voltage).toFixed(1)}V {packet.data?.variant?.value?.batteryLevel}%
             </div>
-          {:else if packet.position}
+          {:else if packet.data?.$typeName == 'meshtastic.Position'}
             <div class="bg-teal-800/60 rounded px-1 my-0.5 text-xs ring-0 text-teal-200 mx-2 w-fit">
-              ({(packet.position.latitudeI / 10000000).toFixed(3)}, {(packet.position.longitudeI / 10000000).toFixed(3)}) {packet.position.altitude ?? '?'}m asl
+              ({(packet.data.latitudeI / 10000000).toFixed(3)}, {(packet.data.longitudeI / 10000000).toFixed(3)}) {packet.data.altitude ?? '?'}m asl
             </div>
-          {:else if packet.user}
+          {:else if packet.data?.$typeName == 'meshtastic.User'}
             <div class="bg-indigo-800/60 rounded px-1 my-0.5 text-xs ring-0 text-indigo-300 mx-2 w-fit">
-              {packet?.user?.longName}
+              {packet?.data?.longName}
             </div>
-          {:else if packet.routing}
+          {:else if packet.data?.$typeName == 'meshtastic.Routing' && packet?.data?.variant?.value}
             <div class="bg-pink-800/40 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
-              Err: {packet?.routing?.errorReason}
+              {packet?.data?.variant?.value}
             </div>
-          {:else if packet.trace}
+          {:else if packet.data?.$typeName == 'meshtastic.RouteDiscovery'}
             <div class="bg-purple-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">
-              {[packet.to, ...packet?.trace?.route, packet.from].map((id) => getNodeNameById(id)).join(' -> ')}
+              {[packet.to, ...packet?.data?.route, packet.from].map((id) => getNodeNameById(id)).join(' -> ')}
             </div>
           {:else if packet.neighbors?.length}
             <div class="bg-fuchsia-800/60 rounded px-1 my-0.5 text-xs ring-0 text-white/80 mx-2 w-fit">

@@ -136,7 +136,7 @@ export type ChannelSettings = {
 
 export type Channel = {
   index: number
-  role: 'PRIMARY' | 'SECONDARY' | 'DISABLED'
+  role: 0 | 1 | 2
   settings: ChannelSettings
 }
 
@@ -171,7 +171,7 @@ export type MeshPacket = {
   hopStart: number
   publicKey?: string
   pkiEncrypted?: boolean
-  data?: string
+  data?: any
   message?: Message
   deviceMetrics?: DeviceMetrics
   environmentMetrics?: EnvironmentMetrics

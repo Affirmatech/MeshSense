@@ -46,6 +46,10 @@ export let deviceConfig: any = {}
 
 let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
 
+BigInt.prototype['toJSON'] = function () {
+  return Number(this)
+}
+
 function getMyNode() {
   return getNodeById(myNodeNum.value)
 }
@@ -141,6 +145,11 @@ exitHook(() => {
   // connection?.disconnect()
 })
 
+function extractPayload(packet: MeshPacket): Record<string, any> {
+  let key = Object.hasOwn(packet, 'payloadVariant') ? 'payloadVariant' : 'variant'
+  return { [packet[key]?.case]: packet[key]?.value }
+}
+
 /** Disconnect from any existing connection */
 export async function disconnect(setIntent = true) {
   connectionStatus.set('disconnected')
@@ -231,11 +240,13 @@ export async function connect(address?: string) {
 
   /** Channel Info */
   connection.events.onChannelPacket.subscribe((e) => {
-    channels.upsert(copy(e))
+    let channel = copy(e)
+    channel.settings.psk = Buffer.from(e.settings?.psk).toString('base64')
+    channels.upsert(channel)
   })
 
   /** All packets */
-  connection.events.onMeshPacket.subscribe((e: MeshPacket) => {
+  connection.events.onMeshPacket.subscribe((e: Protobuf.Mesh.MeshPacket) => {
     if (e.from) {
       let updates: any = {
         num: e.from,
@@ -284,7 +295,7 @@ export async function connect(address?: string) {
   connection.events.onUserPacket.subscribe((e) => {
     let { id, from, data } = copy(e)
     let packet: MeshPacket
-    if (id) packet = packets.upsert({ id, user: data })
+    if (id) packet = packets.upsert({ id, data })
     if (from) {
       let node = nodes.upsert({ num: from, user: data })
       if (packet?.viaMqtt === false) sendToMeshMap({ num: from, user: data }, node, packet)
@@ -304,22 +315,17 @@ export async function connect(address?: string) {
   /** TELEMETRY_APP */
   connection.events.onTelemetryPacket.subscribe((e) => {
     let { id, data } = copy(e)
-    let telemetry: Record<string, any> = {}
-    for (let key of ['deviceMetrics', 'environmentMetrics', 'airQualityMetrics', 'powerMetrics', 'localStats', 'healthMetrics']) {
-      if (data[key]) telemetry[key] = data[key]
-    }
-    let packet = packets.upsert({ id, ...telemetry })
-    if (Object.keys(telemetry).length) {
-      let node = nodes.upsert({ num: e.from, ...telemetry })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, ...telemetry }, node, packet)
-    }
+    let telemetry = extractPayload(data)
+    let packet = packets.upsert({ id, data })
+    let node = nodes.upsert({ num: e.from, ...telemetry })
+    if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, ...telemetry }, node, packet)
   })
 
   /** POSITION_APP */
   connection.events.onPositionPacket.subscribe((e) => {
     let { id, data } = copy(e)
     let packet: MeshPacket
-    if (id && data.latitudeI) packet = packets.upsert({ id, position: data })
+    if (id && data.latitudeI) packet = packets.upsert({ id, data })
     if (e.from && data.latitudeI) {
       let node = nodes.upsert({ num: e.from, position: data })
       if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, position: data }, node, packet)
@@ -340,15 +346,19 @@ export async function connect(address?: string) {
   })
 
   connection.events.onConfigPacket.subscribe((e) => {
-    Object.assign(deviceConfig, copy(e))
+    Object.assign(deviceConfig, extractPayload(copy(e)))
   })
 
   connection.events.onModuleConfigPacket.subscribe((e) => {
-    Object.assign(deviceConfig, copy(e))
+    Object.assign(deviceConfig, extractPayload(copy(e)))
   })
 
   // /** Subscribe to all events */
   for (let event in connection.events) {
+    // connection.events[event].subscribe((e: any) => {
+    //   console.debug(`[meshtastic]`, event)
+    // })
+
     if (
       [
         'onPendingSettingsChange',
@@ -405,7 +415,7 @@ export async function connect(address?: string) {
   connection.events.onTraceRoutePacket.subscribe((e) => {
     let { id, data } = copy(e)
     let packet: MeshPacket
-    if (id) packet = packets.upsert({ id, trace: data })
+    if (id) packet = packets.upsert({ id, data })
     if (e.from && data) {
       let node = nodes.upsert({ num: e.from, trace: data })
       if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, trace: data }, node, packet)
@@ -421,7 +431,7 @@ export async function connect(address?: string) {
   /** ROUTING_APP */
   connection.events.onRoutingPacket.subscribe((e) => {
     let { id, data } = copy(e)
-    if (id) packets.upsert({ id, routing: data })
+    if (id) packets.upsert({ id, data })
   })
 
   /** NEIGHBORINFO_APP */
@@ -457,7 +467,7 @@ export async function connect(address?: string) {
   }
 }
 
-export async function send({ message = '', destination, channel, wantAck = true }) {
+export async function send({ message = '', destination, channel, wantAck = false }) {
   if (connectionStatus.value != 'connected' || !message) return
   message = `${messagePrefix.value || ''} ${message} ${messageSuffix.value || ''}`.trim()
   console.log('Sending', { message, destination, channel, wantAck })
@@ -482,7 +492,7 @@ async function processTraceRoutes() {
     to: destination,
     rxTime: Date.now() / 1000,
     channel: '',
-    decoded: { portnum: 'TRACEROUTE' }
+    data: { $typeName: 'RouteRequest' }
   } as any)
   connection.traceRoute(destination)
   pendingTraceroutes.shift()
@@ -592,31 +602,30 @@ export async function setPosition(position: Position) {
   position.precisionBits = position.precisionBits ?? 32
   position.locationSource = 1 // LOC_MANUAL
 
-  let firstChannel = channels.value?.[0]
-  if (firstChannel) {
-    firstChannel.settings.moduleSettings = firstChannel.settings.moduleSettings ?? {}
-    firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
-    channels.upsert(firstChannel)
-    await setChannel(firstChannel)
-    await sleep(500)
-  }
+  // let firstChannel = channels.value?.[0]
+  // if (firstChannel) {
+  //   firstChannel.settings.moduleSettings = firstChannel.settings.moduleSettings ?? {}
+  //   firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
+  //   channels.upsert(firstChannel)
+  //   await setChannel(firstChannel)
+  //   await sleep(500)
+  // }
 
   if (deviceConfig['position']) {
     let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: false }
     console.log('Sending Config Position', value)
-    connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
+    connection.setConfig({ payloadVariant: { case: 'position', value } } as Protobuf.Config.Config)
   }
 
   await sleep(500)
-  let data = new Protobuf.Mesh.Position(position)
   console.log('Sending Position', position)
-  connection.setPosition(data)
+  connection.setPosition({ $typeName: 'meshtastic.Position', ...position })
 
   await sleep(500)
   if (deviceConfig['position']) {
     let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: true }
     console.log('Sending Config Position', value)
-    connection.setConfig(new Protobuf.Config.Config({ payloadVariant: { case: 'position', value } }))
+    connection.setConfig({ payloadVariant: { case: 'position', value } } as Protobuf.Config.Config)
   }
 
   deviceConfig.position.fixedPosition = true
@@ -624,16 +633,15 @@ export async function setPosition(position: Position) {
 
 /** This is currently clearing position */
 export async function setTime(seconds?: number) {
-  console.log('[meshtastic]', 'Updating Device Time')
-  return connection.setPosition(new Protobuf.Mesh.Position({ time: seconds }))
+  // console.log('[meshtastic]', 'Updating Device Time')
+  // return connection.setPosition(new Protobuf.Mesh.Position({ time: seconds }))
 }
 
 export async function setChannel(channel: Channel) {
-  if (channel?.index != undefined) {
-    console.log('Updating Channel', channel.index, channel)
-    let data = copy(channel)
-    data.role = channelRoles[channel.role] ?? channel.role
-    data.settings.psk = Buffer.from(channel.settings.psk, 'base64')
-    await connection.setChannel(new Protobuf.Channel.Channel(data))
-  }
+  if (channel?.index == undefined) return
+  console.log('Updating Channel', channel.index, channel)
+  let data = copy(channel)
+  data.role = channelRoles[channel.role] ?? channel.role
+  data.settings.psk = Buffer.from(channel.settings.psk, 'base64')
+  await connection.setChannel(data)
 }
