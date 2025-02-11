@@ -22,6 +22,12 @@ Ubuntu and Raspberry Pi OS users will need the following dependency installed to
 sudo apt install libfuse2
 ```
 
+To display unicode symbols on the buttons, it may be helpful to install `fonts-noto-color-emoji`
+
+```sh
+sudo apt install fonts-noto-color-emoji
+```
+
 ## Development Setup
 
 To run MeshSense from the source code, first clone the MeshSense repo:

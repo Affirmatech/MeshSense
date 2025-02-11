@@ -1,6 +1,6 @@
 {
   "name": "meshsense",
-  "version": "1.0.19-beta",
+  "version": "1.1.0-beta",
   "description": "MeshSense is a simple, open-source application that monitors, maps and graphically displays all the vital stats of your area's Meshtastic network including connected nodes, signal reports, trace routes and more!",
   "main": "./out/main/index.js",
   "author": "Affirmatech Inc.",
