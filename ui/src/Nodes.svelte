@@ -118,23 +118,29 @@
             <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
               >{node.user?.longName || '!' + node.num?.toString(16)}</button
             >
-            {#if typeof node.user?.role === 'string'}
-              {#if node.user.role === 'CLIENT'}
+            {#if node.user?.role != undefined}
+              {#if node.user.role === 0}
                 <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">C</div>
-              {:else if node.user.role === 'CLIENT_MUTE'}
+              {:else if node.user.role === 1}
                 <div title="Client_Mute Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">CM</div>
-              {:else if node.user.role.startsWith('CLIENT')}
-                <div title="Other Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">C</div>
-              {:else if node.user.role === 'TRACKER'}
-                <div title="Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">T</div>
-              {:else if node.user.role === 'SEONSOR'}
-                <div title="Sensor Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">S</div>
-              {:else if node.user.role === 'ROUTER'}
+              {:else if node.user.role === 2}
                 <div title="Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">R</div>
-              {:else if node.user.role === 'ROUTER_CLIENT'}
+              {:else if node.user.role === 3}
                 <div title="Deprecated Router_Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">RC</div>
-              {:else if node.user.role.startsWith('ROUTER')}
-                <div title="Other Router Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">R</div>
+              {:else if node.user.role === 4}
+                <div title="Repeater Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">Re</div>
+              {:else if node.user.role === 5}
+                <div title="Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">T</div>
+              {:else if node.user.role === 6}
+                <div title="Sensor Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">S</div>
+              {:else if node.user.role === 7}
+                <div title="TAK Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">TAK</div>
+              {:else if node.user.role === 8}
+                <div title="Client Hidden Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">CH</div>
+              {:else if node.user.role === 9}
+                <div title="Lost and Found Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">LF</div>
+              {:else if node.user.role === 10}
+                <div title="TAK Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">TT</div>
               {/if}
             {/if}
             {#if node.viaMqtt}

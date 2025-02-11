@@ -62,7 +62,7 @@ export type User = {
   macaddr: string
   hwModel: string
   isLicensed: boolean
-  role: string
+  role: number
 }
 
 export type Position = {
