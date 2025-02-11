@@ -14,6 +14,14 @@ To run MeshSense without a GUI, use the `HEADLESS=1` environment variable when s
 HEADLESS=1 ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage
 ```
 
+## Debian Dependencies
+
+Ubuntu and Raspberry Pi OS users will need the following dependency installed to run the AppImage:
+
+```sh
+sudo apt install libfuse2
+```
+
 ## Development Setup
 
 To run MeshSense from the source code, first clone the MeshSense repo:
