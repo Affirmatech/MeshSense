@@ -1,6 +1,7 @@
 import { State } from './lib/state'
 
 export let version = new State('version', '')
+export let headless = new State('headless', '')
 export let address = new State('address', '', { persist: 'api' })
 export let connectionStatus = new State<'connected' | 'connecting' | 'disconnected' | 'searching' | 'configuring' | 'reconnecting'>('connectionStatus', 'disconnected')
 export let lastFromRadio = new State('lastFromRadio', undefined, { hideLog: true })

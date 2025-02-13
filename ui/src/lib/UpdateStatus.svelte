@@ -2,6 +2,8 @@
   import axios from 'axios'
   import { hasAccess } from './util'
   import { State } from 'api/src/lib/state'
+  import { headless } from 'api/src/vars'
+  import { tick } from 'svelte'
 
   export let updateStatus = new State<any>('updateStatus', {})
 
@@ -24,7 +26,11 @@
   }
 
   function installUpdate() {
-    axios.get('/installUpdate')
+    status = 'Installing Update'
+    if ($headless) status += '. Please manually restart MeshSense when in headless mode.'
+    tick().then(() => {
+      axios.get('/installUpdate', { timeout: 500 })
+    })
   }
 
   //runExample()

@@ -77,16 +77,20 @@ app.whenReady().then(async () => {
   }
 
   console.log('[electron] Arguments', process.argv)
-  if (!process.env['HEADLESS']) {
+  let headless = process.argv.includes('--headless')
+  if (!headless) {
     apiProcess.stdout?.on('data', createWindowOnServerListening)
   }
   apiProcess.postMessage({ event: 'version', body: app.getVersion() })
+  apiProcess.postMessage({ event: 'headless', body: headless })
   // apiProcess.postMessage({ event: 'updateChannel', body: autoUpdater.channel })
 
   apiProcess.on('message', (e) => {
     console.log('[api to electron]', e)
-    if (e.event == 'installUpdate') autoUpdater.quitAndInstall()
-    else if (e.event == 'checkUpdate') autoUpdater.checkForUpdates()
+    if (e.event == 'installUpdate') {
+      autoUpdater.autoRunAppAfterInstall = !headless
+      autoUpdater.quitAndInstall()
+    } else if (e.event == 'checkUpdate') autoUpdater.checkForUpdates()
     else if (e.event == 'setUpdateChannel') {
       console.log('[electron] Set update channel', e.body)
       autoUpdater.channel = e.body

@@ -49,6 +49,7 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 
 export let version = new State('version', '')
+export let headless = new State('headless', '')
 export let updateChannel = new State('updateChannel', undefined, { persist: true })
 export let updateStatus = new State('updateStatus', {})
 
@@ -105,6 +106,8 @@ async function initSever() {
     console.log('[electron to api]', e)
     if (e.data.event == 'version') {
       version.set(e.data.body)
+    } else if (e.data.event == 'headless') {
+      headless.set(e.data.body)
     } else if (e.data.event == 'updateChannel') {
       if (e.data.body) updateChannel.set(e.data.body)
     } else if (['update-available', 'download-progress', 'update-downloaded'].includes(e.data.event)) {

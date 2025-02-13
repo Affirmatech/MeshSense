@@ -8,10 +8,10 @@ MeshSense directly connects to your Meshtastic node via Bluetooth or WiFi and co
 
 ## Headless Usage
 
-To run MeshSense without a GUI, use the `HEADLESS=1` environment variable when starting. Additionally the `ACCESS_KEY` environment variable can be used to specify the privileged access key for remote connections to gain full permissions.
+To run MeshSense without a GUI, use the `--headless` flag. Additionally the `ACCESS_KEY` environment variable can be used to specify the privileged access key for remote connections to gain full permissions.
 
 ```sh
-HEADLESS=1 ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage
+ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage --headless
 ```
 
 ## Debian Dependencies
@@ -37,7 +37,7 @@ git clone --recurse-submodules https://github.com/Affirmatech/MeshSense.git
 cd MeshSense
 ```
 
-Build `webbluetooth` Dependency
+Build `webbluetooth` Dependency.  Debian systems will need the `cmake` and `libdbus-1-dev` packages.
 
 ```
 cd api/webbluetooth
@@ -46,7 +46,7 @@ npm run build:all
 cd ../..
 ```
 
-The `update.mjs` script will install the dependencies for the `ui`, `api`, and `electron` directories.
+The `update.mjs` script will pull the latest code and install dependencies for the `ui`, `api`, and `electron` directories.
 
 ```sh
 ./update.mjs
