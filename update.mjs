@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawn } from 'child_process'
+import { argv } from 'process';
 import { styleText } from 'util';
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
@@ -19,6 +20,7 @@ let platform = process.platform.replace(/32$/, '').replace('darwin', 'mac')
 
 console.log(styleText(['magenta', 'bold'], 'Updating Project'))
 await runCmd('git pull')
+await runCmd('git submodule update --init --recursive')
 
 console.log(styleText(['magenta', 'bold'], 'Updating UI'))
 process.chdir('ui')
@@ -33,14 +35,17 @@ process.chdir('../electron')
 await runCmd(`npm i`)
 process.chdir('..')
 
-console.log(styleText(['magenta', 'bold'], 'Updating Subproject webbluetooth'))
-process.chdir('api/webbluetooth')
-if ((await runCmd('git pull')).includes('file changed')) {
+if (argv.includes('--webbluetooth')) {
+  console.log(styleText(['magenta', 'bold'], 'Updating Subproject webbluetooth'))
+  process.chdir('api/webbluetooth')
   await runCmd('npm i')
-  await runCmd('npm build:all')
+  await runCmd('npm run build:all')
+  process.chdir('../..')
 }
 
 console.log(styleText(['magenta', 'bold'], 'Updating Subproject meshtastic-js'))
-process.chdir('../meshtastic-js')
+process.chdir('api/meshtastic-js')
 await runCmd('npm i')
+await runCmd('npm run build')
+process.chdir('../..')
 
