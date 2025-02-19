@@ -3,7 +3,7 @@
  */
 
 // import { HttpConnection, BleConnection } from '@meshtastic/js'
-import { HttpConnection, BleConnection, Protobuf } from '../meshtastic'
+import { HttpConnection, BleConnection, Protobuf } from '../meshtastic-js/src'
 import {
   Channel,
   MeshPacket,

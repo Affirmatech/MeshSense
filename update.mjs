@@ -4,10 +4,15 @@ import { styleText } from 'util';
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
   let cmd = spawn(commandString, { shell: true, env: process.env })
-  cmd.stdout.on('data', (data) => process.stdout.write(data))
+  let stdoutData = '';
+
+  cmd.stdout.on('data', (data) => {
+    stdoutData += data
+    process.stdout.write(data)
+})
   cmd.stderr.on('data', (data) => process.stderr.write(data))
   cmd.on('error', (e) => reject(e))
-  cmd.on('close', (e) => e == 0 ? resolve() : reject(`Return code: ${e}`))
+  cmd.on('close', (e) => e == 0 ? resolve(stdoutData) : reject(`Return code: ${e}`))
 })
 
 let platform = process.platform.replace(/32$/, '').replace('darwin', 'mac')
@@ -26,3 +31,16 @@ await runCmd('npm i')
 console.log(styleText(['magenta', 'bold'], 'Updating Electron'))
 process.chdir('../electron')
 await runCmd(`npm i`)
+process.chdir('..')
+
+console.log(styleText(['magenta', 'bold'], 'Updating Subproject webbluetooth'))
+process.chdir('api/webbluetooth')
+if ((await runCmd('git pull')).includes('file changed')) {
+  await runCmd('npm i')
+  await runCmd('npm build:all')
+}
+
+console.log(styleText(['magenta', 'bold'], 'Updating Subproject meshtastic-js'))
+process.chdir('../meshtastic-js')
+await runCmd('npm i')
+
