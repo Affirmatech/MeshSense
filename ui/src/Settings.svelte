@@ -102,7 +102,17 @@
 
     <label>
       <div class="font-bold">Traceroute Rate Limit (Minutes per Node)</div>
-      <input class="input w-28" type="number" bind:value={$tracerouteRateLimit} />
+      <input
+        class="input w-28"
+        type="number"
+        min={15}
+        on:change={(e) => {
+          let newValue = Math.max(Number(e.currentTarget.value), 15)
+          $tracerouteRateLimit = newValue
+          e.currentTarget.value = String(newValue)
+        }}
+        value={$tracerouteRateLimit}
+      />
     </label>
 
     <label>

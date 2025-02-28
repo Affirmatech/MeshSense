@@ -27,7 +27,7 @@ export let pendingTraceroutes = new State<number[]>('pendingTraceroutes', [], { 
 export let meshMapForwarding = new State<boolean>('meshMapForwarding', false, { hideLog: true, persist: true })
 
 /** Measured in minutes */
-export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 15, { persist: true })
+export let tracerouteRateLimit = new State<number>('tracerouteRateLimit', 60, { persist: true })
 export let nodeInactiveTimer = new State<number>('nodeInactiveTimer', 60, { persist: true })
 
 export type DeviceMetadata = {

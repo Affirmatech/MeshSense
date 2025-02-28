@@ -40,7 +40,7 @@ let connectionIntended = false
 /** Tracks when nodes were last requested a traceroute: `traceRouteLog[nodeNum]` */
 let traceRouteLog: Record<number, number> = {}
 
-let globalTracerouteRateLimitSec = 30
+let globalTracerouteRateLimitSec = 60
 
 export let deviceConfig: any = {}
 
