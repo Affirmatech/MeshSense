@@ -42,6 +42,8 @@ let traceRouteLog: Record<number, number> = {}
 
 let globalTracerouteRateLimitSec = 60
 
+if (tracerouteRateLimit.value < 15) tracerouteRateLimit.set(15)
+
 export let deviceConfig: any = {}
 
 let meshMapForwardingURL = process.env['MESHMAP_URL'] ?? 'https://meshsense.affirmatech.com'
