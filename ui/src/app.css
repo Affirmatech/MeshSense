@@ -89,3 +89,12 @@ button:active {
 .label {
   @apply select-none;
 }
+
+/* Added custom color classes for vertical bars (e.g. channel utilization) */
+.bg-yellow-500 {
+  background-color: #eab308;
+}
+
+.bg-orange-500 {
+  background-color: #f97316;
+}
