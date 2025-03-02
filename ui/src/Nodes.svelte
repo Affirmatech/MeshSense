@@ -15,6 +15,7 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { messageDestination } from './Message.svelte'
   import { setPositionMode } from './Map.svelte'
+  import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
   export let showInactive = false
   let selectedNode: NodeInfo
@@ -109,6 +110,9 @@
               <!-- Hops -->
               <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
             {/if}
+
+            <!-- Channel Utilization for smallMode -->
+            <ChannelUtilization {node} />
           </div>
         {:else}
           <!-- Longname -->
@@ -246,6 +250,10 @@
               </button>
             {/if}
           </div>
+
+          <!-- Channel Utilization for normal mode -->
+          <ChannelUtilization {node} />
+
           {#if node.environmentMetrics}
             <div class="flex gap-1">
               {#if node.environmentMetrics.temperature}
