@@ -91,10 +91,31 @@ button:active {
 }
 
 /* Added custom color classes for vertical bars (e.g. channel utilization) */
-.bg-yellow-500 {
-  background-color: #eab308;
+
+/* inherited from tailwind
+.bg-green-500 {
+  background-color: inherited;
+} */
+
+.bg-greenyellow-500 {
+  background-color: #9acd32;
 }
 
+/* inherited from tailwind
+.bg-yellow-500 {
+  background-color: inherited;
+} */
+
+/* inherited from tailwind
 .bg-orange-500 {
-  background-color: #f97316;
+  background-color: inherited;
+} */
+
+/* inherited from tailwind 
+.bg-red-500 {
+  background-color: inherited;
+} */
+
+.bg-superred-500 {
+  background-color: red;
 }
