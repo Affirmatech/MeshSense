@@ -12,9 +12,11 @@
  
   $: colorClass = channelUtilizationINT !== null
     ? (channelUtilizationINT < 15 ? 'green' : 
+       channelUtilizationINT < 20 ? 'greenyellow' :
        channelUtilizationINT < 25 ? 'yellow' : 
-       channelUtilizationINT < 35 ? 'orange' : 
-       'red')
+       channelUtilizationINT < 30 ? 'orange' : 
+       channelUtilizationINT < 35 ? 'red' :
+       'superred')
     : 'grayscale'; // default color when channelUtilizationINT is null
 </script>
  
@@ -29,9 +31,11 @@
   <div class="grow"></div>
   <div
     class:bg-green-500={colorClass === 'green'}
+    class:bg-greenyellow-500={colorClass === 'greenyellow'}
     class:bg-yellow-500={colorClass === 'yellow'}
     class:bg-orange-500={colorClass === 'orange'}
     class:bg-red-500={colorClass === 'red'}
+    class:bg-superred-500={colorClass === 'superred'}
     class:bg-gray-500={colorClass === 'grayscale'}
     style="height: {scaledHeight}%;"
   ></div>
