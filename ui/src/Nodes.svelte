@@ -15,6 +15,7 @@
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { messageDestination } from './Message.svelte'
   import { setPositionMode } from './Map.svelte'
+  import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
   export let showInactive = false
   let selectedNode: NodeInfo
@@ -89,8 +90,15 @@
             : 'grayscale'}  "
       >
         {#if $smallMode}
+          <!-- Short Mode -->
           <div title={node.user?.longName} class="flex items-center gap-1">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
+
+            <div class="relative w-2 h-6">
+              <!-- Channel Utilization for smallMode -->
+              <ChannelUtilization {node} />
+            </div>
+
             <!-- Shortname -->
             <button on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded w-12 text-center overflow-hidden">{node.user?.shortName || '?'}</button>
 
@@ -109,15 +117,22 @@
               <!-- Hops -->
               <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
             {/if}
+
           </div>
         {:else}
-          <!-- Longname -->
+          <!-- Large Mode -->
           <div class="flex gap-1 items-center">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
+            <div class="relative w-2 h-6">
+              <!-- Channel Utilization for largeMode -->
+              <ChannelUtilization {node} />
+            </div>
+
+            <!-- Longname -->
             <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
-              >{node.user?.longName || '!' + node.num?.toString(16)}</button
-            >
+              >{node.user?.longName || '!' + node.num?.toString(16)}</button>
+
             {#if node.user?.role != undefined}
               {#if node.user.role === 0}
                 <div title="Client Node" class="bg-blue-500/50 rounded px-1 font-bold cursor-help">C</div>
@@ -246,6 +261,7 @@
               </button>
             {/if}
           </div>
+
           {#if node.environmentMetrics}
             <div class="flex gap-1">
               {#if node.environmentMetrics.temperature}
