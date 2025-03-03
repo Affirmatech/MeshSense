@@ -90,6 +90,7 @@
             : 'grayscale'}  "
       >
         {#if $smallMode}
+          <!-- Short Mode -->
           <div title={node.user?.longName} class="flex items-center gap-1">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
@@ -119,7 +120,7 @@
 
           </div>
         {:else}
-          <!-- Longname -->
+          <!-- Large Mode -->
           <div class="flex gap-1 items-center">
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
@@ -128,6 +129,7 @@
               <ChannelUtilization {node} />
             </div>
 
+            <!-- Longname -->
             <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
               >{node.user?.longName || '!' + node.num?.toString(16)}</button>
 
