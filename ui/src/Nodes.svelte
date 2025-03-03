@@ -124,7 +124,7 @@
             <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
 
             <div class="relative w-2 h-6">
-              <!-- Channel Utilization for longMode -->
+              <!-- Channel Utilization for largeMode -->
               <ChannelUtilization {node} />
             </div>
 
