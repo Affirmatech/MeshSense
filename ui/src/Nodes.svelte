@@ -18,16 +18,18 @@
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
   export let showInactive = false
+  export let includeMqtt = true
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: $nodes.length, showInactive, $nodeInactiveTimer, filterNodes()
+  $: $nodes.length, showInactive, includeMqtt, $nodeInactiveTimer, filterNodes()
 
   function filterNodes() {
     $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
 
     $filteredNodes = $nodes
       .filter((node) => showInactive || node.num == $myNodeNum || !$inactiveNodes.some((inactive) => node.num == inactive.num))
+      .filter((node) => includeMqtt || !node.viaMqtt)
       .sort((a, b) => {
         if (a.num === $myNodeNum) return -1
         if (b.num === $myNodeNum) return 1
@@ -72,6 +74,10 @@
   <h2 slot="title" class="rounded-t flex items-center gap-2">
     <div class="grow">Nodes</div>
     {#if !$smallMode}
+      <label class="text-sm font-normal"
+        >MQTT
+        <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
+      </label>
       <label class="text-sm font-normal"
         >Inactive
         <input title="Toggle Inactive Nodes" type="checkbox" bind:checked={showInactive} />
