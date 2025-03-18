@@ -2,6 +2,8 @@
   import { Feature, Map, View } from 'ol'
   import { OSM, Vector } from 'ol/source'
   import TileLayer from 'ol/layer/Tile'
+  import Control from 'ol/control/Control'
+  import { defaults as defaultControls } from 'ol/control'
 
   import { LineString, Point, Polygon } from 'ol/geom'
   import { createEventDispatcher, onMount } from 'svelte'
@@ -159,8 +161,65 @@
   // 	dispatch('mapReady')
   // }
 
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  function fetchUserDarkModePref () {
+    let storedValue = localStorage.getItem('darkMode')
+    if (/^[01]$/.test(storedValue)) {
+      return storedValue
+    } else {
+      storedValue = prefersDarkMode ? '1' : '0'
+      localStorage.setItem('darkMode', storedValue)
+      return storedValue
+    }
+  }
+
+  export function renderUserDarkModePref () {
+    const darkMode = fetchUserDarkModePref()
+    map.render()
+  }
+
+  function toggleMapDarkMode(darkMode: string) {
+    localStorage.setItem('darkMode', darkMode === '1' ? '0' : '1')
+    map.render()
+  }
+
+  function toggleControlDarkMode(darkMode: string, button: HTMLButtonElement) {
+    if (button) {
+      button.innerHTML = darkMode === '1' ? '☾' : '☼'
+    }
+  } 
+  
+  class ToggleDarkModeControl extends Control {
+    constructor() {
+      const button = document.createElement('button')
+      const darkMode = fetchUserDarkModePref()
+      button.innerHTML = darkMode === '1' ? '☼' : '☾'// button.iHTML = '☼'
+      button.title = 'Toggle Dark Mode'
+
+      const element = document.createElement('div')
+      element.className = 'ol-unselectable ol-control ol-control-darkmode'
+      element.appendChild(button)
+
+      super({element: element})
+      button.addEventListener('click', this.handleToggleDarkMode.bind(this), false)
+    }
+
+    handleToggleDarkMode() {
+      const darkMode = fetchUserDarkModePref()
+      const button = this.element.querySelector('button')
+      toggleMapDarkMode(darkMode)
+      toggleControlDarkMode(darkMode, button)
+    }
+  }
+
   onMount(() => {
-    map = new Map({ target: mapElement })
+    map = new Map({ 
+      controls: defaultControls().extend([
+        new ToggleDarkModeControl()
+      ]),
+      target: mapElement 
+    })
     // console.log('[OLM] Creating Map', { center, zoom })
     map.setView(
       new View({
@@ -168,10 +227,12 @@
         zoom
       })
     )
+
+    const tile = new TileLayer({
+      source: new OSM()
+    })
     map.setLayers([
-      new TileLayer({
-        source: new OSM()
-      })
+      tile
     ])
 
     map.on('moveend', (e) => {
@@ -181,6 +242,24 @@
     map.on('click', (e) => {
       let point = map.getCoordinateFromPixel(e.pixel)
       if (onClick) onClick(point[1], point[0])
+    })
+
+
+    tile.on('prerender', function(e){
+      const  darkMode = fetchUserDarkModePref()
+      if (darkMode === '1') {
+        const cx = e.context as CanvasRenderingContext2D;
+        cx.filter = 'brightness(.6) invert(.9) contrast(2) hue-rotate(200deg) saturate(.8) brightness(.7)'
+        cx.globalCompositeOperation = 'source-over'
+      }
+    })
+    tile.on('postrender', (e) => { 
+      const  darkMode = fetchUserDarkModePref()
+      if (darkMode === '1') {
+        const cx = e.context as CanvasRenderingContext2D
+        cx.filter = 'none'
+        cx.globalCompositeOperation = 'source-over'
+      }
     })
   })
 </script>

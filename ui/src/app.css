@@ -89,3 +89,12 @@ button:active {
 .label {
   @apply select-none;
 }
+
+.ol-layers {
+  transition: filter .3s;
+}
+
+.ol-control-darkmode {
+  top: 73px;
+  left: .5em;
+}

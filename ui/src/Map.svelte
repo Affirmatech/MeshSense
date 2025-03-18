@@ -51,6 +51,8 @@
         }
       })
     )
+  
+    ol.renderUserDarkModePref()
   }
 
   let modalPage = 'Settings'
