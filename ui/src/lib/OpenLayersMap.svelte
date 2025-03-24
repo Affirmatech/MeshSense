@@ -83,26 +83,30 @@
           feature.set('description', data.description)
 
           if (data.icon) {
-            var iconStyle = new Style({
-              image: new Icon({
-                anchor: [0.5, 46],
-                anchorXUnits: 'fraction',
-                anchorYUnits: 'pixels',
-                src: data.icon,
-                scale: 0.25
-              }),
-              text: new Text({
-                font: '15px Calibri,sans-serif',
-                fill: new Fill({ color: '#000' }),
-                offsetY: 20,
-                stroke: new Stroke({
-                  color: '#fff',
-                  width: 5
+            function getIconStyle() {
+              let darkMode = fetchUserDarkModePref()
+              return new Style({
+                image: new Icon({
+                  anchor: [0.5, 46],
+                  anchorXUnits: 'fraction',
+                  anchorYUnits: 'pixels',
+                  src: data.icon,
+                  scale: 0.25
                 }),
-                text: feature.get('description')
+                text: new Text({
+                  font: '15px Calibri,sans-serif',
+                  fill: new Fill({ color: darkMode !== '1' ? '#000' : '#fff' }),
+                  offsetY: 20,
+                  stroke: new Stroke({
+                    color: darkMode !== '1' ? '#fff' : '#000',
+                    width: 4
+                  }),
+                  text: feature.get('description')
+                })
               })
-            })
-            feature.setStyle(iconStyle)
+            }
+
+            feature.setStyle(getIconStyle)
           }
           return feature
         })
@@ -161,9 +165,9 @@
   // 	dispatch('mapReady')
   // }
 
-  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-  function fetchUserDarkModePref () {
+  function fetchUserDarkModePref() {
     let storedValue = localStorage.getItem('darkMode')
     if (/^[01]$/.test(storedValue)) {
       return storedValue
@@ -174,13 +178,16 @@
     }
   }
 
-  export function renderUserDarkModePref () {
+  export function renderUserDarkModePref() {
     const darkMode = fetchUserDarkModePref()
     map.render()
   }
 
   function toggleMapDarkMode(darkMode: string) {
     localStorage.setItem('darkMode', darkMode === '1' ? '0' : '1')
+    for (let name of Object.keys(layers)) {
+      layers[name].changed()
+    }
     map.render()
   }
 
@@ -188,20 +195,20 @@
     if (button) {
       button.innerHTML = darkMode === '1' ? '☾' : '☼'
     }
-  } 
-  
+  }
+
   class ToggleDarkModeControl extends Control {
     constructor() {
       const button = document.createElement('button')
       const darkMode = fetchUserDarkModePref()
-      button.innerHTML = darkMode === '1' ? '☼' : '☾'// button.iHTML = '☼'
+      button.innerHTML = darkMode === '1' ? '☼' : '☾' // button.iHTML = '☼'
       button.title = 'Toggle Dark Mode'
 
       const element = document.createElement('div')
       element.className = 'ol-unselectable ol-control ol-control-darkmode'
       element.appendChild(button)
 
-      super({element: element})
+      super({ element: element })
       button.addEventListener('click', this.handleToggleDarkMode.bind(this), false)
     }
 
@@ -214,11 +221,9 @@
   }
 
   onMount(() => {
-    map = new Map({ 
-      controls: defaultControls().extend([
-        new ToggleDarkModeControl()
-      ]),
-      target: mapElement 
+    map = new Map({
+      controls: defaultControls().extend([new ToggleDarkModeControl()]),
+      target: mapElement
     })
     // console.log('[OLM] Creating Map', { center, zoom })
     map.setView(
@@ -231,9 +236,7 @@
     const tile = new TileLayer({
       source: new OSM()
     })
-    map.setLayers([
-      tile
-    ])
+    map.setLayers([tile])
 
     map.on('moveend', (e) => {
       if (onMove) onMove(map.getView().getCenter(), map.getView().getZoom())
@@ -244,17 +247,16 @@
       if (onClick) onClick(point[1], point[0])
     })
 
-
-    tile.on('prerender', function(e){
-      const  darkMode = fetchUserDarkModePref()
+    tile.on('prerender', function (e) {
+      const darkMode = fetchUserDarkModePref()
       if (darkMode === '1') {
-        const cx = e.context as CanvasRenderingContext2D;
+        const cx = e.context as CanvasRenderingContext2D
         cx.filter = 'brightness(.6) invert(.9) contrast(2) hue-rotate(200deg) saturate(.8) brightness(.7)'
         cx.globalCompositeOperation = 'source-over'
       }
     })
-    tile.on('postrender', (e) => { 
-      const  darkMode = fetchUserDarkModePref()
+    tile.on('postrender', (e) => {
+      const darkMode = fetchUserDarkModePref()
       if (darkMode === '1') {
         const cx = e.context as CanvasRenderingContext2D
         cx.filter = 'none'
