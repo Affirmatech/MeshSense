@@ -21,7 +21,7 @@
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: $nodes.length, $nodeInactiveTimer, filterNodes()
+  $: $nodes.length, $nodeInactiveTimer, nodeVisibilityMode, filterNodes()
 
   function filterNodes() {
     $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
