@@ -604,14 +604,14 @@ export async function setPosition(position: Position) {
   position.precisionBits = position.precisionBits ?? 32
   position.locationSource = 1 // LOC_MANUAL
 
-  // let firstChannel = channels.value?.[0]
-  // if (firstChannel) {
-  //   firstChannel.settings.moduleSettings = firstChannel.settings.moduleSettings ?? {}
-  //   firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
-  //   channels.upsert(firstChannel)
-  //   await setChannel(firstChannel)
-  //   await sleep(500)
-  // }
+  let firstChannel = channels.value?.[0]
+  if (firstChannel) {
+    firstChannel.settings.moduleSettings = firstChannel.settings.moduleSettings ?? {}
+    firstChannel.settings.moduleSettings.positionPrecision = position.precisionBits
+    channels.upsert(firstChannel)
+    await setChannel(firstChannel)
+    await sleep(500)
+  }
 
   if (deviceConfig['position']) {
     let value = { ...deviceConfig['position'], gpsMode: gpsModes[deviceConfig['position']?.gpsMode], fixedPosition: false }

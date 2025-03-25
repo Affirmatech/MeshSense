@@ -41,6 +41,16 @@
   function clearNodes() {
     axios.post('/deleteNodes', { nodes: $inactiveNodes })
   }
+
+  function getBatteryColor(batteryLevel) {
+    if (batteryLevel === 101) return ''; // use HTML style="background-color: 'steelblue'"
+    if (batteryLevel >= 70) return 'bg-green-500';
+    if (batteryLevel >= 50) return 'bg-[#9acd32]';
+    if (batteryLevel >= 25) return 'bg-yellow-500';
+    if (batteryLevel >= 10) return 'bg-orange-500';
+    if (batteryLevel >= 6) return 'bg-red-500';
+    return 'bg-[red]';
+  }
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
@@ -204,14 +214,9 @@
                 {node.deviceMetrics?.batteryLevel || 0}%
               {/if}
               <div
-                class="h-0.5"
-                style="width: {node.deviceMetrics?.batteryLevel || 0}%; background-color: {node.deviceMetrics?.batteryLevel === 101
-                  ? 'steelblue'
-                  : node.deviceMetrics?.batteryLevel >= 70
-                    ? 'green'
-                    : node.deviceMetrics?.batteryLevel >= 30
-                      ? 'yellow'
-                      : 'red'};"
+                class="h-0.5 {getBatteryColor(node.deviceMetrics?.batteryLevel)}" 
+                style="width: {node.deviceMetrics?.batteryLevel || 0}%; 
+                      background-color: {node.deviceMetrics?.batteryLevel === 101 ? 'steelblue' : ''};"
               ></div>
             </div>
 
