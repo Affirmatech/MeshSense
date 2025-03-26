@@ -17,11 +17,13 @@
   import { setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
-  export let nodeVisibilityMode = 'active'
-  export let includeMqtt = true
+  export let nodeVisibilityMode = localStorage.getItem('nodeVisibilityMode') ?? 'active'
+  export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
+  $: localStorage.setItem('nodeVisibilityMode', nodeVisibilityMode)
+  $: localStorage.setItem('includeMqtt', String(includeMqtt))
   $: $nodes.length, $nodeInactiveTimer, nodeVisibilityMode, includeMqtt, filterNodes()
 
   function filterNodes() {
@@ -30,12 +32,11 @@
     $filteredNodes = $nodes
       .filter((node) => {
         switch (nodeVisibilityMode) {
-          case 'active':
-            return node.num === $myNodeNum || !$inactiveNodes.some((inactive) => node.num === inactive.num)
           case 'inactive':
             return $inactiveNodes.some((inactive) => node.num === inactive.num)
           case 'all':
             return true
+          case 'active':
           default:
             return node.num === $myNodeNum || !$inactiveNodes.some((inactive) => node.num === inactive.num)
         }
@@ -69,27 +70,29 @@
     }
   }
 
-  // Text mapping for the visibility toggle
-  $: nodeVisibilityText = (() => {
-    const filteredCount = $filteredNodes?.length ?? 0
-    const totalCount = $nodes?.length ?? 0
-    
+  function formatNodeVisibilityText(count: number) {
     switch (nodeVisibilityMode) {
-      case 'active': return `active ${filteredCount}`
-      case 'inactive': return `inactive ${filteredCount}`
-      case 'all': return `all ${totalCount}`
-      default: return `active ${filteredCount}`
+      case 'inactive':
+        return `inactive: ${count}`
+      case 'all':
+        return `all: ${count}`
+      case 'active':
+      default:
+        return `active: ${count}`
     }
-  })()
+  }
+
+  // Text mapping for the visibility toggle
+  $: nodeVisibilityText = formatNodeVisibilityText($filteredNodes?.length ?? 0)
 
   function getBatteryColor(batteryLevel) {
-    if (batteryLevel === 101) return ''; // use HTML style="background-color: 'steelblue'"
-    if (batteryLevel >= 70) return 'bg-green-500';
-    if (batteryLevel >= 50) return 'bg-[#9acd32]';
-    if (batteryLevel >= 25) return 'bg-yellow-500';
-    if (batteryLevel >= 10) return 'bg-orange-500';
-    if (batteryLevel >= 6) return 'bg-red-500';
-    return 'bg-[red]';
+    if (batteryLevel === 101) return '' // use HTML style="background-color: 'steelblue'"
+    if (batteryLevel >= 70) return 'bg-green-500'
+    if (batteryLevel >= 50) return 'bg-[#9acd32]'
+    if (batteryLevel >= 25) return 'bg-yellow-500'
+    if (batteryLevel >= 10) return 'bg-orange-500'
+    if (batteryLevel >= 6) return 'bg-red-500'
+    return 'bg-[red]'
   }
 </script>
 
@@ -122,23 +125,20 @@
 
 <Card title="Nodes" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center gap-2">
-    <div class="grow">Nodes
+    <div class="grow flex items-center gap-2">
+      Nodes
       {#if !$smallMode}
-        <button 
-          title="Toggle (active/inactive/all) Visibility" 
-          on:click={toggleNodeVisibility} 
-          class="text-sm font-normal ml-1"
-        >
-          ({nodeVisibilityText})
+        <button title="Toggle (active/inactive/all) Visibility" on:click={toggleNodeVisibility} class="btn text-xs font-normal ml-1">
+          {nodeVisibilityText}
         </button>
       {/if}
     </div>
-      {#if !$smallMode}
-        <label class="text-sm font-normal"
-          >MQTT
-          <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
-        </label>
-      {/if}
+    {#if !$smallMode}
+      <label class="text-sm font-normal"
+        >MQTT
+        <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
+      </label>
+    {/if}
     <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
@@ -179,7 +179,6 @@
               <!-- Hops -->
               <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
             {/if}
-
           </div>
         {:else}
           <!-- Large Mode -->
@@ -193,7 +192,8 @@
 
             <!-- Longname -->
             <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
-              >{node.user?.longName || '!' + node.num?.toString(16)}</button>
+              >{node.user?.longName || '!' + node.num?.toString(16)}</button
+            >
 
             {#if node.user?.role != undefined}
               {#if node.user.role === 0}
@@ -260,7 +260,7 @@
                 {node.deviceMetrics?.batteryLevel || 0}%
               {/if}
               <div
-                class="h-0.5 {getBatteryColor(node.deviceMetrics?.batteryLevel)}" 
+                class="h-0.5 {getBatteryColor(node.deviceMetrics?.batteryLevel)}"
                 style="width: {node.deviceMetrics?.batteryLevel || 0}%; 
                       background-color: {node.deviceMetrics?.batteryLevel === 101 ? 'steelblue' : ''};"
               ></div>
