@@ -17,18 +17,29 @@
   import { setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
-  export let showInactive = false
+  export let nodeVisibilityMode = 'active'
   export let includeMqtt = true
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: $nodes.length, showInactive, includeMqtt, $nodeInactiveTimer, filterNodes()
+  $: $nodes.length, $nodeInactiveTimer, nodeVisibilityMode, includeMqtt, filterNodes()
 
   function filterNodes() {
     $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
 
     $filteredNodes = $nodes
-      .filter((node) => showInactive || node.num == $myNodeNum || !$inactiveNodes.some((inactive) => node.num == inactive.num))
+      .filter((node) => {
+        switch (nodeVisibilityMode) {
+          case 'active':
+            return node.num === $myNodeNum || !$inactiveNodes.some((inactive) => node.num === inactive.num)
+          case 'inactive':
+            return $inactiveNodes.some((inactive) => node.num === inactive.num)
+          case 'all':
+            return true
+          default:
+            return node.num === $myNodeNum || !$inactiveNodes.some((inactive) => node.num === inactive.num)
+        }
+      })
       .filter((node) => includeMqtt || !node.viaMqtt)
       .sort((a, b) => {
         if (a.num === $myNodeNum) return -1
@@ -41,6 +52,35 @@
   function clearNodes() {
     axios.post('/deleteNodes', { nodes: $inactiveNodes })
   }
+
+  // Function to handle node visibility toggle
+  function toggleNodeVisibility() {
+    switch (nodeVisibilityMode) {
+      case 'active':
+        nodeVisibilityMode = 'inactive'
+        break
+      case 'inactive':
+        nodeVisibilityMode = 'all'
+        break
+      case 'all':
+      default:
+        nodeVisibilityMode = 'active'
+        break
+    }
+  }
+
+  // Text mapping for the visibility toggle
+  $: nodeVisibilityText = (() => {
+    const filteredCount = $filteredNodes?.length ?? 0
+    const totalCount = $nodes?.length ?? 0
+    
+    switch (nodeVisibilityMode) {
+      case 'active': return `active ${filteredCount}`
+      case 'inactive': return `inactive ${filteredCount}`
+      case 'all': return `all ${totalCount}`
+      default: return `active ${filteredCount}`
+    }
+  })()
 
   function getBatteryColor(batteryLevel) {
     if (batteryLevel === 101) return ''; // use HTML style="background-color: 'steelblue'"
@@ -82,17 +122,23 @@
 
 <Card title="Nodes" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center gap-2">
-    <div class="grow">Nodes</div>
-    {#if !$smallMode}
-      <label class="text-sm font-normal"
-        >MQTT
-        <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
-      </label>
-      <label class="text-sm font-normal"
-        >Inactive
-        <input title="Toggle Inactive Nodes" type="checkbox" bind:checked={showInactive} />
-      </label>
-    {/if}
+    <div class="grow">Nodes
+      {#if !$smallMode}
+        <button 
+          title="Toggle (active/inactive/all) Visibility" 
+          on:click={toggleNodeVisibility} 
+          class="text-sm font-normal ml-1"
+        >
+          ({nodeVisibilityText})
+        </button>
+      {/if}
+    </div>
+      {#if !$smallMode}
+        <label class="text-sm font-normal"
+          >MQTT
+          <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
+        </label>
+      {/if}
     <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
@@ -305,8 +351,8 @@
         {/if}
       </div>
     {/each}
-    {#if $hasAccess && !showInactive && $inactiveNodes.length >= 10}
-      <button on:click={clearNodes} class="btn h-12">Clear {$nodes?.length - $filteredNodes?.length} Inactive Nodes</button>
+    {#if $hasAccess && nodeVisibilityMode !== 'active' && $inactiveNodes.length >= 10}
+      <button on:click={clearNodes} class="btn h-12">Clear {$inactiveNodes?.length} Inactive Nodes</button>
     {/if}
   </div>
 </Card>
