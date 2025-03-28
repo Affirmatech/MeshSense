@@ -26,7 +26,7 @@
     }
   }
 
-  $: if (ol) {
+  function plotData() {
     let myNodeCoords = getCoordinates($myNodeNum)
 
     ol.plotLines(
@@ -51,8 +51,13 @@
         }
       })
     )
-  
-    ol.renderUserDarkModePref()
+  }
+
+  $: {
+    $myNodeNum, nodesWithCoords
+    if (ol) {
+      plotData()
+    }
   }
 
   let modalPage = 'Settings'
@@ -88,6 +93,7 @@
         setPosition(latitude, longitude)
       }
     }}
+    onDarkModeToggle={plotData}
   ></OpenLayersMap>
   {#if $setPositionMode}
     <div class="absolute select-none top-10 left-10 bg-indigo-600/80 text-white p-3 py-1 rounded-lg">

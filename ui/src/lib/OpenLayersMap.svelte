@@ -31,10 +31,14 @@
   let map: Map
   let layers: Record<string, Layer> = {}
 
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  let darkMode = (localStorage.getItem('darkMode') ?? String(prefersDarkMode)) == 'true'
+
   export let center = undefined
   export let zoom = 12
   export let onMove: (center: Coordinate, zoom: number) => void = undefined
   export let onClick: (latitude: number, longitude: number) => void = undefined
+  export let onDarkModeToggle: () => void = undefined
 
   if (!center || (center[0] == 0 && center[1] == 0)) {
     center = [-90.3242479, 39.5167587]
@@ -83,9 +87,8 @@
           feature.set('description', data.description)
 
           if (data.icon) {
-            function getIconStyle() {
-              let darkMode = fetchUserDarkModePref()
-              return new Style({
+            feature.setStyle(
+              new Style({
                 image: new Icon({
                   anchor: [0.5, 46],
                   anchorXUnits: 'fraction',
@@ -95,18 +98,16 @@
                 }),
                 text: new Text({
                   font: '15px Calibri,sans-serif',
-                  fill: new Fill({ color: darkMode !== '1' ? '#000' : '#fff' }),
+                  fill: new Fill({ color: !darkMode ? '#000' : '#fff' }),
                   offsetY: 20,
                   stroke: new Stroke({
-                    color: darkMode !== '1' ? '#fff' : '#000',
+                    color: !darkMode ? '#fff' : '#000',
                     width: 4
                   }),
                   text: feature.get('description')
                 })
               })
-            }
-
-            feature.setStyle(getIconStyle)
+            )
           }
           return feature
         })
@@ -165,43 +166,19 @@
   // 	dispatch('mapReady')
   // }
 
-  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-
-  function fetchUserDarkModePref() {
-    let storedValue = localStorage.getItem('darkMode')
-    if (/^[01]$/.test(storedValue)) {
-      return storedValue
-    } else {
-      storedValue = prefersDarkMode ? '1' : '0'
-      localStorage.setItem('darkMode', storedValue)
-      return storedValue
-    }
-  }
-
-  export function renderUserDarkModePref() {
-    const darkMode = fetchUserDarkModePref()
-    map.render()
-  }
-
-  function toggleMapDarkMode(darkMode: string) {
-    localStorage.setItem('darkMode', darkMode === '1' ? '0' : '1')
-    for (let name of Object.keys(layers)) {
-      layers[name].changed()
-    }
-    map.render()
-  }
-
-  function toggleControlDarkMode(darkMode: string, button: HTMLButtonElement) {
-    if (button) {
-      button.innerHTML = darkMode === '1' ? '☾' : '☼'
-    }
+  function toggleMapDarkMode() {
+    darkMode = !darkMode
+    localStorage.setItem('darkMode', String(darkMode))
+    if (onDarkModeToggle) onDarkModeToggle()
+    // for (let name of Object.keys(layers)) {
+    //   layers[name].changed()
+    // }
   }
 
   class ToggleDarkModeControl extends Control {
     constructor() {
       const button = document.createElement('button')
-      const darkMode = fetchUserDarkModePref()
-      button.innerHTML = darkMode === '1' ? '☼' : '☾' // button.iHTML = '☼'
+      button.innerHTML = !darkMode ? '☼' : '☾' // button.iHTML = '☼'
       button.title = 'Toggle Dark Mode'
 
       const element = document.createElement('div')
@@ -213,10 +190,9 @@
     }
 
     handleToggleDarkMode() {
-      const darkMode = fetchUserDarkModePref()
       const button = this.element.querySelector('button')
-      toggleMapDarkMode(darkMode)
-      toggleControlDarkMode(darkMode, button)
+      button.innerHTML = !darkMode ? '☾' : '☼'
+      toggleMapDarkMode()
     }
   }
 
@@ -248,16 +224,14 @@
     })
 
     tile.on('prerender', function (e) {
-      const darkMode = fetchUserDarkModePref()
-      if (darkMode === '1') {
+      if (darkMode) {
         const cx = e.context as CanvasRenderingContext2D
         cx.filter = 'brightness(.6) invert(.9) contrast(2) hue-rotate(200deg) saturate(.8) brightness(.7)'
         cx.globalCompositeOperation = 'source-over'
       }
     })
     tile.on('postrender', (e) => {
-      const darkMode = fetchUserDarkModePref()
-      if (darkMode === '1') {
+      if (darkMode) {
         const cx = e.context as CanvasRenderingContext2D
         cx.filter = 'none'
         cx.globalCompositeOperation = 'source-over'
