@@ -151,6 +151,43 @@
     })
   }
 
+  export function showPin(description?: string, long?: number, lat?: number) {
+    if (layers['pin']) map.removeLayer(layers['pin'])
+
+    if (long == undefined || lat == undefined) return
+
+    layers['pin'] = new VectorLayer({
+      source: new Vector({
+        features: [
+          new Feature({
+            geometry: new Point([long, lat])
+        }),
+      ]}),
+      style: new Style({
+        image: new Icon({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        src: `${import.meta.env.VITE_PATH || ''}/map-marker-alt-solid.svg`,
+        scale: 0.25
+      }),
+      text: new Text({
+        font: '15px Calibri,sans-serif',
+        fill: new Fill({ color: !darkMode ? '#000' : '#fff' }),
+        offsetY: -20,
+        stroke: new Stroke({
+          color: !darkMode ? '#fff' : '#000',
+          width: 4
+        }),
+        text: description || '',
+      })
+    })
+  })
+
+  map.addLayer(layers['pin'])
+  flyTo(long, lat)
+}
+
   // function plotLocations() {
   // 	if (layers['locations']) map.removeLayer(layers['locations'])
   // 	layers['locations'] = new VectorLayer({

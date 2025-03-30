@@ -4,6 +4,7 @@
   import { getNodeNameById, scrollToBottom, testPacket } from './lib/util'
   import Modal from './lib/Modal.svelte'
   import { messageDestination } from './Message.svelte'
+  import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { tick } from 'svelte'
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
@@ -25,6 +26,7 @@
   let showCsvModal = false
   let csvText: string
   let csvTextElement: HTMLPreElement
+  export let ol: OpenLayersMap = undefined
 
   $: if ($packets) scrollToBottom(packetsDiv, false, (unseen) => (unseenMessages = unseen))
   $: messagesOnly, scrollToBottom(packetsDiv, true, (unseen) => (unseenMessages = unseen))
@@ -60,6 +62,16 @@
     if (packet.payloadVariant?.case == 'encrypted') return 'Encrypted'
     if (packet.message) return 'Message'
     return (packet.data?.variant?.value?.$typeName ?? packet.data?.$typeName)?.replace('meshtastic.', '')
+  }
+
+  function showPin(packet: MeshPacket) {
+    let description = getNodeNameById(packet.from)
+    if (packet.rxTime) {
+      description += ' (' + new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' }) + ')'
+    }
+    let lat = packet.data.latitudeI / 10000000
+    let long = packet.data.longitudeI / 10000000
+    ol.showPin(description, long, lat)
   }
 </script>
 
@@ -109,6 +121,9 @@
           </div>
           <div>
             <button on:click={() => (selectedPacket = packet)}>🔍</button>
+            {#if packet.data?.$typeName == 'meshtastic.Position'}
+            <button title="Fly To" on:click={() => showPin(packet)}>🌐</button>
+            {/if}
           </div>
           {#if packet.data?.variant?.case == 'deviceMetrics'}
             <div class="bg-green-500/20 rounded px-1 my-0.5 text-xs ring-0 text-green-200 mx-2 w-fit">

@@ -29,6 +29,8 @@
   function plotData() {
     let myNodeCoords = getCoordinates($myNodeNum)
 
+    ol.showPin()
+
     ol.plotLines(
       'routes',
       nodesWithCoords

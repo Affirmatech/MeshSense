@@ -60,7 +60,7 @@
       </div>
     {/if}
     {#if !$expandedMap}
-      <Log />
+      <Log {ol} />
     {/if}
   </div>
 </main>
