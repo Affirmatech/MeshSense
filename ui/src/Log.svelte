@@ -119,7 +119,7 @@
           <div class="w-10">
             {#if packet.hopStart}{packet.hopStart - packet.hopLimit} / {packet.hopStart}{/if}
           </div>
-          <div>
+          <div class="w-8">
             <button on:click={() => (selectedPacket = packet)}>🔍</button>
             {#if packet.data?.$typeName == 'meshtastic.Position'}
             <button title="Fly To" on:click={() => showPin(packet)}>🌐</button>
