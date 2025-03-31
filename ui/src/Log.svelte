@@ -1,11 +1,12 @@
 <script lang="ts">
   import { broadcastId, channels, myNodeNum, nodes, packets, version, type MeshPacket } from 'api/src/vars'
   import Card from './lib/Card.svelte'
-  import { getNodeNameById, scrollToBottom, testPacket } from './lib/util'
+  import { getNodeById, getNodeName, getNodeNameById, scrollToBottom, testPacket } from './lib/util'
   import Modal from './lib/Modal.svelte'
   import { messageDestination } from './Message.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { tick } from 'svelte'
+  import { getIconURL } from './Map.svelte'
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
     if (filterText) {
@@ -65,13 +66,15 @@
   }
 
   function showPin(packet: MeshPacket) {
-    let description = getNodeNameById(packet.from)
+    let node = getNodeById(packet.from)
+    let description = getNodeName(node)
+    let icon = getIconURL(node)
     if (packet.rxTime) {
       description += ' (' + new Date(packet.rxTime * 1000).toLocaleString(undefined, { day: 'numeric', month: 'numeric', hour: 'numeric', minute: 'numeric' }) + ')'
     }
     let lat = packet.data.latitudeI / 10000000
     let long = packet.data.longitudeI / 10000000
-    ol.showPin(description, long, lat)
+    ol.showPin(description, long, lat, icon)
   }
 </script>
 
@@ -122,7 +125,7 @@
           <div class="w-8">
             <button on:click={() => (selectedPacket = packet)}>🔍</button>
             {#if packet.data?.$typeName == 'meshtastic.Position'}
-            <button title="Fly To" on:click={() => showPin(packet)}>🌐</button>
+              <button title="Fly To" on:click={() => showPin(packet)}>🌐</button>
             {/if}
           </div>
           {#if packet.data?.variant?.case == 'deviceMetrics'}
