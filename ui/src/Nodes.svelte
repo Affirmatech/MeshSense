@@ -1,11 +1,16 @@
 <script context="module" lang="ts">
+  import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, pendingTraceroutes, type NodeInfo } from 'api/src/vars'
   export let smallMode = writable(false)
   export let filteredNodes = writable<NodeInfo[]>([])
   export let inactiveNodes = writable<NodeInfo[]>([])
+  export let nodeVisibilityMode = writable<string>(localStorage.getItem('nodeVisibilityMode') ?? 'active')
+
+  export function isInactive(node: NodeInfo) {
+    return Date.now() - node.lastHeard * 1000 >= (nodeInactiveTimer.value ?? 60) * 60 * 1000
+  }
 </script>
 
 <script lang="ts">
-  import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, pendingTraceroutes, type NodeInfo } from 'api/src/vars'
   import Card from './lib/Card.svelte'
   import { getCoordinates, getNodeName, getNodeNameById, hasAccess, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
@@ -17,21 +22,20 @@
   import { setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
 
-  export let nodeVisibilityMode = localStorage.getItem('nodeVisibilityMode') ?? 'active'
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
 
-  $: localStorage.setItem('nodeVisibilityMode', nodeVisibilityMode)
+  $: localStorage.setItem('nodeVisibilityMode', $nodeVisibilityMode)
   $: localStorage.setItem('includeMqtt', String(includeMqtt))
-  $: $nodes.length, $nodeInactiveTimer, nodeVisibilityMode, includeMqtt, filterNodes()
+  $: $nodes.length, $nodeInactiveTimer, $nodeVisibilityMode, includeMqtt, filterNodes()
 
   function filterNodes() {
-    $inactiveNodes = $nodes.filter((node) => Date.now() - node.lastHeard * 1000 >= ($nodeInactiveTimer ?? 60) * 60 * 1000)
+    $inactiveNodes = $nodes.filter(isInactive)
 
     $filteredNodes = $nodes
       .filter((node) => {
-        switch (nodeVisibilityMode) {
+        switch ($nodeVisibilityMode) {
           case 'inactive':
             return $inactiveNodes.some((inactive) => node.num === inactive.num)
           case 'all':
@@ -56,22 +60,22 @@
 
   // Function to handle node visibility toggle
   function toggleNodeVisibility() {
-    switch (nodeVisibilityMode) {
+    switch ($nodeVisibilityMode) {
       case 'active':
-        nodeVisibilityMode = 'inactive'
+        $nodeVisibilityMode = 'inactive'
         break
       case 'inactive':
-        nodeVisibilityMode = 'all'
+        $nodeVisibilityMode = 'all'
         break
       case 'all':
       default:
-        nodeVisibilityMode = 'active'
+        $nodeVisibilityMode = 'active'
         break
     }
   }
 
   function formatNodeVisibilityText(count: number) {
-    switch (nodeVisibilityMode) {
+    switch ($nodeVisibilityMode) {
       case 'inactive':
         return `inactive: ${count}`
       case 'all':
@@ -351,7 +355,7 @@
         {/if}
       </div>
     {/each}
-    {#if $hasAccess && nodeVisibilityMode !== 'active' && $inactiveNodes.length >= 10}
+    {#if $hasAccess && $nodeVisibilityMode !== 'active' && $inactiveNodes.length >= 10}
       <button on:click={clearNodes} class="btn h-12">Clear {$inactiveNodes?.length} Inactive Nodes</button>
     {/if}
   </div>

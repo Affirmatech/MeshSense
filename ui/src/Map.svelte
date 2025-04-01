@@ -21,10 +21,10 @@
 
 <script lang="ts">
   import { connectionStatus, myNodeNum, version, type NodeInfo } from 'api/src/vars'
-  import { filteredNodes } from './Nodes.svelte'
+  import { filteredNodes, isInactive, nodeVisibilityMode } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
-  import { getCoordinates, getNodeName, getNodeNameById, setPosition } from './lib/util'
+  import { getCoordinates, getNodeById, getNodeName, getNodeNameById, setPosition } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
 
@@ -38,7 +38,7 @@
     ol.plotLines(
       'routes',
       nodesWithCoords
-        .filter((n) => n.trace || n.hopsAway == 0)
+        .filter((n) => (n.trace || n.hopsAway == 0) && ($nodeVisibilityMode != 'active' || !n.trace?.route?.some((routeNodeId) => isInactive(getNodeById(routeNodeId)))))
         .map((n) => {
           let list = [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
           return list.filter((coords) => !(coords[0] == 0 && coords[1] == 0))
