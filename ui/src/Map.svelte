@@ -2,11 +2,13 @@
   import { writable } from 'svelte/store'
   export let expandedMap = writable(false)
   export let setPositionMode = writable(false)
+  import { generateHexer } from '@bdancer/icon-gaga'
 
   export function getIconURL(node: NodeInfo) {
     if (node.position?.latitudeI) {
       if (node?.position?.altitude > 2743) return `${import.meta.env.VITE_PATH || ''}/airplane.svg`
-      else return `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${node.num}`
+      else return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ name: String(node.num) }))
+      // else return `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${node.num}`
     } else {
       return `${import.meta.env.VITE_PATH || ''}/circle-help.svg`
     }
