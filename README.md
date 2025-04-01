@@ -11,13 +11,12 @@ MeshSense directly connects to your Meshtastic node via Bluetooth or WiFi and co
 To run MeshSense without a GUI, use the `--headless` flag. Additionally the `ACCESS_KEY` environment variable can be used to specify the privileged access key for remote connections to gain full permissions.
 
 ```sh
-export NODE=10.0.1.20  # Address of Meshtastic Node
+export ADDRESS=10.0.1.20  # Address of Meshtastic Node
 export PORT=5920          # Port of remote interface
 
 ACCESS_KEY=mySecretKey ./meshsense-x86_64.AppImage --headless
 
 # Alternative execution:
-```sh
 dbus-run-session xvfb-run ./meshsense-arm64.AppImage --headless \
  --disable-gpu --in-process-gpu --disable-software-rasterizer
 ```
