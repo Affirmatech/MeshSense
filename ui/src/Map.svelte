@@ -4,10 +4,14 @@
   export let setPositionMode = writable(false)
   import { generateHexer } from '@bdancer/icon-gaga'
 
+  export function getSvgUri(name: string) {
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ name }))
+  }
+
   export function getIconURL(node: NodeInfo) {
     if (node.position?.latitudeI) {
       if (node?.position?.altitude > 2743) return `${import.meta.env.VITE_PATH || ''}/airplane.svg`
-      else return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ name: String(node.num) }))
+      else return getSvgUri(String(node.num))
       // else return `https://icongaga-api.bytedancer.workers.dev/api/genHexer?name=${node.num}`
     } else {
       return `${import.meta.env.VITE_PATH || ''}/circle-help.svg`

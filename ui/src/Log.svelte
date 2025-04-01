@@ -6,7 +6,7 @@
   import { messageDestination } from './Message.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { tick } from 'svelte'
-  import { getIconURL } from './Map.svelte'
+  import { getIconURL, getSvgUri } from './Map.svelte'
 
   function shouldPacketBeShown(packet: MeshPacket, includeTx, filterText: string) {
     if (filterText) {
@@ -106,7 +106,7 @@
           <!-- Nodes -->
           <div class="w-44 flex gap-1 overflow-hidden">
             <div class="">
-              <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={packet.from}" alt="Node {packet.from}" />
+              <img class="h-4 inline-block" src={getSvgUri(String(packet.from))} alt="Node {packet.from}" />
               {getNodeNameById(packet.from)}
             </div>
             {#if packet.to && packet.to != 4294967295}
