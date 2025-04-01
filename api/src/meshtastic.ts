@@ -32,6 +32,9 @@ import { beginScanning, bluetoothDevices, stopScanning } from './lib/bluetooth'
 import exitHook from 'exit-hook'
 import * as geolib from 'geolib'
 import axios from 'axios'
+import { State } from './lib/state'
+
+let routeCache: State<Record<number, number[]>>
 
 let connection: HttpConnection | BleConnection
 let connectionIntended = false
@@ -86,6 +89,23 @@ function isTracerouteAvailable(nodeNum: number) {
   console.log(`[meshtastic] Traceroute to ${nodeNum} already sent ${(lastTracerouteRelativeTime / 60000).toFixed(1)} minutes ago`)
   return false
 }
+
+function checkForCachedRoute(node: NodeInfo) {
+  if (node.trace) return
+  let trace = routeCache?.value[node.num]
+  if (trace) {
+    console.log('Loading cached route', node.num, trace)
+    node.trace = trace
+    traceRouteLog[node.num] = Date.now()
+  }
+}
+
+myNodeNum.subscribe((value) => {
+  console.log('Creating route cache for', value)
+  if (Number(value) >= 0) {
+    routeCache = new State(`routeCache-${value}`, {}, { persist: true, hideLog: true })
+  } else routeCache = undefined
+})
 
 packets.subscribe(() => {
   let limit = isNaN(packetLimit.value) ? 500 : packetLimit.value
@@ -290,6 +310,7 @@ export async function connect(address?: string) {
   connection.events.onNodeInfoPacket.subscribe((e) => {
     let existingNode = nodes.value.find((n) => e.num == n.num)
     if (existingNode?.lastHeard > e.lastHeard) e.lastHeard = existingNode.lastHeard
+    checkForCachedRoute(e as any)
     nodes.upsert(copy(e))
   })
 
@@ -420,6 +441,7 @@ export async function connect(address?: string) {
     if (id) packet = packets.upsert({ id, data })
     if (e.from && data) {
       let node = nodes.upsert({ num: e.from, trace: data })
+      if (routeCache) routeCache.assign({ [e.from]: data })
       if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, trace: data }, node, packet)
       // Update lastHeard of all nodes in the traceroute chain
       for (let num of data.route) {

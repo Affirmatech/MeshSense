@@ -121,7 +121,7 @@ export type NodeInfo = {
   deviceMetrics?: DeviceMetrics
   environmentMetrics?: EnvironmentMetrics
   rssi?: number
-  trace?: { route: number[] }
+  trace?: any
   approximatePosition?: { longitude: number; latitude: number } | false
 }
 
