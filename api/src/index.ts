@@ -93,6 +93,10 @@ createRoutes((app) => {
     accessKey.set(process.env.ACCESS_KEY)
   }
 
+  if (process.env.NODE) {
+    address.set(process.env.NODE)
+  }
+
   //** Capture current hostname and port */
   apiHostname.set(hostname())
   apiPort.set((server.address() as any)?.port)
@@ -114,5 +118,5 @@ createRoutes((app) => {
 
   checkForNews()
 
-  if (autoConnectOnStartup.value && address.value) connect(address.value)
+  if ((process.env.NODE || autoConnectOnStartup.value) && address.value) connect(address.value)
 })
