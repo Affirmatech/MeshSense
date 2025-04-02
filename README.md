@@ -21,6 +21,8 @@ dbus-run-session xvfb-run ./meshsense-arm64.AppImage --headless \
  --disable-gpu --in-process-gpu --disable-software-rasterizer
 ```
 
+See also [Headless FAQ](https://affirmatech.com/meshsense/faq#headless)
+
 ## Debian Dependencies
 
 Ubuntu and Raspberry Pi OS users will need the following dependency installed to run the AppImage:
