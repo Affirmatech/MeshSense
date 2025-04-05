@@ -11,7 +11,7 @@
   import Message from './Message.svelte'
   import { allowRemoteMessaging, connectionStatus, version } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
-  import SettingsModal, { showPage } from './SettingsModal.svelte'
+  import SettingsModal from './SettingsModal.svelte'
   import { hasAccess } from './lib/util'
   import News, { newsVisible } from './News.svelte'
 
@@ -21,6 +21,14 @@
 
 <script lang="ts">
   let ol: OpenLayersMap
+  import { onMount } from 'svelte'
+  import { showPage } from './SettingsModal.svelte'
+
+  onMount(() => {
+    window.api?.onOpenSettings(() => {
+      showPage('Settings')
+    })
+  })
 </script>
 
 <!-- <ServiceWorker /> -->

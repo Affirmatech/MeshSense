@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, utilityProcess } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, utilityProcess, globalShortcut } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -136,6 +136,11 @@ app.whenReady().then(async () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
+
+  globalShortcut.register('CommandOrControl+,', () => {
+    const win = BrowserWindow.getAllWindows()[0]
+    win?.webContents.send('open-settings')
   })
 
   updateCheckLoop()
