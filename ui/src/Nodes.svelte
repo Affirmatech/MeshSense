@@ -21,6 +21,7 @@
   import { messageDestination } from './Message.svelte'
   import { setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
+  import ObservedRF from './lib/ObservedRF.svelte'
 
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
@@ -169,16 +170,8 @@
             <button on:click={() => ($messageDestination = node.num)} class="bg-black/20 rounded w-12 text-center overflow-hidden">{node.user?.shortName || '?'}</button>
 
             {#if node.snr && node.hopsAway == 0}
-              <!-- SNR -->
-              <div title="SNR" class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
-                {node.snr}
-                <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
-              </div>
-
-              <!-- RSSI -->
-              <div title="RSSI" class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
-                {node.rssi || '-'}
-              </div>
+              <!-- display observed RF values for smallMode -->
+              <ObservedRF {node} />
             {:else}
               <!-- Hops -->
               <div title="{node.hopsAway} Hops Away" class="text-sm font-normal bg-black/20 rounded w-10 text-center">{node.num == $myNodeNum ? '-' : (node.hopsAway ?? '?')}</div>
@@ -228,17 +221,9 @@
               <div title="Node heard via MQTT" class="bg-rose-900/50 text-rose-200 rounded px-1 cursor-help text-xs">MQTT</div>
             {/if}
             <div class="grow"></div>
-            <!-- SNR -->
             {#if node.snr && node.hopsAway == 0}
-              <div title="SNR" class="text-sm w-10 shrink-0 text-center {node.snr && node.hopsAway == 0 ? 'bg-black/20' : ''} rounded h-5">
-                {node.snr}
-                <div class="h-0.5 -translate-y-0.5 scale-x-90" style="width: {((node.snr + 20) / 30) * 100}%; background-color: {node.snr >= 0 ? 'green' : node.snr >= -10 ? 'yellow' : 'red'};"></div>
-              </div>
-
-              <!-- RSSI -->
-              <div title="RSSI" class="text-sm w-8 shrink-0 text-center bg-black/20 rounded h-5">
-                {node.rssi || '-'}
-              </div>
+              <!-- display observed RF values -->
+              <ObservedRF {node} />
             {/if}
           </div>
 
