@@ -222,6 +222,8 @@
                 <div title="Lost and Found Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">LF</div>
               {:else if node.user.role === 10}
                 <div title="TAK Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">TT</div>
+              {:else if node.user.role === 11}
+                <div title="Router_Late Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">RL</div>
               {/if}
             {/if}
             {#if node.viaMqtt}
