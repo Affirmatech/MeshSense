@@ -25,7 +25,7 @@
     myNodeNum,
     meshMapForwarding
   } from 'api/src/vars'
-  import { hasAccess, userKey, blockUserKey, getNodeById } from './lib/util'
+  import { hasAccess, userKey, blockUserKey, getNodeById, displayFahrenheit } from './lib/util'
   import { State } from 'api/src/lib/state'
   import { tick } from 'svelte'
   import axios from 'axios'
@@ -128,6 +128,11 @@
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$autoConnectOnStartup} />
       <div class="font-bold">Connect to node on startup</div>
+    </label>
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$displayFahrenheit} />
+      <div class="font-bold">Display temperature in Fahrenheit</div>
     </label>
 
     <label class="flex gap-2 items-center">

@@ -12,7 +12,7 @@
 
 <script lang="ts">
   import Card from './lib/Card.svelte'
-  import { getCoordinates, getNodeName, getNodeNameById, hasAccess, unixSecondsTimeAgo } from './lib/util'
+  import { formatTemp, getCoordinates, getNodeName, getNodeNameById, hasAccess, displayFahrenheit, unixSecondsTimeAgo } from './lib/util'
   import Microchip from './lib/icons/Microchip.svelte'
   import axios from 'axios'
   import Modal from './lib/Modal.svelte'
@@ -329,7 +329,7 @@
             <div class="flex gap-1">
               {#if node.environmentMetrics.temperature}
                 <div title="Temperature" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
-                  {Math.round(node.environmentMetrics.temperature)} °C
+                  {formatTemp(node.environmentMetrics.temperature, $displayFahrenheit)}
                 </div>
               {/if}
               {#if node.environmentMetrics.barometricPressure}

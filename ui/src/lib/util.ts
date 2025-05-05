@@ -104,38 +104,81 @@ export function setPosition(latitude: number, longitude: number) {
 
 export function testPacket() {
   packets.push({
-    from: 2171857383,
+    $typeName: 'meshtastic.MeshPacket',
+    from: 3045257252,
     to: 4294967295,
     channel: 0,
-    decoded: {
-      portnum: 'TELEMETRY_APP',
-      payload: 'DTHrB2cSFQhlFXnpgkAd6LSBPyXxhoc/KNjmCA==',
-      wantResponse: false,
-      dest: 0,
-      source: 0,
-      requestId: 0,
-      replyId: 0,
-      emoji: 0
+    payloadVariant: {
+      case: 'decoded',
+      value: {
+        $typeName: 'meshtastic.Data',
+        portnum: 67,
+        payload: {
+          '0': 13,
+          '1': 155,
+          '2': 219,
+          '3': 24,
+          '4': 104,
+          '5': 18,
+          '6': 21,
+          '7': 8,
+          '8': 101,
+          '9': 21,
+          '10': 111,
+          '11': 18,
+          '12': 131,
+          '13': 186,
+          '14': 29,
+          '15': 34,
+          '16': 34,
+          '17': 234,
+          '18': 64,
+          '19': 37,
+          '20': 121,
+          '21': 86,
+          '22': 204,
+          '23': 63,
+          '24': 40,
+          '25': 207,
+          '26': 196,
+          '27': 24
+        },
+        wantResponse: false,
+        dest: 0,
+        source: 0,
+        requestId: 0,
+        replyId: 0,
+        emoji: 0,
+        bitfield: 0
+      }
     },
-    id: 1727925148,
-    rxTime: 1728572132,
-    rxSnr: 6,
-    hopLimit: 7,
+    id: 2729267930,
+    rxTime: 1746459550,
+    rxSnr: -1.5,
+    hopLimit: 6,
     wantAck: false,
-    priority: 'UNSET',
-    rxRssi: -84,
-    delayed: 'NO_DELAY',
+    priority: 0,
+    rxRssi: -101,
+    delayed: 0,
     viaMqtt: false,
     hopStart: 7,
-    publicKey: '',
+    publicKey: {},
     pkiEncrypted: false,
-    // deviceMetrics: {
-    //   batteryLevel: 101,
-    //   voltage: 4.091000080108643,
-    //   channelUtilization: 1.0133333206176758,
-    //   airUtilTx: 1.0588055849075317,
-    //   uptimeSeconds: 144216
-    // }
+    data: {
+      $typeName: 'meshtastic.Telemetry',
+      time: 1746459547,
+      variant: {
+        case: 'environmentMetrics',
+        value: {
+          $typeName: 'meshtastic.EnvironmentMetrics',
+          temperature: 20.223
+        }
+      }
+    }
+  })
+
+  nodes.upsert({
+    num: 3045257252,
     environmentMetrics: {
       temperature: 15.008466720581055,
       relativeHumidity: 53.141929626464844,
@@ -144,15 +187,12 @@ export function testPacket() {
       iaq: 133
     }
   })
+}
 
-  // nodes.upsert({
-  //   num: 2171857383,
-  //   environmentMetrics: {
-  //     temperature: 15.008466720581055,
-  //     relativeHumidity: 53.141929626464844,
-  //     barometricPressure: 1004.330810546875,
-  //     gasResistance: 624.9585571289062,
-  //     iaq: 133
-  //   }
-  // })
+export let displayFahrenheit = writable(localStorage.getItem('displayFahrenheit') == 'true')
+displayFahrenheit.subscribe((value) => localStorage.setItem('displayFahrenheit', String(value)))
+
+export function formatTemp(tempC: number, displayFahrenheit?: boolean) {
+  if (displayFahrenheit) return Math.round((tempC * 9) / 5 + 32) + '  °F'
+  return Math.round(tempC) + '  °C'
 }
