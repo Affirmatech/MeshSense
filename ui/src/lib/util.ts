@@ -11,6 +11,7 @@ export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) 
 
 let failedUserKeyAttempts = 0
 userKey.subscribe(async (value) => {
+  axios.defaults.headers['authorization'] = `Bearer ` + value
   await tick()
 
   if (get(hasAccess)) {

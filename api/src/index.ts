@@ -3,7 +3,7 @@ import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute, setPosition, deviceConfig } from './meshtastic'
-import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup, meshSenseNewsDate } from './vars'
+import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup, meshSenseNewsDate, allowRemoteMessaging } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
 import { createWriteStream } from 'fs'
@@ -33,8 +33,14 @@ intercept(
   }
 )
 
+function isAuthorized(req: any) {
+  let token = req.headers['authorization']?.split(' ')[1]
+  return req.socket.remoteAddress.includes('127.0.0.1') || (accessKey.value != '' && accessKey.value == token)
+}
+
 createRoutes((app) => {
   app.post('/send', (req, res) => {
+    if (!allowRemoteMessaging.value && !isAuthorized(req)) return res.sendStatus(403)
     let message = req.body.message
     let destination = req.body.destination
     let channel = req.body.channel
@@ -56,17 +62,20 @@ createRoutes((app) => {
   })
 
   app.post('/deleteNodes', async (req, res) => {
+    if (!isAuthorized(req)) return res.sendStatus(403)
     let nodes = req.body.nodes
     await deleteNodes(nodes)
   })
 
   app.post('/connect', async (req, res) => {
+    if (!isAuthorized(req)) return res.sendStatus(403)
     console.log('[express]', '/connect')
     connect(req.body.address || address.value)
     return res.sendStatus(200)
   })
 
   app.post('/disconnect', async (req, res) => {
+    if (!isAuthorized(req)) return res.sendStatus(403)
     console.log('[express]', '/disconnect')
     disconnect()
     return res.sendStatus(200)
@@ -83,6 +92,7 @@ createRoutes((app) => {
   })
 
   app.post('/position', async (req, res) => {
+    if (!isAuthorized(req)) return res.sendStatus(403)
     console.log('[express]', '/position', req.body)
     setPosition(req.body)
     return res.sendStatus(200)
