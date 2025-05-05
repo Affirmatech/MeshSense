@@ -491,7 +491,7 @@ export async function connect(address?: string) {
   }
 }
 
-export async function send({ message = '', destination, channel, wantAck = false }) {
+export async function send({ message = '', destination, channel, wantAck = true }) {
   if (connectionStatus.value != 'connected' || !message) return
   message = `${messagePrefix.value || ''} ${message} ${messageSuffix.value || ''}`.trim()
   console.log('Sending', { message, destination, channel, wantAck })
