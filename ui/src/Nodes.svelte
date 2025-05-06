@@ -115,7 +115,7 @@
 
     <div class="flex items-center bg-black/20 rounded gap-2 grow">
       <h2 class="rounded">User ID</h2>
-      <div class="grow">!{String(selectedNode?.num.toString(16))}</div>
+      <div class="grow">!{String(selectedNode?.num?.toString(16)?.padStart(8, '0'))}</div>
     </div>
 
     {#if selectedNode?.num == $myNodeNum}
@@ -188,8 +188,8 @@
             </div>
 
             <!-- Longname -->
-            <button title={node.user?.longName || '!' + node.num?.toString(16)} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
-              >{node.user?.longName || '!' + node.num?.toString(16)}</button
+            <button title={node.user?.longName || '!' + node.num?.toString(16)?.padStart(8, '0')} class="text-left truncate max-w-44" on:click={() => ($messageDestination = node.num)}
+              >{node.user?.longName || '!' + node.num?.toString(16)?.padStart(8, '0')}</button
             >
 
             {#if node.user?.role != undefined}

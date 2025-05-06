@@ -87,11 +87,11 @@ export function getNodeNameById(id: number) {
   if (id == broadcastId) return 'all'
   if (id == undefined) return 'unknown'
   let node = nodes.value.find((node) => node.num == id)
-  return node ? getNodeName(node) : `!${id?.toString(16)}`
+  return node ? getNodeName(node) : `!${id?.toString(16)?.padStart(8, '0')}`
 }
 
 export function getNodeName(node: NodeInfo) {
-  return node?.user?.shortName || node?.user?.id || '!' + node?.num?.toString(16)
+  return node?.user?.shortName || node?.user?.id || '!' + node?.num?.toString(16)?.padStart(8, '0')
 }
 
 export function setPosition(latitude: number, longitude: number) {
