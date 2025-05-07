@@ -35,7 +35,10 @@ intercept(
 
 function isAuthorized(req: any) {
   let token = req.headers['authorization']?.split(' ')[1]
-  return req.socket.remoteAddress.includes('127.0.0.1') || (accessKey.value != '' && accessKey.value == token)
+  console.log('Remote Address', req.socket.remoteAddress)
+  return (
+    req.socket.remoteAddress.includes('127.0.0.1') || req.socket.remoteAddress.includes('ffff') || req.socket.remoteAddress.includes('localhost') || (accessKey.value != '' && accessKey.value == token)
+  )
 }
 
 createRoutes((app) => {
