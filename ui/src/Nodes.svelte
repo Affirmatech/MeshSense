@@ -296,7 +296,7 @@
                   let [long, lat] = getCoordinates(node)
                   ol.flyTo(long, lat)
                 }}
-                >🌐
+                >📍
               </button>
             {:else}
               <button
@@ -305,7 +305,7 @@
                 on:click={(e) => {
                   axios.post('/requestPosition', { destination: node.num })
                 }}
-                >📡
+                >🌐
               </button>
             {/if}
           </div>
