@@ -19,7 +19,7 @@
   import { writable } from 'svelte/store'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import { messageDestination } from './Message.svelte'
-  import { setPositionMode } from './Map.svelte'
+  import { getSvgUri, setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
   import ObservedRF from './lib/ObservedRF.svelte'
 
@@ -159,7 +159,7 @@
         {#if $smallMode}
           <!-- Short Mode -->
           <div title={node.user?.longName} class="flex items-center gap-1">
-            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
+            <img class="h-4 inline-block" src={getSvgUri(String(node.num))} alt="Node {node.user?.id}" />
 
             <div class="relative w-2 h-6">
               <!-- Channel Utilization for smallMode -->
@@ -180,7 +180,7 @@
         {:else}
           <!-- Large Mode -->
           <div class="flex gap-1 items-center">
-            <img class="h-4 inline-block" src="https://icongaga-api.bytedancer.workers.dev/api/genHexer?name={node.num}" alt="Node {node.user?.id}" />
+            <img class="h-4 inline-block" src={getSvgUri(String(node.num))} alt="Node {node.user?.id}" />
 
             <div class="relative w-2 h-6">
               <!-- Channel Utilization for largeMode -->

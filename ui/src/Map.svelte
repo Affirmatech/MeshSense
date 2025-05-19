@@ -40,7 +40,8 @@
       nodesWithCoords
         .filter((n) => (n.trace || n.hopsAway == 0) && $nodeVisibilityMode != 'inactive' && !n.trace?.route?.some((routeNodeId) => isInactive(getNodeById(routeNodeId))))
         .map((n) => {
-          let list = [myNodeCoords, ...(n.trace?.route?.map((n) => getCoordinates(n)) || []), getCoordinates(n)]
+          let list: any[] = [...(n.trace?.route?.map((traceNode) => getCoordinates(traceNode)) || []), getCoordinates(n)]
+          if (myNodeCoords[0] && myNodeCoords[1]) list.unshift(myNodeCoords)
           return list.filter((coords) => !(coords[0] == 0 && coords[1] == 0))
         })
     )
