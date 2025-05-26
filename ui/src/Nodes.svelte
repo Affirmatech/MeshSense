@@ -26,10 +26,11 @@
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
   export let ol: OpenLayersMap = undefined
+  export let filterText = writable('')
 
   $: localStorage.setItem('nodeVisibilityMode', $nodeVisibilityMode)
   $: localStorage.setItem('includeMqtt', String(includeMqtt))
-  $: $nodes.length, $nodeInactiveTimer, $nodeVisibilityMode, includeMqtt, filterNodes()
+  $: $nodes.length, $nodeInactiveTimer, $nodeVisibilityMode, includeMqtt, $filterText, filterNodes()
 
   function filterNodes() {
     $inactiveNodes = $nodes.filter(isInactive)
@@ -47,6 +48,16 @@
         }
       })
       .filter((node) => includeMqtt || !node.viaMqtt)
+      .filter((node) => {
+        const text = $filterText.toLowerCase();
+        return (
+          node.user?.longName?.toLowerCase().includes(text) ||
+          node.user?.shortName?.toLowerCase().includes(text) ||
+          node.user?.role?.toString().includes(text) ||
+          node.num.toString().includes(text) ||
+          node.num.toString(16).toLowerCase().includes(text)
+        )
+      })
       .sort((a, b) => {
         if (a.num === $myNodeNum) return -1
         if (b.num === $myNodeNum) return 1
@@ -130,7 +141,7 @@
 
 <Card title="Nodes" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center gap-2">
-    <div class="grow flex items-center gap-2">
+    <div class="flex items-center gap-2">
       Nodes
       {#if !$smallMode}
         <button title="Toggle (active/inactive/all) Visibility" on:click={toggleNodeVisibility} class="btn text-xs font-normal ml-1">
@@ -146,7 +157,13 @@
     {/if}
     <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
-  <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
+  <div>
+  {#if !$smallMode}
+    <div class="grid m-2">
+      <input type="text" placeholder="Node Filter..." bind:value={$filterText} class="input"/>
+    </div>
+  {/if}
+    <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
     {#each $filteredNodes as node (node.num)}
       <div
         class:ring-1={node.hopsAway == 0}
@@ -252,7 +269,7 @@
               {/if}
               <div
                 class="h-0.5 {getBatteryColor(node.deviceMetrics?.batteryLevel)}"
-                style="width: {node.deviceMetrics?.batteryLevel || 0}%; 
+                style="width: {node.deviceMetrics?.batteryLevel || 0}%;
                       background-color: {node.deviceMetrics?.batteryLevel === 101 ? 'steelblue' : ''};"
               ></div>
             </div>
@@ -346,4 +363,5 @@
       <button on:click={clearNodes} class="btn h-12">Clear {$inactiveNodes?.length} Inactive Nodes</button>
     {/if}
   </div>
+</div>
 </Card>
