@@ -1,3 +1,4 @@
+console.log('globalThis.crypto →', globalThis.crypto)
 import 'dotenv/config'
 import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
