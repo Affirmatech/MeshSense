@@ -1,4 +1,13 @@
-console.log('globalThis.crypto →', globalThis.crypto)
+import { webcrypto } from 'crypto';
+
+declare global {
+  // Let TypeScript know about globalThis.crypto
+  // eslint-disable-next-line no-var
+  var crypto: typeof webcrypto;
+}
+
+globalThis.crypto = webcrypto;
+
 import 'dotenv/config'
 import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
