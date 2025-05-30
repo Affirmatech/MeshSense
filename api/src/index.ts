@@ -10,6 +10,7 @@ import { createWriteStream } from 'fs'
 import { dataDirectory } from './lib/paths'
 import { join } from 'path'
 import axios from 'axios'
+import crypto from 'crypto' // ← ADD THIS
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 process.on('uncaughtException', (err, origin) => {
