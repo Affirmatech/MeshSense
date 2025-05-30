@@ -27,6 +27,8 @@
   import { getCoordinates, getNodeById, getNodeName, getNodeNameById, setPosition } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
+  import { fromLonLat } from 'ol/proj'
+  import { plotTrail } from './lib/OpenLayersMap.svelte'
 
   export let ol: OpenLayersMap = undefined
 
@@ -68,6 +70,36 @@
   }
 
   let modalPage = 'Settings'
+
+  let trailArray: { coords: [number, number]; ts: number }[] = []
+  let pendingTrail = false
+  let timeWindowMs = 6 * 3600 * 1000 // default 6 hours
+
+  function pruneOldPoints() {
+    const cutoff = Date.now() - timeWindowMs
+    trailArray = trailArray.filter((p) => p.ts >= cutoff)
+  }
+
+  function scheduleTrailUpdate() {
+    if (pendingTrail) return
+    pendingTrail = true
+    requestAnimationFrame(() => {
+      const coordsTransformed = trailArray.map((p) => fromLonLat(p.coords))
+      plotTrail(coordsTransformed)
+      pendingTrail = false
+    })
+  }
+
+  // Example: inside your node update logic
+  const { lon, lat } = /* your code fetching the new coordinate */
+  trailArray.push({ coords: [lon, lat], ts: Date.now() })
+  pruneOldPoints()
+  scheduleTrailUpdate()
+
+  $: if (ol) {
+    plotTrail([])
+    // ...existing plotData() or other init calls...
+  }
 </script>
 
 <Card title="Map" {...$$restProps}>
