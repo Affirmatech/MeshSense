@@ -28,9 +28,8 @@
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
   import { fromLonLat } from 'ol/proj'
-  import { plotTrail } from './lib/OpenLayersMap.svelte'
 
-  export let ol: OpenLayersMap = undefined
+  export let ol: any; // or use the correct type if you have one
 
   $: nodesWithCoords = $filteredNodes.filter((n) => !(n.position?.latitudeI == undefined || n.position?.latitudeI == 0) || n.approximatePosition)
 
@@ -85,13 +84,13 @@
     pendingTrail = true
     requestAnimationFrame(() => {
       const coordsTransformed = trailArray.map((p) => fromLonLat(p.coords))
-      plotTrail(coordsTransformed)
+      ol?.plotTrail(coordsTransformed)
       pendingTrail = false
     })
   }
 
   $: if (ol) {
-    plotTrail([])
+    ol.plotTrail([])
     // ...existing plotData() or other init calls...
   }
 
@@ -144,7 +143,7 @@
       }
     }}
     onDarkModeToggle={plotData}
-  ></OpenLayersMap>
+  />
   {#if $setPositionMode}
     <div class="absolute select-none top-10 left-10 bg-indigo-600/80 text-white p-3 py-1 rounded-lg">
       Click on a new position for {getNodeNameById($myNodeNum)}
