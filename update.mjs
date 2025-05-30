@@ -1,7 +1,16 @@
 #!/usr/bin/env node
+// styleText used to live in util, but Node v18+ no longer exports it.
+// We’ll use chalk to get the same effect, or fall back to plaintext.
+import chalk from 'chalk';
+/** 
+ * styleText(text, colorName) → colored text 
+ * supported colors: green, red (add more if you like)
+ */
+const styleText = (txt, col) =>
+  ({ green: chalk.green, red: chalk.red }[col] ?? ((s) => s))(txt);
+
 import { spawn } from 'child_process'
 import { argv } from 'process';
-import { styleText } from 'util';
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
   let cmd = spawn(commandString, { shell: true, env: process.env })
