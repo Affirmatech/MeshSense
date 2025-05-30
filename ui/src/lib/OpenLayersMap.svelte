@@ -21,6 +21,7 @@
   import Text from 'ol/style/Text'
   import type { LoadingStrategy } from 'ol/source/Vector'
   import type { Coordinate } from 'ol/coordinate'
+  import VectorSource from 'ol/source/Vector'
 
   useGeographic()
   let dispatch = createEventDispatcher()
@@ -277,6 +278,37 @@
       }
     })
   })
+
+  // Exposed to parent components
+  export function plotTrail(coordinates: [number, number][]) {
+    // If a previous trail exists, remove it
+    if (layers['trail']) {
+      map.removeLayer(layers['trail'])
+      delete layers['trail']
+    }
+
+    // Create new trail layer
+    const trailLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [
+          new Feature({
+            geometry: new LineString(coordinates)
+          })
+        ]
+      }),
+      style: new Style({
+        stroke: new Stroke({
+          color: '#FF0000',
+          width: 4
+        })
+      }),
+      updateWhileAnimating: true,
+      updateWhileInteracting: true
+    })
+
+    layers['trail'] = trailLayer
+    map.addLayer(trailLayer)
+  }
 </script>
 
 <div bind:this={mapElement} class="h-full" />

@@ -90,15 +90,26 @@
     })
   }
 
-  // Example: inside your node update logic
-  const { lon, lat } = /* your code fetching the new coordinate */
-  trailArray.push({ coords: [lon, lat], ts: Date.now() })
-  pruneOldPoints()
-  scheduleTrailUpdate()
-
   $: if (ol) {
     plotTrail([])
     // ...existing plotData() or other init calls...
+  }
+
+  $: {
+    // Whenever the selected node or its coords change…
+    const selectedNode = nodesWithCoords.find(n => n.num === $myNodeNum)
+    if (selectedNode?.position?.latitudeI && selectedNode?.position?.longitudeI) {
+      const lon = selectedNode.position.longitudeI / 1e7
+      const lat = selectedNode.position.latitudeI / 1e7
+
+      // Only push if it’s truly new
+      const last = trailArray[trailArray.length - 1]
+      if (!last || last.coords[0] !== lon || last.coords[1] !== lat) {
+        trailArray.push({ coords: [lon, lat], ts: Date.now() })
+        pruneOldPoints()
+        scheduleTrailUpdate()
+      }
+    }
   }
 </script>
 
