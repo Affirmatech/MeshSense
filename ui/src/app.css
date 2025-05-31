@@ -74,6 +74,10 @@ h1 {
   @apply px-2 py-0.5 from-blue-800 bg-gradient-to-br to-cyan-700 rounded text-blue-100  border-blue-500;
 }
 
+.btn-inactive {
+  @apply px-2 py-0.5 bg-gray-600/50 rounded text-blue-100 border-blue-500;
+}
+
 button:hover {
   @apply brightness-110;
 }

@@ -4,6 +4,8 @@
   export let filteredNodes = writable<NodeInfo[]>([])
   export let inactiveNodes = writable<NodeInfo[]>([])
   export let nodeVisibilityMode = writable<string>(localStorage.getItem('nodeVisibilityMode') ?? 'active')
+  export let sortField = writable<string>(localStorage.getItem('sortField') ?? 'lastHeard')
+  export let sortDirection = writable<'asc' | 'desc'>(localStorage.getItem('sortDirection') as 'asc' | 'desc' ?? 'desc')
 
   export function isInactive(node: NodeInfo) {
     return Date.now() - node.lastHeard * 1000 >= (nodeInactiveTimer.value ?? 60) * 60 * 1000
@@ -30,7 +32,9 @@
 
   $: localStorage.setItem('nodeVisibilityMode', $nodeVisibilityMode)
   $: localStorage.setItem('includeMqtt', String(includeMqtt))
-  $: $nodes.length, $nodeInactiveTimer, $nodeVisibilityMode, includeMqtt, $filterText, filterNodes()
+  $: localStorage.setItem('sortField', $sortField)
+  $: localStorage.setItem('sortDirection', $sortDirection)
+  $: $nodes.length, $nodeInactiveTimer, $nodeVisibilityMode, includeMqtt, $filterText, $sortField, $sortDirection, filterNodes()
 
   function filterNodes() {
     $inactiveNodes = $nodes.filter(isInactive)
@@ -61,8 +65,72 @@
       .sort((a, b) => {
         if (a.num === $myNodeNum) return -1
         if (b.num === $myNodeNum) return 1
-        if (a.hopsAway == 0 && b.hopsAway == 0) return b.snr - a.snr
-        return a.hopsAway === b.hopsAway ? getNodeName(a)?.localeCompare(getNodeName(b)) : a.hopsAway - b.hopsAway
+
+        let aValue: any
+        let bValue: any
+
+        switch ($sortField) {
+          case 'lastHeard':
+            aValue = a.lastHeard
+            bValue = b.lastHeard
+            break
+          case 'shortName':
+            aValue = a.user?.shortName || ''
+            bValue = b.user?.shortName || ''
+            break
+          case 'longName':
+            aValue = a.user?.longName || ''
+            bValue = b.user?.longName || ''
+            break
+          case 'batteryLevel':
+            aValue = a.deviceMetrics?.batteryLevel || 0
+            bValue = b.deviceMetrics?.batteryLevel || 0
+            break
+          case 'batteryVoltage':
+            aValue = a.deviceMetrics?.voltage || 0
+            bValue = b.deviceMetrics?.voltage || 0
+            break
+          case 'hops':
+            aValue = a.hopsAway || 0
+            bValue = b.hopsAway || 0
+            break
+          case 'distance':
+            const aCoords = getCoordinates(a)
+            const bCoords = getCoordinates(b)
+            const myCoords = getCoordinates($myNodeNum)
+            if (aCoords[0] && aCoords[1] && myCoords[0] && myCoords[1]) {
+              aValue = Math.sqrt(Math.pow(aCoords[0] - myCoords[0], 2) + Math.pow(aCoords[1] - myCoords[1], 2))
+            } else {
+              aValue = Infinity
+            }
+            if (bCoords[0] && bCoords[1] && myCoords[0] && myCoords[1]) {
+              bValue = Math.sqrt(Math.pow(bCoords[0] - myCoords[0], 2) + Math.pow(bCoords[1] - myCoords[1], 2))
+            } else {
+              bValue = Infinity
+            }
+            break
+          case 'rssi':
+            aValue = a.rssi || -999
+            bValue = b.rssi || -999
+            break
+          case 'snr':
+            aValue = a.snr || -999
+            bValue = b.snr || -999
+            break
+          case 'channelUtilization':
+            aValue = 0
+            bValue = 0
+            break
+          default:
+            aValue = a.lastHeard
+            bValue = b.lastHeard
+        }
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return $sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+        }
+
+        return $sortDirection === 'asc' ? aValue - bValue : bValue - aValue
       })
   }
 
@@ -110,6 +178,10 @@
     if (batteryLevel >= 6) return 'bg-red-500'
     return 'bg-[red]'
   }
+
+  function toggleSortDirection() {
+    $sortDirection = $sortDirection === 'asc' ? 'desc' : 'asc'
+  }
 </script>
 
 <Modal title="Node Detail" visible={selectedNode != undefined}>
@@ -147,13 +219,27 @@
         <button title="Toggle (active/inactive/all) Visibility" on:click={toggleNodeVisibility} class="btn text-xs font-normal ml-1">
           {nodeVisibilityText}
         </button>
+        <select bind:value={$sortField} class="btn text-xs font-normal">
+          <option value="lastHeard">Last Heard</option>
+          <option value="shortName">Short Name</option>
+          <option value="longName">Long Name</option>
+          <option value="batteryLevel">Battery %</option>
+          <option value="batteryVoltage">Voltage</option>
+          <option value="hops">Hops</option>
+          <option value="distance">Distance</option>
+          <option value="rssi">RSSI</option>
+          <option value="snr">SNR</option>
+          <option value="channelUtilization">Channel Util</option>
+        </select>
+        <button title="Toggle Sort Direction" on:click={toggleSortDirection} class="btn text-xs font-normal">
+          {$sortDirection === 'asc' ? '↑' : '↓'}
+        </button>
       {/if}
     </div>
     {#if !$smallMode}
-      <label class="text-sm font-normal"
-        >MQTT
-        <input title="Toggle MQTT Nodes" type="checkbox" bind:checked={includeMqtt} />
-      </label>
+      <button title="Toggle MQTT Nodes" on:click={() => (includeMqtt = !includeMqtt)} class="text-xs font-normal {includeMqtt ? 'btn' : 'btn-inactive'}">
+        MQTT
+      </button>
     {/if}
     <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
