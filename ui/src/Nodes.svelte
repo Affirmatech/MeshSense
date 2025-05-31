@@ -164,21 +164,6 @@
     }
   }
 
-  function formatNodeVisibilityText(count: number) {
-    switch ($nodeVisibilityMode) {
-      case 'inactive':
-        return `inactive: ${count}`
-      case 'all':
-        return `all: ${count}`
-      case 'active':
-      default:
-        return `active: ${count}`
-    }
-  }
-
-  // Text mapping for the visibility toggle
-  $: nodeVisibilityText = formatNodeVisibilityText($filteredNodes?.length ?? 0)
-
   function getBatteryColor(batteryLevel) {
     if (batteryLevel === 101) return '' // use HTML style="background-color: 'steelblue'"
     if (batteryLevel >= 70) return 'bg-green-500'
@@ -224,34 +209,44 @@
 <Card title="Nodes" {...$$restProps}>
   <h2 slot="title" class="rounded-t flex items-center gap-2">
     <div class="flex items-center gap-2">
-      Nodes
+      <div class="grow flex items-center gap-2">
+        Nodes
+        {#if !$smallMode}
+          <button
+            title="Toggle Visibility - Currently Showing: {$nodeVisibilityMode}"
+            on:click={toggleNodeVisibility}
+            class="text-xs font-normal ml-1 {
+              $nodeVisibilityMode === 'active' ? 'btn-active' :
+              $nodeVisibilityMode === 'inactive' ? 'btn-inactive' :
+              'btn'
+            }"
+          >
+            {$filteredNodes.length}
+          </button>
+          <select bind:value={$sortField} class="btn text-xs font-normal w-20">
+            <option value="lastHeard">Last Heard</option>
+            <option value="shortName">Short Name</option>
+            <option value="longName">Long Name</option>
+            <option value="batteryLevel">Battery %</option>
+            <option value="batteryVoltage">Voltage</option>
+            <option value="hops">Hops</option>
+            <option value="distance">Distance</option>
+            <option value="rssi">RSSI</option>
+            <option value="snr">SNR</option>
+            <option value="channelUtilization">Channel Util</option>
+          </select>
+          <button title="Toggle Sort Direction" on:click={toggleSortDirection} class="btn text-xs font-normal">
+            {$sortDirection === 'asc' ? '↑' : '↓'}
+          </button>
+        {/if}
+      </div>
       {#if !$smallMode}
-        <button title="Toggle (active/inactive/all) Visibility" on:click={toggleNodeVisibility} class="btn text-xs font-normal ml-1">
-          {nodeVisibilityText}
-        </button>
-        <select bind:value={$sortField} class="btn text-xs font-normal">
-          <option value="lastHeard">Last Heard</option>
-          <option value="shortName">Short Name</option>
-          <option value="longName">Long Name</option>
-          <option value="batteryLevel">Battery %</option>
-          <option value="batteryVoltage">Voltage</option>
-          <option value="hops">Hops</option>
-          <option value="distance">Distance</option>
-          <option value="rssi">RSSI</option>
-          <option value="snr">SNR</option>
-          <option value="channelUtilization">Channel Util</option>
-        </select>
-        <button title="Toggle Sort Direction" on:click={toggleSortDirection} class="btn text-xs font-normal">
-          {$sortDirection === 'asc' ? '↑' : '↓'}
+        <button title="Toggle MQTT Nodes" on:click={() => (includeMqtt = !includeMqtt)} class="text-xs font-normal {includeMqtt ? 'btn' : 'btn-inactive'}">
+          MQTT
         </button>
       {/if}
+      <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
     </div>
-    {#if !$smallMode}
-      <button title="Toggle MQTT Nodes" on:click={() => (includeMqtt = !includeMqtt)} class="text-xs font-normal {includeMqtt ? 'btn' : 'btn-inactive'}">
-        MQTT
-      </button>
-    {/if}
-    <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div>
   {#if !$smallMode}
