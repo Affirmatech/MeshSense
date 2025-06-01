@@ -28,7 +28,7 @@
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
   import { fromLonLat } from 'ol/proj'
-  import { getNodeHistory } from '../stores/nodes'; // Adjust as needed
+  import { getNodeHistory } from './stores/nodes';
 
   export let ol: any; // or use the correct type if you have one
 
