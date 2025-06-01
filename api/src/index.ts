@@ -20,6 +20,8 @@ import { createWriteStream } from 'fs'
 import { dataDirectory } from './lib/paths'
 import { join } from 'path'
 import axios from 'axios'
+import express from 'express';
+import { nodeHistoryMap } from './nodeHistoryStore'; // <-- implement or import this
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 process.on('uncaughtException', (err, origin) => {
@@ -114,6 +116,15 @@ createRoutes((app) => {
     setPosition(req.body)
     return res.sendStatus(200)
   })
+
+  app.get('/api/nodes/:nodeNum/history', (req, res) => {
+    const nodeNum = parseInt(req.params.nodeNum, 10);
+    if (isNaN(nodeNum)) {
+      return res.status(400).json({ error: 'Invalid nodeNum' });
+    }
+    const history = nodeHistoryMap.get(nodeNum) || [];
+    return res.json(history);
+  });
 
   //** Set accessKey via environment variable */
   if (process.env.ACCESS_KEY) {

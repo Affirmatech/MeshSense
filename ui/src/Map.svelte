@@ -28,7 +28,7 @@
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
   import { fromLonLat } from 'ol/proj'
-  import { getNodeHistory } from './stores/nodes';
+  import { getNodeHistory, type HistoryRecord } from './stores/nodes';
 
   export let ol: any; // or use the correct type if you have one
 
@@ -112,19 +112,22 @@
     }
   }
 
-  function onTimestampClick(clickedEntry) {
-    const historyRecords = getNodeHistory($myNodeNum);
+  async function onTimestampClick(entry: any) {
+    const historyRecords: HistoryRecord[] = await getNodeHistory($myNodeNum);
+
     const points = historyRecords
       .map(r => ({
-        coords: [r.longitudeI / 1e7, r.latitudeI / 1e7],
+        coords: [r.longitudeI / 1e7, r.latitudeI / 1e7] as [number, number],
         ts: r.timestampMs
       }))
       .sort((a, b) => a.ts - b.ts);
+
     const uniquePoints = points.filter((p, i, arr) => {
       if (i === 0) return true;
-      const prev = arr[i - 1].coords;
-      return p.coords[0] !== prev[0] || p.coords[1] !== prev[1];
+      const [prevLon, prevLat] = arr[i - 1].coords;
+      return p.coords[0] !== prevLon || p.coords[1] !== prevLat;
     });
+
     trailArray = uniquePoints;
     pruneOldPoints();
     scheduleTrailUpdate();
@@ -171,7 +174,9 @@
   {/if}
   <!-- Example history list rendering -->
   {#each historyList as entry}
-    <div class="timestamp-item" on:click={() => onTimestampClick(entry)}>
+    <div 
+      class="timestamp-item" 
+      on:click={() => onTimestampClick(entry)}>
       {new Date(entry.timestampMs).toLocaleString()}
     </div>
   {/each}
