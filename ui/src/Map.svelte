@@ -28,6 +28,7 @@
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
   import { fromLonLat } from 'ol/proj'
+  import { getNodeHistory } from '../stores/nodes'; // Adjust as needed
 
   export let ol: any; // or use the correct type if you have one
 
@@ -70,9 +71,9 @@
 
   let modalPage = 'Settings'
 
-  let trailArray: { coords: [number, number]; ts: number }[] = []
-  let pendingTrail = false
-  let timeWindowMs = 6 * 3600 * 1000 // default 6 hours
+  let trailArray: { coords: [number, number]; ts: number }[] = [];
+  let pendingTrail = false;
+  let timeWindowMs = 6 * 3600 * 1000; // default 6 hours
 
   function pruneOldPoints() {
     const cutoff = Date.now() - timeWindowMs
@@ -109,6 +110,24 @@
         scheduleTrailUpdate()
       }
     }
+  }
+
+  function onTimestampClick(clickedEntry) {
+    const historyRecords = getNodeHistory($myNodeNum);
+    const points = historyRecords
+      .map(r => ({
+        coords: [r.longitudeI / 1e7, r.latitudeI / 1e7],
+        ts: r.timestampMs
+      }))
+      .sort((a, b) => a.ts - b.ts);
+    const uniquePoints = points.filter((p, i, arr) => {
+      if (i === 0) return true;
+      const prev = arr[i - 1].coords;
+      return p.coords[0] !== prev[0] || p.coords[1] !== prev[1];
+    });
+    trailArray = uniquePoints;
+    pruneOldPoints();
+    scheduleTrailUpdate();
   }
 </script>
 
@@ -150,4 +169,10 @@
       <button title="Cancel selecting a position" class="btn btn-sm ml-2 font-bold !text-red-200 !from-rose-500 !to-rose-800 rounded-full" on:click={() => ($setPositionMode = false)}>X</button>
     </div>
   {/if}
+  <!-- Example history list rendering -->
+  {#each historyList as entry}
+    <div class="timestamp-item" on:click={() => onTimestampClick(entry)}>
+      {new Date(entry.timestampMs).toLocaleString()}
+    </div>
+  {/each}
 </Card>
