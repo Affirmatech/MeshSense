@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { autoUpdater } from 'electron-updater'
+import { buildMenu } from './menu'
 
 let apiProcess: Electron.UtilityProcess
 let apiPort: any = 9999
@@ -147,6 +148,7 @@ app.whenReady().then(async () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 
+  buildMenu()
   updateCheckLoop()
   // setTimeout(() => {
   //   autoUpdater.quitAndInstall()

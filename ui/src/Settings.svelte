@@ -2,6 +2,8 @@
   import { entries, get, set } from 'idb-keyval'
   export let updateChannel = new State('updateChannel', undefined)
   export let enableAudioAlerts = writable()
+  export let highlightOwnNode = writable((localStorage.getItem('highlightOwnNode') ?? 'true') == 'true')
+  highlightOwnNode.subscribe((value) => localStorage.setItem('highlightOwnNode', String(value)))
   get('enableAudioAlerts').then((v) => enableAudioAlerts.set(v ?? true))
   enableAudioAlerts.subscribe((v) => {
     set('enableAudioAlerts', v)
@@ -133,6 +135,11 @@
     <label class="flex gap-2">
       <input type="checkbox" bind:checked={$displayFahrenheit} />
       <div class="font-bold">Display temperature in Fahrenheit</div>
+    </label>
+
+    <label class="flex gap-2">
+      <input type="checkbox" bind:checked={$highlightOwnNode} />
+      <div class="font-bold">Highlight own node's log entries</div>
     </label>
 
     <label class="flex gap-2 items-center">
