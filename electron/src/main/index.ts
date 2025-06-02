@@ -58,6 +58,14 @@ app.whenReady().then(async () => {
   console.log(`DIRNAME`, __dirname)
   let apiPath = join(__dirname, '../../resources/api/index.cjs').replace('app.asar', 'app.asar.unpacked')
   console.log(`API_PATH`, apiPath)
+  createWindow()
+
+  // Only run auto-update check if we actually have an update manifest
+  try {
+    await autoUpdater.checkForUpdatesAndNotify()
+  } catch (e) {
+    console.warn('AutoUpdater: no update manifest found, skipping. ', e)
+  }
 
   apiProcess = utilityProcess.fork(apiPath, process.argv, { stdio: 'pipe' })
   apiProcess.stdout?.on('data', (e) => process.stdout.write(e))
