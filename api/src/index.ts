@@ -118,7 +118,7 @@ createRoutes((app) => {
   })
 
   app.get('/api/nodes/:nodeNum/history', (req, res) => {
-    const nodeNum = parseInt(req.params.nodeNum, 10);
+    const nodeNum = Number(req.params.nodeNum); // Ensure this is a number
     if (isNaN(nodeNum)) {
       return res.status(400).json({ error: 'Invalid nodeNum' });
     }

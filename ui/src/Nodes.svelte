@@ -289,7 +289,8 @@
                 title="Traceroute {node.hopsAway == 0 ? 'Direct' : ''}{node?.trace ? [$myNodeNum, ...node?.trace?.route, node?.num].map((id) => getNodeNameById(id)).join(' -> ') : ''}"
                 on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button
               >
-              <!-- Add the History button here -->
+              
+            <!-- History button-->
               <button
                 class="btn btn-xs"
                 title="Show Node History"
@@ -297,7 +298,7 @@
                   selectedHistoryNode.set(node.num);
                   showHistoryPanel.set(true);
                 }}>
-                History
+                H
               </button>
             {:else if $hasAccess}
               <button title="Set Position" class="rounded-md fill-cyan-400/80 text-lg -mx-0.5" on:click={() => ($setPositionMode = true)}

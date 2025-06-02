@@ -6,7 +6,8 @@ export interface HistoryRecord {
 
 export async function getNodeHistory(nodeNum: number): Promise<HistoryRecord[]> {
   try {
-    const resp = await fetch(`/api/nodes/${nodeNum}/history`);
+    // Ensure nodeNum is a number
+    const resp = await fetch(`/api/nodes/${Number(nodeNum)}/history`);
     if (!resp.ok) {
       console.error(`Failed to fetch history for node ${nodeNum}:`, resp.statusText);
       return [];
