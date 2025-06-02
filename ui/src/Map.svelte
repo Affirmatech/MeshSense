@@ -76,18 +76,24 @@
   let timeWindowMs = 6 * 3600 * 1000; // default 6 hours
 
   function pruneOldPoints() {
-    const cutoff = Date.now() - timeWindowMs
-    trailArray = trailArray.filter((p) => p.ts >= cutoff)
+    const cutoff = Date.now() - timeWindowMs;
+    console.log('→ Pruning old points; cutoff =', new Date(cutoff).toLocaleString());
+    console.log('   before prune:', trailArray.length);
+    trailArray = trailArray.filter(p => p.ts >= cutoff);
+    console.log('   after prune:', trailArray.length);
   }
 
   function scheduleTrailUpdate() {
-    if (pendingTrail) return
-    pendingTrail = true
+    if (pendingTrail) return;
+    pendingTrail = true;
+
     requestAnimationFrame(() => {
-      const coordsTransformed = trailArray.map((p) => fromLonLat(p.coords))
-      ol?.plotTrail(coordsTransformed)
-      pendingTrail = false
-    })
+      const coordsTransformed = trailArray.map(p => fromLonLat(p.coords));
+      console.log('→ scheduleTrailUpdate called, trailArray length =', trailArray.length);
+      console.log('   transformed coords:', coordsTransformed);
+      ol?.plotTrail(coordsTransformed);
+      pendingTrail = false;
+    });
   }
 
   $: if (ol) {
@@ -114,6 +120,7 @@
 
   async function onTimestampClick(entry: any) {
     const historyRecords: HistoryRecord[] = await getNodeHistory($myNodeNum);
+    console.log('→ getNodeHistory returned', historyRecords.length, 'records');
 
     const points = historyRecords
       .map(r => ({
@@ -127,6 +134,7 @@
       const [prevLon, prevLat] = arr[i - 1].coords;
       return p.coords[0] !== prevLon || p.coords[1] !== prevLat;
     });
+    console.log('→ uniquePoints (after dedupe) =', uniquePoints.length);
 
     trailArray = uniquePoints;
     pruneOldPoints();

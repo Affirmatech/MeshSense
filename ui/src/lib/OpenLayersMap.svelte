@@ -281,13 +281,12 @@
 
   // Exposed to parent components
   export function plotTrail(coordinates: [number, number][]) {
-    // If a previous trail exists, remove it
+    console.log('→ plotTrail called, adding layer with', coordinates.length, 'pts');
     if (layers['trail']) {
-      map.removeLayer(layers['trail'])
-      delete layers['trail']
+      map.removeLayer(layers['trail']);
+      delete layers['trail'];
     }
 
-    // Create new trail layer
     const trailLayer = new VectorLayer({
       source: new VectorSource({
         features: [
@@ -304,10 +303,10 @@
       }),
       updateWhileAnimating: true,
       updateWhileInteracting: true
-    })
+    });
 
-    layers['trail'] = trailLayer
-    map.addLayer(trailLayer)
+    layers['trail'] = trailLayer;
+    map.addLayer(trailLayer);
   }
 </script>
 
