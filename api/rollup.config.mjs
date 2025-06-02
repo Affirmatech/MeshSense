@@ -74,8 +74,9 @@ export default defineConfig({
       ignoreGlobal: true
     }),
     typescript({
-      target: 'esnext'
+      target: 'esnext',
       // sourceMap: true
+      exclude: ['webbluetooth/build/**']
     }),
     json()
   ]
