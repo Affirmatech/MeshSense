@@ -22,6 +22,7 @@
   import { getSvgUri, setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
   import ObservedRF from './lib/ObservedRF.svelte'
+  import { selectedHistoryNode, showHistoryPanel } from './stores/ui';
 
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo

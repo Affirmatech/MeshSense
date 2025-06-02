@@ -29,6 +29,7 @@
   import { newsVisible } from './News.svelte'
   import { fromLonLat } from 'ol/proj'
   import { getNodeHistory, type HistoryRecord } from './stores/nodes';
+  import { selectedHistoryNode, showHistoryPanel } from './stores/ui';
 
   export let ol: any; // or use the correct type if you have one
 
@@ -119,8 +120,8 @@
   }
 
   async function onTimestampClick(entry: any) {
-    console.log('Clicked:', entry);
-    const historyRecords: HistoryRecord[] = await getNodeHistory($myNodeNum);
+    if (!$selectedHistoryNode) return;
+    const historyRecords: HistoryRecord[] = await getNodeHistory($selectedHistoryNode);
     console.log('→ getNodeHistory returned', historyRecords.length, 'records');
 
     const points = historyRecords
@@ -145,8 +146,8 @@
 
   let historyList: any[] = [];
 
-  $: if ($myNodeNum) {
-    getNodeHistory($myNodeNum).then(list => historyList = list);
+  $: if ($selectedHistoryNode && $showHistoryPanel) {
+    getNodeHistory($selectedHistoryNode).then(list => historyList = list);
   }
 </script>
 
@@ -189,19 +190,22 @@
     </div>
   {/if}
 
-  <section class="node-history">
-    <h3>Node History for #{$myNodeNum}</h3>
-    {#if historyList.length === 0}
-      <p><em>No history available for this node.</em></p>
-    {:else}
-      {#each historyList as entry (entry.timestampMs)}
-        <button
-          type="button"
-          class="timestamp-item"
-          on:click={() => onTimestampClick(entry)}>
-          {new Date(entry.timestampMs).toLocaleString()}
-        </button>
-      {/each}
-    {/if}
-  </section>
+  {#if $showHistoryPanel}
+    <section class="node-history">
+      <h3>Node History for #{$selectedHistoryNode}</h3>
+      {#if historyList.length === 0}
+        <p><em>No history available for this node.</em></p>
+      {:else}
+        {#each historyList as entry (entry.timestampMs)}
+          <button
+            type="button"
+            class="timestamp-item"
+            on:click={() => onTimestampClick(entry)}>
+            {new Date(entry.timestampMs).toLocaleString()}
+          </button>
+        {/each}
+      {/if}
+      <button class="btn" on:click={() => showHistoryPanel.set(false)}>Close</button>
+    </section>
+  {/if}
 </Card>
