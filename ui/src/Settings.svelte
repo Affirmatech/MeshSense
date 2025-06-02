@@ -2,7 +2,8 @@
   import { entries, get, set } from 'idb-keyval'
   export let updateChannel = new State('updateChannel', undefined)
   export let enableAudioAlerts = writable()
-  export let highlightOwnNode = new State('highlightOwnNode', true)
+  export let highlightOwnNode = writable((localStorage.getItem('highlightOwnNode') ?? 'true') == 'true')
+  highlightOwnNode.subscribe((value) => localStorage.setItem('highlightOwnNode', String(value)))
   get('enableAudioAlerts').then((v) => enableAudioAlerts.set(v ?? true))
   enableAudioAlerts.subscribe((v) => {
     set('enableAudioAlerts', v)
