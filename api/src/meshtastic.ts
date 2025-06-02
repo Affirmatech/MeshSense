@@ -33,6 +33,7 @@ import exitHook from 'exit-hook'
 import * as geolib from 'geolib'
 import axios from 'axios'
 import { State } from './lib/state'
+import { nodeHistoryMap } from './nodeHistoryStore'
 
 let routeCache: State<Record<number, number[]>>
 
@@ -350,8 +351,22 @@ export async function connect(address?: string) {
     let packet: MeshPacket
     if (id && data.latitudeI) packet = packets.upsert({ id, data })
     if (e.from && data.latitudeI) {
-      let node = nodes.upsert({ num: e.from, position: data })
-      if (packet?.viaMqtt === false) sendToMeshMap({ num: e.from, position: data }, node, packet)
+      let nodeNum = Number(e.from)
+      const record = {
+        latitudeI: data.latitudeI,
+        longitudeI: data.longitudeI,
+        timestampMs: Date.now()
+      }
+      if (!nodeHistoryMap.has(nodeNum)) {
+        nodeHistoryMap.set(nodeNum, [])
+      }
+      nodeHistoryMap.get(nodeNum)!.push(record)
+      // Optionally limit history size:
+      // const arr = nodeHistoryMap.get(nodeNum)!
+      // if (arr.length > 1000) arr.shift()
+      console.log(`Pushed history for node ${nodeNum}:`, record)
+      let node = nodes.upsert({ num: nodeNum, position: data })
+      if (packet?.viaMqtt === false) sendToMeshMap({ num: nodeNum, position: data }, node, packet)
     }
   })
 

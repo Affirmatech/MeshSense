@@ -21,7 +21,7 @@ import { dataDirectory } from './lib/paths'
 import { join } from 'path'
 import axios from 'axios'
 import express from 'express';
-import { nodeHistoryMap } from './nodeHistoryStore'; // <-- implement or import this
+import { nodeHistoryMap } from './nodeHistoryStore';
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 process.on('uncaughtException', (err, origin) => {
