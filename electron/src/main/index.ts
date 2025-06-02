@@ -56,7 +56,14 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
   console.log(`DIRNAME`, __dirname)
-  let apiPath = join(__dirname, '../../resources/api/index.cjs').replace('app.asar', 'app.asar.unpacked')
+  let apiPath: string
+  if (app.isPackaged) {
+    // In packaged builds, use process.resourcesPath
+    apiPath = join(process.resourcesPath, 'api', 'index.cjs')
+  } else {
+    // In dev, use relative to source
+    apiPath = join(__dirname, '..', 'resources', 'api', 'index.cjs')
+  }
   console.log(`API_PATH`, apiPath)
   createWindow()
 
