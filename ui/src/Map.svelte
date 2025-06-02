@@ -119,6 +119,7 @@
   }
 
   async function onTimestampClick(entry: any) {
+    console.log('Clicked:', entry);
     const historyRecords: HistoryRecord[] = await getNodeHistory($myNodeNum);
     console.log('→ getNodeHistory returned', historyRecords.length, 'records');
 
@@ -128,13 +129,14 @@
         ts: r.timestampMs
       }))
       .sort((a, b) => a.ts - b.ts);
+    console.log('→ Converted and sorted points:', points);
 
     const uniquePoints = points.filter((p, i, arr) => {
       if (i === 0) return true;
       const [prevLon, prevLat] = arr[i - 1].coords;
       return p.coords[0] !== prevLon || p.coords[1] !== prevLat;
     });
-    console.log('→ uniquePoints (after dedupe) =', uniquePoints.length);
+    console.log('→ uniquePoints (deduped) length =', uniquePoints.length);
 
     trailArray = uniquePoints;
     pruneOldPoints();
@@ -186,12 +188,20 @@
       <button title="Cancel selecting a position" class="btn btn-sm ml-2 font-bold !text-red-200 !from-rose-500 !to-rose-800 rounded-full" on:click={() => ($setPositionMode = false)}>X</button>
     </div>
   {/if}
-  <!-- Example history list rendering -->
-  {#each historyList as entry}
-    <div 
-      class="timestamp-item" 
-      on:click={() => onTimestampClick(entry)}>
-      {new Date(entry.timestampMs).toLocaleString()}
-    </div>
-  {/each}
+
+  <section class="node-history">
+    <h3>Node History for #{$myNodeNum}</h3>
+    {#if historyList.length === 0}
+      <p><em>No history available for this node.</em></p>
+    {:else}
+      {#each historyList as entry (entry.timestampMs)}
+        <button
+          type="button"
+          class="timestamp-item"
+          on:click={() => onTimestampClick(entry)}>
+          {new Date(entry.timestampMs).toLocaleString()}
+        </button>
+      {/each}
+    {/if}
+  </section>
 </Card>
