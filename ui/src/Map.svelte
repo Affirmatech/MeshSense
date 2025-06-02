@@ -132,6 +132,12 @@
     pruneOldPoints();
     scheduleTrailUpdate();
   }
+
+  let historyList: any[] = [];
+
+  $: if ($myNodeNum) {
+    getNodeHistory($myNodeNum).then(list => historyList = list);
+  }
 </script>
 
 <Card title="Map" {...$$restProps}>
