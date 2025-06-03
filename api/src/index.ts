@@ -84,6 +84,7 @@ createRoutes((app) => {
     if (!isAuthorized(req)) return res.sendStatus(403)
     let nodes = req.body.nodes
     await deleteNodes(nodes)
+    return res.sendStatus(200)
   })
 
   app.post('/connect', async (req, res) => {
