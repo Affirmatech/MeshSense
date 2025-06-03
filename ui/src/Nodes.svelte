@@ -110,12 +110,22 @@
             }
             break
           case 'rssi':
-            aValue = a.rssi || -999
-            bValue = b.rssi || -999
+            if ((a.hopsAway ?? 0) > 0 || (b.hopsAway ?? 0) > 0) {
+              aValue = a.hopsAway ?? 99
+              bValue = b.hopsAway ?? 99
+            } else {
+              aValue = a.rssi || -999
+              bValue = b.rssi || -999
+            }
             break
           case 'snr':
-            aValue = a.snr || -999
-            bValue = b.snr || -999
+            if ((a.hopsAway ?? 0) > 0 || (b.hopsAway ?? 0) > 0) {
+              aValue = a.hopsAway ?? 99
+              bValue = b.hopsAway ?? 99
+            } else {
+              aValue = a.snr || -999
+              bValue = b.snr || -999
+            }
             break
           case 'channelUtilization':
             aValue = a.deviceMetrics?.channelUtilization || 0
