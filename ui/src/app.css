@@ -98,3 +98,11 @@ button:active {
   top: 73px;
   left: .5em;
 }
+
+.node-history {
+  @apply absolute top-12 left-4 p-2 bg-black/80 rounded-lg max-h-60 overflow-auto flex flex-col gap-1 text-sm;
+}
+
+.timestamp-item {
+  @apply w-full text-left px-2 py-0.5 rounded bg-slate-700/50 hover:bg-slate-700;
+}

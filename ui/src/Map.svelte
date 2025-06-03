@@ -75,6 +75,8 @@
   let trailArray: { coords: [number, number]; ts: number }[] = [];
   let pendingTrail = false;
   let timeWindowMs = 6 * 3600 * 1000; // default 6 hours
+  let rangeStart: number | null = null;
+  let rangeEnd: number | null = null;
 
   function pruneOldPoints() {
     const cutoff = Date.now() - timeWindowMs;
@@ -120,27 +122,41 @@
   }
 
   async function onTimestampClick(entry: any) {
-    if (!$selectedHistoryNode) return;
-    const historyRecords: HistoryRecord[] = await getNodeHistory($selectedHistoryNode);
-    console.log('→ getNodeHistory returned', historyRecords.length, 'records');
+    if (rangeStart === null || (rangeStart !== null && rangeEnd !== null)) {
+      rangeStart = entry.timestampMs;
+      rangeEnd = null;
+      trailArray = [];
+      scheduleTrailUpdate();
+    } else if (rangeEnd === null) {
+      rangeEnd = entry.timestampMs;
+      applyHistoryRange();
+    }
+  }
 
+  async function applyHistoryRange() {
+    if (!$selectedHistoryNode || rangeStart === null || rangeEnd === null) return;
+    const historyRecords: HistoryRecord[] = await getNodeHistory($selectedHistoryNode);
+    const start = Math.min(rangeStart, rangeEnd);
+    const end = Math.max(rangeStart, rangeEnd);
     const points = historyRecords
       .map(r => ({
         coords: [r.longitudeI / 1e7, r.latitudeI / 1e7] as [number, number],
         ts: r.timestampMs
       }))
+      .filter(p => p.ts >= start && p.ts <= end)
       .sort((a, b) => a.ts - b.ts);
-    console.log('→ Converted and sorted points:', points);
-
     const uniquePoints = points.filter((p, i, arr) => {
       if (i === 0) return true;
       const [prevLon, prevLat] = arr[i - 1].coords;
       return p.coords[0] !== prevLon || p.coords[1] !== prevLat;
     });
-    console.log('→ uniquePoints (deduped) length =', uniquePoints.length);
-
     trailArray = uniquePoints;
-    pruneOldPoints();
+    scheduleTrailUpdate();
+  }
+
+  function resetHistoryRange() {
+    rangeStart = rangeEnd = null;
+    trailArray = [];
     scheduleTrailUpdate();
   }
 
@@ -193,19 +209,23 @@
   {#if $showHistoryPanel}
     <section class="node-history">
       <h3>Node History for #{$selectedHistoryNode}</h3>
+      <p class="text-sm mb-2">Select start and end timestamps to draw a trail.</p>
       {#if historyList.length === 0}
         <p><em>No history available for this node.</em></p>
       {:else}
         {#each historyList as entry (entry.timestampMs)}
           <button
             type="button"
-            class="timestamp-item"
+            class="timestamp-item {rangeStart === entry.timestampMs || rangeEnd === entry.timestampMs ? 'bg-indigo-500 text-white' : ''}"
             on:click={() => onTimestampClick(entry)}>
             {new Date(entry.timestampMs).toLocaleString()}
           </button>
         {/each}
       {/if}
-      <button class="btn" on:click={() => showHistoryPanel.set(false)}>Close</button>
+      <div class="mt-2 flex gap-2">
+        <button class="btn" on:click={resetHistoryRange}>Clear Selection</button>
+        <button class="btn" on:click={() => { resetHistoryRange(); showHistoryPanel.set(false); }}>Close</button>
+      </div>
     </section>
   {/if}
 </Card>
