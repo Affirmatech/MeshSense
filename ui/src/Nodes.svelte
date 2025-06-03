@@ -118,8 +118,8 @@
             bValue = b.snr || -999
             break
           case 'channelUtilization':
-            aValue = 0
-            bValue = 0
+            aValue = a.deviceMetrics?.channelUtilization || 0
+            bValue = b.deviceMetrics?.channelUtilization || 0
             break
           default:
             aValue = a.lastHeard
