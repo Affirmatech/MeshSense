@@ -91,10 +91,10 @@
     pendingTrail = true;
 
     requestAnimationFrame(() => {
-      const coordsTransformed = trailArray.map(p => fromLonLat(p.coords));
+      const coords = trailArray.map(p => p.coords);
       console.log('→ scheduleTrailUpdate called, trailArray length =', trailArray.length);
-      console.log('   transformed coords:', coordsTransformed);
-      ol?.plotTrail(coordsTransformed);
+      console.log('   coords:', coords);
+      ol?.plotTrail(coords);
       pendingTrail = false;
     });
   }
