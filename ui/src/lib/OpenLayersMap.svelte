@@ -308,6 +308,47 @@
     layers['trail'] = trailLayer;
     map.addLayer(trailLayer);
   }
+
+  export function plotTrailMarkers(points: { coords: [number, number]; ts: number }[]) {
+    if (layers['trailMarkers']) {
+      map.removeLayer(layers['trailMarkers']);
+      delete layers['trailMarkers'];
+    }
+
+    if (points.length === 0) return;
+
+    const features = points.map(p => {
+      const feature = new Feature({
+        geometry: new Point(p.coords)
+      });
+      feature.setStyle(
+        new Style({
+          image: new Circle({
+            radius: 5,
+            fill: new Fill({ color: '#f00' }),
+            stroke: new Stroke({ color: '#fff', width: 1 })
+          }),
+          text: new Text({
+            font: '12px sans-serif',
+            offsetY: -12,
+            fill: new Fill({ color: !darkMode ? '#000' : '#fff' }),
+            stroke: new Stroke({ color: !darkMode ? '#fff' : '#000', width: 3 }),
+            text: new Date(p.ts).toLocaleTimeString()
+          })
+        })
+      );
+      return feature;
+    });
+
+    const layer = new VectorLayer({
+      source: new VectorSource({ features }),
+      updateWhileAnimating: true,
+      updateWhileInteracting: true
+    });
+
+    layers['trailMarkers'] = layer;
+    map.addLayer(layer);
+  }
 </script>
 
 <div bind:this={mapElement} class="h-full" />

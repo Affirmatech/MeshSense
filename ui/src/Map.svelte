@@ -95,12 +95,15 @@
       console.log('→ scheduleTrailUpdate called, trailArray length =', trailArray.length);
       console.log('   coords:', coords);
       ol?.plotTrail(coords);
+      // also drop timestamped markers along the trail
+      ol?.plotTrailMarkers(trailArray);
       pendingTrail = false;
     });
   }
 
   $: if (ol) {
     ol.plotTrail([])
+    ol.plotTrailMarkers([])
     // ...existing plotData() or other init calls...
   }
 
