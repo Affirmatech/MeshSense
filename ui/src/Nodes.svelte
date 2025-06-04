@@ -22,6 +22,7 @@
   import { getSvgUri, setPositionMode } from './Map.svelte'
   import ChannelUtilization from './lib/ChannelUtilization.svelte'
   import ObservedRF from './lib/ObservedRF.svelte'
+  import { selectedHistoryNode, showHistoryPanel } from './stores/ui';
 
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
@@ -269,7 +270,7 @@
               {/if}
               <div
                 class="h-0.5 {getBatteryColor(node.deviceMetrics?.batteryLevel)}"
-                style="width: {node.deviceMetrics?.batteryLevel || 0}%;
+                style="width: {node.deviceMetrics?.batteryLevel || 0}% ;
                       background-color: {node.deviceMetrics?.batteryLevel === 101 ? 'steelblue' : ''};"
               ></div>
             </div>
@@ -288,6 +289,17 @@
                 title="Traceroute {node.hopsAway == 0 ? 'Direct' : ''}{node?.trace ? [$myNodeNum, ...node?.trace?.route, node?.num].map((id) => getNodeNameById(id)).join(' -> ') : ''}"
                 on:click={() => axios.post('/traceRoute', { destination: node.num })}>↯</button
               >
+              
+            <!-- History button-->
+              <button
+                class="btn btn-xs"
+                title="Show Node History"
+                on:click={() => {
+                  selectedHistoryNode.set(node.num);
+                  showHistoryPanel.set(true);
+                }}>
+                H
+              </button>
             {:else if $hasAccess}
               <button title="Set Position" class="rounded-md fill-cyan-400/80 text-lg -mx-0.5" on:click={() => ($setPositionMode = true)}
                 ><svg width="24px" height="24px" viewBox="0 0 512 512" data-name="Layer 1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
@@ -326,36 +338,6 @@
               </button>
             {/if}
           </div>
-
-          {#if node.environmentMetrics}
-            <div class="flex gap-1">
-              {#if node.environmentMetrics.temperature}
-                <div title="Temperature" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
-                  {formatTemp(node.environmentMetrics.temperature, $displayFahrenheit)}
-                </div>
-              {/if}
-              {#if node.environmentMetrics.barometricPressure}
-                <div title="Barometric Pressure" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
-                  {Math.round(node.environmentMetrics.barometricPressure)} hPA
-                </div>
-              {/if}
-              {#if node.environmentMetrics.relativeHumidity}
-                <div title="Relative Humidity" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-12 h-6 text-center overflow-hidden">
-                  {Math.round(node.environmentMetrics.relativeHumidity)}%
-                </div>
-              {/if}
-              {#if node.environmentMetrics.gasResistance}
-                <div title="Gas Resistance" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-20 h-6 text-center overflow-hidden">
-                  {Math.round(node.environmentMetrics.gasResistance)} MOhm
-                </div>
-              {/if}
-              {#if node.environmentMetrics.iaq}
-                <div title="Air Quality" class="text-sm font-normal bg-purple-950/20 text-purple-200/90 rounded p-0.5 w-16 h-6 text-center overflow-hidden">
-                  {Math.round(node.environmentMetrics.iaq)} IAQ
-                </div>
-              {/if}
-            </div>
-          {/if}
         {/if}
       </div>
     {/each}

@@ -1,3 +1,13 @@
+import { webcrypto } from 'crypto';
+
+declare global {
+  // Let TypeScript know about globalThis.crypto
+  // eslint-disable-next-line no-var
+  var crypto: typeof webcrypto;
+}
+
+globalThis.crypto = webcrypto;
+
 import 'dotenv/config'
 import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
@@ -10,6 +20,8 @@ import { createWriteStream } from 'fs'
 import { dataDirectory } from './lib/paths'
 import { join } from 'path'
 import axios from 'axios'
+import express from 'express';
+import { nodeHistoryMap } from './nodeHistoryStore';
 setInterval(() => currentTime.set(Date.now()), 15000)
 
 process.on('uncaughtException', (err, origin) => {
@@ -72,6 +84,7 @@ createRoutes((app) => {
     if (!isAuthorized(req)) return res.sendStatus(403)
     let nodes = req.body.nodes
     await deleteNodes(nodes)
+    return res.sendStatus(200)
   })
 
   app.post('/connect', async (req, res) => {
@@ -104,6 +117,15 @@ createRoutes((app) => {
     setPosition(req.body)
     return res.sendStatus(200)
   })
+
+  app.get('/api/nodes/:nodeNum/history', (req, res) => {
+    const nodeNum = Number(req.params.nodeNum); // Ensure this is a number
+    if (isNaN(nodeNum)) {
+      return res.status(400).json({ error: 'Invalid nodeNum' });
+    }
+    const history = nodeHistoryMap.get(nodeNum) || [];
+    return res.json(history);
+  });
 
   //** Set accessKey via environment variable */
   if (process.env.ACCESS_KEY) {

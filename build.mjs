@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { spawn } from 'child_process'
-import { styleText } from 'util';
 import './api/node_modules/dotenv/config.js'
 
 let runCmd = (commandString) => new Promise((resolve, reject) => {
@@ -13,14 +12,16 @@ let runCmd = (commandString) => new Promise((resolve, reject) => {
 
 let platform = process.platform.replace(/32$/, '').replace('darwin', 'mac')
 
-console.log(styleText(['magenta', 'bold'], 'Building UI'))
+console.log('🏗 Building UI…')
 process.chdir('ui')
 await runCmd('npm run build')
 
-console.log(styleText(['magenta', 'bold'], 'Building API'))
+console.log('🏗 Building API…')
 process.chdir('../api')
 await runCmd('npm run build')
 
-console.log(styleText(['magenta', 'bold'], 'Building Electron'))
+console.log('🏗 Building Electron…')
 process.chdir('../electron')
 await runCmd(`npm run build:${platform} --c.extraMetadata.version=2.0.0`)
+
+console.log('✅ Build complete!')
