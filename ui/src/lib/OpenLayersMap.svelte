@@ -298,7 +298,8 @@
       style: new Style({
         stroke: new Stroke({
           color: '#FF0000',
-          width: 4
+          width: 2
+          lineDash: [6, 10]
         })
       }),
       updateWhileAnimating: true,
