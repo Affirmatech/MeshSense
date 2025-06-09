@@ -42,6 +42,24 @@ export function buildMenu() {
     },
     {
       role: 'editMenu',
+      submenu: [
+        {
+          label: 'Filter Nodes',
+          accelerator: 'CmdOrCtrl+F',
+          click: () => {
+            const win = BrowserWindow.getAllWindows()[0]
+            win?.webContents.send('focus-node-filter')
+          }
+        },
+        { type: 'separator' },
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' }
+      ]
     },
     {
       role: 'viewMenu',

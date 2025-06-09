@@ -4,7 +4,7 @@
   // import ServiceWorker from './lib/ServiceWorker.svelte'
   import { WebSocketClient } from './lib/wsc'
   import Log from './Log.svelte'
-  import Nodes, { smallMode } from './Nodes.svelte'
+  import Nodes, { smallMode, focusNodeFilter } from './Nodes.svelte'
   import Map, { expandedMap } from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
@@ -26,10 +26,18 @@
   import { showPage } from './SettingsModal.svelte'
 
   onMount(() => {
-     window.api?.onOpenSettings(() => {
-       showPage('Settings')
-     })
-   })
+    if (window.api?.onOpenSettings) {
+      window.api.onOpenSettings(() => {
+        showPage('Settings')
+      })
+    }
+
+    if (window.api?.onFocusNodeFilter) {
+      window.api.onFocusNodeFilter(() => {
+        focusNodeFilter()
+      })
+    }
+  })
 </script>
 
 <!-- <ServiceWorker /> -->

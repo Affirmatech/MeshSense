@@ -5,6 +5,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 const api = {
   onOpenSettings: (callback: () => void) => {
     ipcRenderer.on('open-settings', callback)
+  },
+  onFocusNodeFilter: (callback: () => void) => {
+    ipcRenderer.on('focus-node-filter', callback)
   }
 }
 

@@ -1,12 +1,17 @@
 <script context="module" lang="ts">
   import { currentTime, myNodeMetadata, myNodeNum, nodeInactiveTimer, nodes, pendingTraceroutes, type NodeInfo } from 'api/src/vars'
   export let smallMode = writable(false)
+  export let selectNodeFilterInput = writable(false)
   export let filteredNodes = writable<NodeInfo[]>([])
   export let inactiveNodes = writable<NodeInfo[]>([])
   export let nodeVisibilityMode = writable<string>(localStorage.getItem('nodeVisibilityMode') ?? 'active')
 
   export function isInactive(node: NodeInfo) {
     return Date.now() - node.lastHeard * 1000 >= (nodeInactiveTimer.value ?? 60) * 60 * 1000
+  }
+
+  export function focusNodeFilter() {
+    selectNodeFilterInput.set(true)
   }
 </script>
 
@@ -25,8 +30,15 @@
 
   export let includeMqtt = (localStorage.getItem('includeMqtt') ?? 'true') == 'true'
   let selectedNode: NodeInfo
+  let nodeFilterInput: HTMLInputElement
   export let ol: OpenLayersMap = undefined
   export let filterText = writable('')
+
+
+  $: if ($selectNodeFilterInput) {
+    nodeFilterInput.select()
+    selectNodeFilterInput.set(false)
+  }
 
   $: localStorage.setItem('nodeVisibilityMode', $nodeVisibilityMode)
   $: localStorage.setItem('includeMqtt', String(includeMqtt))
@@ -160,7 +172,7 @@
   <div>
   {#if !$smallMode}
     <div class="grid m-2">
-      <input type="text" placeholder="Node Filter..." bind:value={$filterText} class="input"/>
+      <input type="text" placeholder="Node Filter..." bind:value={$filterText} class="input" bind:this={nodeFilterInput}/>
     </div>
   {/if}
     <div class="p-1 text-sm grid gap-1 overflow-auto h-full content-start">
