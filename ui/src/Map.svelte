@@ -5,7 +5,12 @@
   import { generateHexer } from '@bdancer/icon-gaga'
 
   export function getSvgUri(name: string) {
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ name }))
+    const hexId = parseInt(name).toString(16).padStart(8, '0')
+    const colorId = hexId.slice(-6)
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ 
+      name,
+      borderColor: `#${colorId}`
+    }))
   }
 
   export function getIconURL(node: NodeInfo) {
