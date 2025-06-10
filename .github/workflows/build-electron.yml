@@ -1,0 +1,91 @@
+name: Electron App
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    steps:
+      - name: Force LF line endings
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@v4.2.2
+        with:
+          submodules: recursive
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: 22.x
+
+      - name: Install dbus on Ubuntu
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y libdbus-1-dev
+
+      - name: Install webbluetooth
+        working-directory: api/webbluetooth
+        run: |
+          npm ci
+          npm run build:all
+
+      - name: Install meshtastic-js
+        working-directory: api/meshtastic-js
+        run: |
+          npm ci
+          npm run build
+
+      - name: Install UI dependencies
+        working-directory: ui
+        run: npm ci
+
+      - name: Install API dependencies
+        working-directory: api
+        run: npm ci
+
+      - name: Install Electron dependencies
+        working-directory: electron
+        run: npm ci
+
+      - name: Build UI
+        working-directory: ui
+        run: |
+          npm run build
+
+      - name: Build API
+        working-directory: api
+        run: |
+          npm run build
+
+      - name: Set build arch
+        id: set_arch
+        shell: bash
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "arch=win" >> $GITHUB_OUTPUT
+          elif [[ "${{ runner.os }}" == "macOS" ]]; then
+            echo "arch=mac" >> $GITHUB_OUTPUT
+          else
+            echo "arch=linux" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Electron app
+        working-directory: electron
+        run: npm run build:${{ steps.set_arch.outputs.arch }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build-${{ matrix.os }}
+          path: electron/dist/

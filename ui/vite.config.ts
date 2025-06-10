@@ -7,7 +7,7 @@ import 'dotenv/config'
 export default defineConfig({
   base: process.env.VITE_PATH,
   server: {
-    port: process.env.PORT || '5921'
+    port: Number(process.env.PORT) || 5921
   },
   build: {
     sourcemap: true
