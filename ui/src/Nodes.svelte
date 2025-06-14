@@ -255,10 +255,6 @@
       {/if}
       <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
     </div>
-    {#if !$smallMode}
-      <button title="Toggle MQTT Nodes" on:click={() => (includeMqtt = !includeMqtt)} class="text-xs font-normal {includeMqtt ? 'btn' : 'btn-inactive'}"> MQTT </button>
-    {/if}
-    <button title="Reduce/Expand Node List" on:click={() => ($smallMode = !$smallMode)} class="btn !px-2 text-sm font-normal">{$smallMode ? '→' : '←'}</button>
   </h2>
   <div>
   {#if !$smallMode}
