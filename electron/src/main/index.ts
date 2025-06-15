@@ -5,6 +5,16 @@ import icon from '../../resources/icon.png?asset'
 import { autoUpdater } from 'electron-updater'
 import { buildMenu } from './menu'
 
+process.on('uncaughtException', (error: any) => {
+  // Ignore EIO errors during shutdown, these are expected when child processes are exiting
+  if (error?.code === 'EIO') {
+    return
+  }
+
+  console.error('[electron] Uncaught Exception:', error)
+  process.exit(10)  // Using an unambiguous exit code here to indicate a crash
+})
+
 let apiProcess: Electron.UtilityProcess
 let apiPort: any = 9999
 
