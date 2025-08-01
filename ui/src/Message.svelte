@@ -11,10 +11,11 @@
   import { getNodeName } from './lib/util'
 
   let inputElement: HTMLInputElement
-
-  $: maxLength = 230 - $messagePrefix?.length - $messageSuffix?.length
-
   let message = ''
+
+  $: maxLength = 230 - ($messagePrefix?.length || 0) - ($messageSuffix?.length || 0)
+  $: remainingChars = maxLength - message.length
+  $: charCountClass = remainingChars <= 0 ? 'text-red-700' : remainingChars <= 40 ? 'text-yellow-700' : 'text-gray-600'
 
   $: if (inputElement && $messageDestination) {
     inputElement.focus()
@@ -40,6 +41,7 @@
   <h2 slot="title" class="rounded-t flex items-center h-full gap-2">
     {#if !$smallMode}
       <div class="grow">Message</div>
+      <div class="text-xs {charCountClass}">{remainingChars}</div>
     {/if}
 
     <select bind:value={$messageDestination} class="input font-normal text-sm border border-blue-500/50 !bg-blue-950" name="" id="">
