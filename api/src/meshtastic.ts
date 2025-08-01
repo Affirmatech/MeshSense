@@ -499,6 +499,11 @@ export async function send({ message = '', destination, channel, wantAck = true 
 }
 
 export function traceRoute(destination: number) {
+  if (destination == broadcastId) {
+    console.log('Skipping trace route to broadcast ID')
+    return
+  }
+
   traceRouteLog[destination] = Date.now()
   if (!pendingTraceroutes.value.includes(destination)) {
     pendingTraceroutes.push(destination)
