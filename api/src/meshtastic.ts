@@ -2,8 +2,9 @@
  * https://js.meshtastic.org/
  */
 
-// import { HttpConnection, BleConnection } from '@meshtastic/js'
-import { HttpConnection, BleConnection, Protobuf } from '../meshtastic-js/dist'
+import { MeshDevice, Protobuf, Types } from '@meshtastic/core'
+import { TransportHTTP } from '@meshtastic/transport-http'
+import { TransportWebBluetooth } from '@meshtastic/transport-web-bluetooth'
 import {
   Channel,
   MeshPacket,
@@ -36,9 +37,11 @@ import { State } from './lib/state'
 
 let routeCache: State<Record<number, number[]>>
 
-let connection: HttpConnection | BleConnection
+let connection: MeshDevice | undefined
+let transport: Types.Transport | undefined
 let connectionIntended = false
-// address.subscribe(connect)
+let connectionTimeout: NodeJS.Timeout
+let currentConnectionAddress = ''
 
 /** Tracks when nodes were last requested a traceroute: `traceRouteLog[nodeNum]` */
 let traceRouteLog: Record<number, number> = {}
@@ -155,16 +158,12 @@ function validateMACAddress(macAddress: string): boolean {
 }
 
 function disableReconnect() {
-  connection.connect = async (args: any) => {
-    console.log('[meshtastic] Preventing Automatic Reconnect')
-  }
+  // TODO: Not sure what to do with this. Doesn't seem like there is any autoreconnect feature in meshtastic/core. Maybe this can be removed?
+  console.log('[meshtastic] Preventing Automatic Reconnect')
 }
 
 exitHook(() => {
   disconnect()
-  // connectionStatus.set('disconnected')
-  // console.log('Disconnecting from device')
-  // connection?.disconnect()
 })
 
 function extractPayload(packet: MeshPacket): Record<string, any> {
@@ -179,9 +178,32 @@ export async function disconnect(setIntent = true) {
   console.log('Disconnecting from device')
   if (connection) {
     disableReconnect()
-    connection.disconnect()
-    clearTimeout(connection['timeout'])
+    clearTimeout(connectionTimeout)
+    try {
+      await connection.disconnect()
+      console.log('[meshtastic] Connection disconnected successfully')
+    } catch (e) {
+      console.log('[meshtastic] Disconnect error (likely already disconnected):', e.message)
+    }
   }
+
+  if (transport instanceof TransportWebBluetooth) {
+    try {
+      for (const [deviceId, device] of Object.entries(bluetoothDevices)) {
+        if (device && device.gatt && device.gatt.connected) {
+          console.log('[meshtastic] Disconnecting GATT for device:', deviceId)
+          device.gatt.disconnect()
+          console.log('[meshtastic] GATT disconnected successfully')
+        }
+      }
+    } catch (e) {
+      console.log('[meshtastic] GATT disconnect error:', e.message)
+  }
+  }
+
+  transport = undefined
+  connection = undefined
+
   if (setIntent) reset()
 }
 
@@ -191,6 +213,7 @@ export function reset() {
   channels.set([])
   myNodeNum.set(undefined)
   myNodeMetadata.set(undefined)
+  currentConnectionAddress = ''
   deleteInProgress = false
   deviceConfig = {}
   pendingTraceroutes.set([])
@@ -198,7 +221,7 @@ export function reset() {
 
 /**
  * Connects to a MeshTastic Node using an HTTP connection.
- * @param {string} address - The IP address of the MeshTastic Node to connect to.
+ * @param {string} address - The IP address or Bluetooth UUID of the MeshTastic Node to connect to.
  */
 export async function connect(address?: string) {
   console.log('[meshtastic] Calling connect', address)
@@ -206,10 +229,10 @@ export async function connect(address?: string) {
   await disconnect(false)
   connectionIntended = true
   if (!address || address == '') return
+  currentConnectionAddress = address
 
   if (validateMACAddress(address)) {
     /** Bluetooth Device */
-    connection = new BleConnection()
     connectionStatus.set('searching')
 
     /** Scan and wait for device to appear if not present */
@@ -221,42 +244,55 @@ export async function connect(address?: string) {
     /** If device never showed up, bail */
     if (!bluetoothDevices[address]) return
     stopScanning()
+
+    try {
+      transport = await TransportWebBluetooth.createFromDevice(bluetoothDevices[address])
+    } catch (error) {
+      console.error('[meshtastic] Failed to create Bluetooth transport:', error)
+      connectionStatus.set('disconnected')
+      return
+    }
   } else {
-    /** HTTP Endpoint */
-    connection = new HttpConnection()
+    transport = await TransportHTTP.create(address, enableTLS.value)
+  }
+
+  // Create MeshDevice with the appropriate transport
+  try {
+    connection = new MeshDevice(transport)
+  } catch (error) {
+    console.error('[meshtastic] Failed to create MeshDevice:', error)
+    connectionStatus.set('disconnected')
+    return
   }
 
   connectionStatus.set('connecting')
   channels.set([])
   updateTimeout()
 
-  //   DeviceRestarting = 1,
-  //   DeviceDisconnected = 2,
-  //   DeviceConnecting = 3,
-  //   DeviceReconnecting = 4,
-  //   DeviceConnected = 5,
-  //   DeviceConfiguring = 6,
-  //   DeviceConfigured = 7,
+  console.log('[meshtastic] Setting up device status event handler')
   connection.events.onDeviceStatus.subscribe(async (e) => {
-    console.log('[meshtastic] Device Status', e)
-    if (e == 6) {
+    console.log('[meshtastic] Device Status changed:', e, `(${Types.DeviceStatusEnum[e]})`)
+    if (e === Types.DeviceStatusEnum.DeviceConfiguring) {
       connectionStatus.set('configuring')
-    } else if (e == 3) {
+    } else if (e === Types.DeviceStatusEnum.DeviceConnecting) {
       connectionStatus.set('connecting')
-    } else if (e == 7) {
+    } else if (e === Types.DeviceStatusEnum.DeviceConfigured) {
       connectionStatus.set('connected')
       // setTime()
-      // } else if (e == 4) {
+    } else if (e === Types.DeviceStatusEnum.DeviceReconnecting) {
+      connectionStatus.set('reconnecting')
       // await disconnect()
-    } else if (e == 2) {
+    } else if (e === Types.DeviceStatusEnum.DeviceDisconnected) {
       console.log('Connection Intended', connectionIntended)
       if (connectionIntended) {
         connectionStatus.set('reconnecting')
-        connect(address)
+        connect(currentConnectionAddress)
       } else {
         connectionStatus.set('disconnected')
         reset()
       }
+    } else if (e === Types.DeviceStatusEnum.DeviceConnected) {
+      connectionStatus.set('connected')
     }
   })
 
@@ -361,13 +397,6 @@ export async function connect(address?: string) {
     packets.upsert({ id, detectionSensor: String(data) })
   })
 
-  /** onChannelPacket */
-  connection.events.onChannelPacket.subscribe((e) => {
-    // Object.assign(deviceConfig, copy(e))
-    // deviceConfig
-    // console.log('CHANNEL', copy(e))
-  })
-
   connection.events.onConfigPacket.subscribe((e) => {
     Object.assign(deviceConfig, extractPayload(copy(e)))
   })
@@ -378,10 +407,6 @@ export async function connect(address?: string) {
 
   // /** Subscribe to all events */
   for (let event in connection.events) {
-    // connection.events[event].subscribe((e: any) => {
-    //   console.debug(`[meshtastic]`, event)
-    // })
-
     if (
       [
         'onPendingSettingsChange',
@@ -419,9 +444,8 @@ export async function connect(address?: string) {
   function updateTimeout() {
     if (connectionStatus.value == 'connected') return
 
-    // console.log('[meshtastic]', 'Updating timeout')
-    clearTimeout(connection['timeout'])
-    connection['timeout'] = setTimeout(() => {
+    clearTimeout(connectionTimeout)
+    connectionTimeout = setTimeout(() => {
       if (connectionStatus.value != 'connected') {
         console.log('[meshtastic]', 'No recent data from device, assuming disconnected')
         disconnect(false)
@@ -481,14 +505,40 @@ export async function connect(address?: string) {
   })
 
   // Attempt to connect to the specified MeshTastic Node
-  console.log('[meshtastic] Connecting to Node', address, connection instanceof BleConnection ? 'via Bluetooth' : 'via IP')
-  if (connection instanceof BleConnection) {
-    // console.log(bluetoothDevices[address])
-    await connection.connect({ device: bluetoothDevices[address] })
+  console.log('[meshtastic] Connecting to Node', address, transport instanceof TransportWebBluetooth ? 'via Bluetooth' : 'via IP')
+  if (transport instanceof TransportWebBluetooth) {
+    console.log('[meshtastic] Bluetooth transport ready')
   } else {
     process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
-    await connection.connect({ address, fetchInterval: 2000, tls: enableTLS.value })
+    console.log('[meshtastic] HTTP transport ready for', address)
   }
+
+  try {
+    await connection.configure()
+  } catch (error) {
+    console.error('[meshtastic] Failed to send configuration request:', error)
+    connectionStatus.set('disconnected')
+    return
+  }
+
+  if (transport instanceof TransportWebBluetooth) {
+    const bluetoothDevice = bluetoothDevices[currentConnectionAddress]
+    if (bluetoothDevice && bluetoothDevice.gatt && !bluetoothDevice.gatt.connected) {
+      try {
+        await bluetoothDevice.gatt.connect()
+      } catch (error) {
+        console.error('[meshtastic] Failed to reconnect GATT:', error)
+        connectionStatus.set('disconnected')
+        return
+      }
+    }
+  }
+
+  setTimeout(() => {
+    if (connectionStatus.value === 'connecting') {
+      console.log('[meshtastic] Connection timeout - still in connecting state after 10 seconds')
+    }
+  }, 10000) // 10 second timeout
 }
 
 export async function send({ message = '', destination, channel, wantAck = true }) {
