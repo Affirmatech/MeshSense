@@ -1,46 +1,51 @@
 on:
   push
+
 jobs:
-  ubuntu22:
+  build-linux:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository (with submodules)
+      - name: Checkout repo (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Update apt repos
-        run: sudo apt-get update
-
-      - name: Install base dependencies
-        run: sudo apt-get install build-essential libfuse2 fonts-noto-color-emoji libdbus-1-dev
+      - name: Update apt repos & install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libfuse2 fonts-noto-color-emoji libdbus-1-dev
 
       - name: Build webbluetooth dependency
         run: |
           cd api/webbluetooth
           npm install
-          npm run build || npm run build:all || echo "No build or build:all script found"
+          npm run build:all
 
-      - name: updates
+      - name: Run update script
         run: ./update.mjs
 
-      - name: Install dependencies for Electron app
-        run: npm install
+      - name: Install electron dependencies
+        run: |
+          cd electron
+          npm install
 
       - name: Build Electron AppImage
-        run: npx electron-builder --linux AppImage
-
-      - name: Generate SHA256 checksum
         run: |
-          cd dist
-          sha256sum *.AppImage > sha256sum.txt
+          cd electron
+          npx electron-builder --linux AppImage
 
-      - name: Upload AppImage and checksum
+      - name: Generate SHA‑256 checksum
+        run: |
+          cd electron/dist
+          sha256sum *.AppImage > sha256sum.txt
+          cat sha256sum.txt
+
+      - name: Upload AppImage & checksum artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-build-artifacts
+          name: meshsense-linux
           path: |
-            dist/*.AppImage
-            dist/sha256sum.txt
-        
+            electron/dist/*.AppImage
+            electron/dist/sha256sum.txt
+            
