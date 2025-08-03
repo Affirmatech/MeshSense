@@ -30,6 +30,17 @@ jobs:
           cd electron
           npm install
 
+      - name: Ensure Electron build output exists
+        run: |
+          cd electron
+          # Check if entry file exists
+          if [ ! -f "out/main/index.js" ]; then
+            echo "⚠️ Entry file missing. Running build..."
+            npm run build || npm run build:all || echo "No build script available, skipping..."
+          else
+            echo "✅ Build output detected. Skipping rebuild."
+          fi
+
       - name: Build Electron AppImage
         run: |
           cd electron
@@ -48,4 +59,3 @@ jobs:
           path: |
             electron/dist/*.AppImage
             electron/dist/sha256sum.txt
-            
