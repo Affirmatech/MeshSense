@@ -1,0 +1,20 @@
+on:
+  push
+jobs:
+  ubuntu24:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update apt repos
+        run: sudo apt-get update
+
+      - name: Install base dependencies
+        run: sudo apt-get install build-essential libfuse2 fonts-noto-color-emoji libdbus-1-dev
+
+      - name: Build webbluetooth dependency
+        run: cd api/webbluetooth \
+            npm i \
+            npm run build:all \
+            
