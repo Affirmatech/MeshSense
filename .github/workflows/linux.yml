@@ -31,4 +31,16 @@ jobs:
       - name: Build Electron AppImage
         run: npx electron-builder --linux AppImage
 
+      - name: Generate SHA256 checksum
+        run: |
+          cd dist
+          sha256sum *.AppImage > sha256sum.txt
+
+      - name: Upload AppImage and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build-artifacts
+          path: |
+            dist/*.AppImage
+            dist/sha256sum.txt
         
