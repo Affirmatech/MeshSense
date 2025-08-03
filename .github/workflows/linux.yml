@@ -11,10 +11,11 @@ jobs:
         run: sudo apt-get update
 
       - name: Install base dependencies
-        run: sudo apt-get install build-essential libfuse2 fonts-noto-color-emoji libdbus-1-dev
+        run: sudo apt-get install -y build-essential libfuse2 fonts-noto-color-emoji libdbus-1-dev
 
       - name: Build webbluetooth dependency
-        run: cd api/webbluetooth \
-            npm i \
-            npm run build:all \
+        run: |
+          cd api/webbluetooth
+          npm install
+          npm run build:all
             
