@@ -25,4 +25,10 @@ jobs:
       - name: updates
         run: ./update.mjs
 
-      
+      - name: Install dependencies for Electron app
+        run: npm install
+
+      - name: Build Electron AppImage
+        run: npx electron-builder --linux AppImage
+
+        
