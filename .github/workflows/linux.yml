@@ -21,3 +21,8 @@ jobs:
           cd api/webbluetooth
           npm install
           npm run build || npm run build:all || echo "No build or build:all script found"
+
+      - name: updates
+        run: ./update.mjs
+
+      
