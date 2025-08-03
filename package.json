@@ -1,0 +1,8 @@
+"build": {
+  "appId": "com.meshtastic.meshtastic",
+  "productName": "Meshtastic",
+  "linux": {
+    "target": "AppImage",
+    "category": "Utility"
+  }
+}
