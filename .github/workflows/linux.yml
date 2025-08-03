@@ -19,7 +19,7 @@ jobs:
       - name: Build webbluetooth dependency
         run: |
           cd api/webbluetooth
-          npm install
+          npm i
           npm run build:all
 
       - name: Run update script
