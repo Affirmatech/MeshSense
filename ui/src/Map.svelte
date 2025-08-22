@@ -7,7 +7,7 @@
   export function getSvgUri(name: string) {
     const hexId = parseInt(name).toString(16).padStart(8, '0')
     const colorId = hexId.slice(-6)
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({ 
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(generateHexer({
       name,
       borderColor: `#${colorId}`
     }))
@@ -25,13 +25,14 @@
 </script>
 
 <script lang="ts">
-  import { connectionStatus, myNodeNum, version, type NodeInfo } from 'api/src/vars'
+  import { connectionStatus, myNodeNum, type NodeInfo } from 'api/src/vars'
   import { filteredNodes, isInactive, nodeVisibilityMode } from './Nodes.svelte'
   import Card from './lib/Card.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
-  import { getCoordinates, getNodeById, getNodeName, getNodeNameById, setPosition } from './lib/util'
+  import { isElectron, getCoordinates, getNodeById, getNodeName, getNodeNameById, setPosition } from './lib/util'
   import { showConfigModal, showPage } from './SettingsModal.svelte'
   import { newsVisible } from './News.svelte'
+  import ButtonBar from './lib/ButtonBar.svelte'
 
   export let ol: OpenLayersMap = undefined
 
@@ -76,20 +77,13 @@
 </script>
 
 <Card title="Map" {...$$restProps}>
-  <h2 slot="title" class="rounded-t flex items-center gap-1">
+  <h2 slot="title" class="rounded-t flex items-center">
     <div class="mr-2">Map</div>
-
-    <div class="grow">
-      <button on:click={() => ($expandedMap = !$expandedMap)} class="btn font-normal text-xs">{$expandedMap ? 'Collapse' : 'Expand'}</button>
+    <div class="flex-1 flex justify-end">
+      {#if !isElectron}
+        <ButtonBar />
+      {/if}
     </div>
-    <div class="text-xs text-white/50 pr-2">MeshSense {$version}</div>
-    <a href="https://affirmatech.com" target="_blank" rel="noopener" class="text-xs text-white/50 pr-2 font-normal">by Affirmatech</a>
-    <a title="Support MeshSense" target="_blank" rel="noopener" class="!text-rose-400 font-bold btn text-sm hover:brightness-110" href="https://purchase.affirmatech.com/?productId=MeshSenseDonation"
-      >♥</a
-    >
-    <button title="What's New?" class="btn btn-sm h-6 grid place-content-center" on:click={() => newsVisible.set(true)}>📰</button>
-    <a title="MeshSense Global Map" target="_blank" rel="noopener" class="font-bold btn text-sm hover:brightness-110" href="https://meshsense.affirmatech.com/">🌎</a>
-    <button title="Settings" class="btn btn-sm h-6 font-normal grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
   </h2>
   <OpenLayersMap
     bind:this={ol}
