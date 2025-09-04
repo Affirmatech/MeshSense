@@ -60,6 +60,34 @@
     }
   }
 
+function downloadCsv() {
+    try {
+      const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'log.csv'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('Download failed', e)
+    }
+  }
+
+  function copyCsvToClipboard(e) {
+    try {
+      navigator.clipboard.writeText(csvText)
+      const button = e.target
+      const originalText = button.textContent
+      button.textContent = 'Copied!'
+      setTimeout(() => {
+        button.textContent = originalText
+      }, 1000)
+    } catch (e) {
+      console.error('Copy to clipboard failed', e)
+    }
+  }
+
   function getType(packet: MeshPacket) {
     if (packet.payloadVariant?.case == 'encrypted') return 'Encrypted'
     if (packet.message) return 'Message'
@@ -83,7 +111,11 @@
   <pre>{JSON.stringify(selectedPacket, undefined, 2)}</pre>
 </Modal>
 
-<Modal title="CSV Log" bind:visible={showCsvModal}>
+<Modal title="CSV Log" bind:visible={showCsvModal}> 
+  <div class="flex p-1 gap-1 -mx-3 -my-2 mb-2 bg-gradient-to-br from-black to-blue-950 flex-wrap self-end">
+    <button class="btn btn-xs text-xs block ml-2 " on:click={() => downloadCsv()}>Download</button>
+    <button class="btn btn-xs text-xs block" on:click={copyCsvToClipboard}>Copy to Clipboard</button>
+  </div>
   <pre id="csvTextElement" bind:this={csvTextElement}>{csvText}</pre>
 </Modal>
 
