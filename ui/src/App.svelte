@@ -12,8 +12,11 @@
   import { allowRemoteMessaging, connectionStatus, version } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
   import SettingsModal from './SettingsModal.svelte'
-  import { hasAccess } from './lib/util'
+  import { isElectron, hasAccess } from './lib/util'
   import News, { newsVisible } from './News.svelte'
+  import CustomTitleBar from './lib/CustomTitleBar.svelte'
+  import ButtonBar from './lib/ButtonBar.svelte'
+  import Welcome from './Welcome.svelte'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -44,7 +47,11 @@
 <UpdateStatus />
 <SettingsModal />
 
-<main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 overflow-auto h-full">
+{#if isElectron}
+  <CustomTitleBar title="MeshSense" />
+{/if}
+
+<main class="w-full grid grid-cols-[auto_1fr] gap-2 p-2 {isElectron && 'pt-10'} overflow-auto h-full">
   <News />
   <div class="flex flex-col gap-2 content-start h-full overflow-auto">
     {#if $hasAccess}
@@ -61,27 +68,7 @@
     {#if $connectionStatus == 'connected'}
       <Map class={$expandedMap ? 'row-span-full col-span-full' : ''} bind:ol />
     {:else}
-      <div class="grid items-center px-5 m-auto">
-        <div class="text-3xl font-bold text-white">Welcome to MeshSense!</div>
-        <div class="max-w-md mt-5 flex flex-col gap-4">
-          <div>Available bluetooth devices will appear on the left</div>
-          <div>If your device is on the network, enter it's IP address in the Device IP field and click Connect.</div>
-
-          {#if !$hasAccess}
-            <div>If you do not see the option to connect, you can get access by connecting via localhost or by setting your Access and User key.</div>
-          {/if}
-
-          <div>
-            For additional information, take a look at our <a target="_blank" href="https://affirmatech.com/meshsense/faq">FAQ</a> and
-            <a target="_blank" href="https://affirmatech.com/meshsense/bluetooth">Bluetooth Tips</a>
-          </div>
-        </div>
-        <div class="font-normal absolute m-2 top-0 right-0 flex gap-2 items-center">
-          <div class="text-xs text-white/50 pr-2 font-bold">MeshSense {$version}</div>
-          <button class="btn btn-sm h-6 grid place-content-center" on:click={() => newsVisible.set(true)}>📰</button>
-          <button class="btn btn-sm h-6 grid place-content-center" on:click={() => showPage('Settings')}>⚙</button>
-        </div>
-      </div>
+      <Welcome />
     {/if}
     {#if !$expandedMap}
       <Log {ol} />

@@ -48,6 +48,11 @@ h2 {
   @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 font-bold text-white;
 }
 
+.titlebar {
+  @apply fixed flex top-0 left-0 right-0 z-0 select-none justify-center text-center p-2 px-3 font-bold text-white;
+  -webkit-app-region: drag;
+}
+
 .header-t {
   @apply select-none bg-gradient-to-br from-black to-blue-950 p-1 px-3 font-bold text-white rounded-t;
 }

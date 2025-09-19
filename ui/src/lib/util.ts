@@ -6,7 +6,7 @@ import axios from 'axios'
 
 export let blockUserKey = writable(false)
 export const userKey = writable(localStorage.getItem('userKey') || '')
-
+export const isElectron = window?.api != null
 export const hasAccess = derived([accessKey, userKey], ([$accessKey, $userKey]) => window.location.hostname == 'localhost' || ($accessKey != '' && $accessKey == $userKey))
 
 let failedUserKeyAttempts = 0
