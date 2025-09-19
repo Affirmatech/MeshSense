@@ -30,7 +30,11 @@ let externals = [
   'aws-sdk',
   'nock',
   'mariadb/callback',
-  'libsql'
+  'libsql',
+  '@meshtastic/core',
+  '@meshtastic/transport-http',
+  '@meshtastic/transport-web-bluetooth',
+  '@meshtastic/transport-web-serial'
 ]
 
 export default defineConfig({
