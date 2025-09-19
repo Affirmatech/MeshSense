@@ -4,6 +4,7 @@ import { electronApp, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { autoUpdater } from 'electron-updater'
 import { buildMenu } from './menu'
+import { getWindowState, saveWindowState } from './window'
 
 process.on('uncaughtException', (error: any) => {
   // Ignore EIO errors during shutdown, these are expected when child processes are exiting
@@ -29,10 +30,14 @@ async function updateCheckLoop() {
 }
 
 function createWindow(): void {
+  const windowState = getWindowState()
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1300,
-    height: 900,
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -40,6 +45,20 @@ function createWindow(): void {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
+  })
+
+  if (windowState.isMaximized) {
+    mainWindow.maximize()
+  }
+
+  const saveState = () => saveWindowState(mainWindow)
+  mainWindow.on('resize', saveState)
+  mainWindow.on('move', saveState)
+  mainWindow.on('maximize', saveState)
+  mainWindow.on('unmaximize', saveState)
+
+  mainWindow.on('close', () => {
+    saveWindowState(mainWindow)
   })
 
   mainWindow.on('ready-to-show', () => {
