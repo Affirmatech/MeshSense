@@ -231,7 +231,7 @@
           >
             {$filteredNodes.length}
           </button>
-          <select bind:value={$sortField} class="btn text-xs font-normal w-20">
+          <select bind:value={$sortField} class="btn text-xs font-normal w-20 !bg-blue-950">
             <option value="lastHeard">Last Heard</option>
             <option value="shortName">Short Name</option>
             <option value="longName">Long Name</option>
