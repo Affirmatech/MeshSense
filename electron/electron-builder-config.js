@@ -39,6 +39,7 @@ const config = {
   },
   mac: {
     artifactName: '${name}' + channelString + '-${arch}.${ext}',
+    icon: 'build/meshsense-regular-adaptive.icns',
     notarize: {
       teamId: `${process.env.APPLE_TEAM_ID}`
     },
