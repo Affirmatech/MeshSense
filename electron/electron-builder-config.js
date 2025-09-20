@@ -2,6 +2,16 @@ var pjson = require('./package.json')
 let channel = pjson.version.match(/-(?<channel>\w*).*/)?.groups?.channel
 let channelString = channel ? `-${channel}` : ''
 
+const winSigningOptions = {
+  signingHashAlgorithms: ['sha256'],
+  publisherName: ['Affirmatech Inc.', 'Affirmatech Incorporated'],
+  signAndEditExecutable: true,
+  verifyUpdateCodeSignature: true,
+  certificateSubjectName: 'Affirmatech Incorporated'
+};
+
+const enableWinSigning = process.env.ENABLE_WIN_SIGNING === 'true';
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -25,11 +35,7 @@ const config = {
   win: {
     artifactName: '${name}' + channelString + '-${arch}.${ext}',
     executableName: 'MeshSense',
-    signingHashAlgorithms: ['sha256'],
-    publisherName: ['Affirmatech Inc.', 'Affirmatech Incorporated'],
-    signAndEditExecutable: true,
-    verifyUpdateCodeSignature: true,
-    certificateSubjectName: 'Affirmatech Incorporated'
+    ...(enableWinSigning ? winSigningOptions : {})
   },
   nsis: {
     artifactName: '${name}' + channelString + '-${arch}.${ext}',
@@ -46,6 +52,12 @@ const config = {
     extendInfo: [
       {
         NSDocumentsFolderUsageDescription: "Application requests access to the user's Documents folder."
+      }
+    ],
+    target: [
+      {
+        target: 'dmg',
+        arch: ['universal'],
       }
     ]
   },
