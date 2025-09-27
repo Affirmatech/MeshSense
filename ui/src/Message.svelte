@@ -47,7 +47,7 @@
     <select bind:value={$messageDestination} class="input font-normal text-sm border border-blue-500/50 !bg-blue-950" name="" id="">
       <option disabled>== Channels ==</option>
       {#each $channels as channel}
-        {#if channel.role != 'DISABLED'}
+        {#if channel.role != 0}
           <option value={channel.index}>{channel.settings.name || `Channel ${channel.index}`}</option>
         {/if}
       {/each}

@@ -3,6 +3,7 @@ import './lib/persistence'
 import { app, createRoutes, finalize, server } from './lib/server'
 import './meshtastic'
 import { connect, disconnect, deleteNodes, requestPosition, send, traceRoute, setPosition, deviceConfig } from './meshtastic'
+import { getMessages } from './lib/messagePersistence'
 import { address, apiPort, currentTime, apiHostname, accessKey, autoConnectOnStartup, meshSenseNewsDate, allowRemoteMessaging } from './vars'
 import { hostname } from 'os'
 import intercept from 'intercept-stdout'
@@ -96,6 +97,12 @@ createRoutes((app) => {
   app.get('/deviceConfig', async (req, res) => {
     if (req.query.accessKey != accessKey.value && req.hostname.toLowerCase() != 'localhost') return res.sendStatus(403)
     return res.json(deviceConfig)
+  })
+
+  app.get('/messages', async (req, res) => {
+    if (!isAuthorized(req)) return res.sendStatus(403)
+    const messages = await getMessages()
+    return res.json(messages)
   })
 
   app.post('/position', async (req, res) => {

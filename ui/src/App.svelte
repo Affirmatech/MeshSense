@@ -4,16 +4,18 @@
   // import ServiceWorker from './lib/ServiceWorker.svelte'
   import { WebSocketClient } from './lib/wsc'
   import Log from './Log.svelte'
+  import UserMessages from './UserMessages.svelte'
   import Nodes, { smallMode, focusNodeFilter } from './Nodes.svelte'
   import Map, { expandedMap } from './Map.svelte'
   import OpenLayersMap from './lib/OpenLayersMap.svelte'
   import Bluetooth from './Bluetooth.svelte'
   import Message from './Message.svelte'
-  import { allowRemoteMessaging, connectionStatus, version } from 'api/src/vars'
+  import { allowRemoteMessaging, connectionStatus, version, packets } from 'api/src/vars'
   import UpdateStatus from './lib/UpdateStatus.svelte'
   import SettingsModal from './SettingsModal.svelte'
   import { hasAccess } from './lib/util'
   import News, { newsVisible } from './News.svelte'
+  import { messages } from './lib/messageStore'
 
   export const ws = new WebSocketClient(`${import.meta.env.VITE_PATH || ''}/ws`)
   axios.defaults.baseURL = import.meta.env.VITE_PATH
@@ -21,11 +23,35 @@
 
 <script lang="ts">
   let ol: OpenLayersMap
+  let activeTab: 'messages' | 'log' = 'messages'
 
   import { onMount } from 'svelte'
   import { showPage } from './SettingsModal.svelte'
 
   onMount(() => {
+    // Fetch initial message history from the server
+    axios.get('/messages').then(response => {
+        messages.set(response.data.sort((a, b) => a.rxTime - b.rxTime));
+    }).catch(error => {
+        console.error("Failed to fetch message history:", error);
+    });
+
+    const handleNewPacket = (packet) => {
+      if (packet?.message) {
+        messages.update(msgs => {
+          if (!msgs.some(m => m.id === packet.id)) {
+            // Add new message and re-sort
+            return [...msgs, packet].sort((a, b) => a.rxTime - b.rxTime);
+          }
+          return msgs; // Return existing messages if it's a duplicate
+        });
+      }
+    };
+
+    // Listen for new packets coming in via websocket
+    const offPush = packets.on('push', handleNewPacket);
+    const offUpsert = packets.on('upsert', handleNewPacket);
+
     if (window.api?.onOpenSettings) {
       window.api.onOpenSettings(() => {
         showPage('Settings')
@@ -37,6 +63,12 @@
         focusNodeFilter()
       })
     }
+
+    // Cleanup listeners on component destroy
+    return () => {
+      offPush();
+      offUpsert();
+    };
   })
 </script>
 
@@ -84,7 +116,19 @@
       </div>
     {/if}
     {#if !$expandedMap}
-      <Log {ol} />
+      <div class="flex flex-col h-full bg-gray-800 rounded-lg">
+        <div class="flex-shrink-0 border-b border-gray-700">
+          <button class="px-4 py-2 text-sm" class:font-bold={activeTab === 'messages'} class:text-white={activeTab === 'messages'} class:text-gray-400={activeTab !== 'messages'} on:click={() => activeTab = 'messages'}>Messages</button>
+          <button class="px-4 py-2 text-sm" class:font-bold={activeTab === 'log'} class:text-white={activeTab === 'log'} class:text-gray-400={activeTab !== 'log'} on:click={() => activeTab = 'log'}>Log</button>
+        </div>
+        <div class="flex-grow h-full overflow-y-auto">
+          {#if activeTab === 'messages'}
+            <UserMessages />
+          {:else}
+            <Log {ol} />
+          {/if}
+        </div>
+      </div>
     {/if}
   </div>
 </main>

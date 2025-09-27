@@ -69,8 +69,13 @@ export function scrollToBottom(element: HTMLElement, force?, notifyUnseen: (reco
 
 export function getCoordinates(node: NodeInfo | number) {
   if (typeof node == 'number') node = getNodeById(node)
-  if (!node?.position?.longitudeI) return [node?.approximatePosition?.longitude, node?.approximatePosition?.latitude]
-  return [node?.position?.longitudeI / 10000000, node?.position?.latitudeI / 10000000]
+  if (!node?.position?.longitudeI) {
+    if (node?.approximatePosition) {
+      return [node.approximatePosition.longitude, node.approximatePosition.latitude]
+    }
+    return [undefined, undefined]
+  }
+  return [node.position.longitudeI / 10000000, node.position.latitudeI / 10000000]
 }
 
 export function getNodeById(num: number) {
@@ -162,7 +167,7 @@ export function testPacket() {
     delayed: 0,
     viaMqtt: false,
     hopStart: 7,
-    publicKey: {},
+    publicKey: '',
     pkiEncrypted: false,
     data: {
       $typeName: 'meshtastic.Telemetry',
@@ -175,7 +180,7 @@ export function testPacket() {
         }
       }
     }
-  })
+  } as any)
 
   nodes.upsert({
     num: 3045257252,

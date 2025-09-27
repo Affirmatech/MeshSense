@@ -33,6 +33,7 @@ import exitHook from 'exit-hook'
 import * as geolib from 'geolib'
 import axios from 'axios'
 import { State } from './lib/state'
+import { saveMessage } from './lib/messagePersistence'
 
 let routeCache: State<Record<number, number[]>>
 
@@ -331,6 +332,7 @@ export async function connect(address?: string) {
     message.show = true
     let packet: MeshPacket
     packet = packets.upsert({ id: message.id, message })
+    saveMessage(packet)
     let node = getNodeById(packet.from)
     if (packet?.viaMqtt === false) sendToMeshMap({ num: message.from }, node, packet)
   })
