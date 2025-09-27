@@ -333,6 +333,8 @@
                   <div title="TAK Tracker Node" class="bg-indigo-500/50 text-indigo-300 rounded px-1 font-bold cursor-help">TT</div>
                 {:else if node.user.role === 11}
                   <div title="Router_Late Node" class="bg-red-500/50 text-red-200 rounded px-1 font-bold cursor-help">RL</div>
+                {:else if node.user.role === 12}
+                  <div title="Client Base" class="bg-blue-500/50 text-red-200 rounded px-1 font-bold cursor-help">CB</div>
                 {/if}
               {/if}
               {#if node.viaMqtt}
