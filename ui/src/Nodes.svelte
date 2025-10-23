@@ -58,6 +58,8 @@
             return $inactiveNodes.some((inactive) => node.num === inactive.num)
           case 'all':
             return true
+          case 'favorite':
+            return node.isFavorite === true
           case 'active':
           default:
             return node.num === $myNodeNum || !$inactiveNodes.some((inactive) => node.num === inactive.num)
@@ -163,6 +165,9 @@
         $nodeVisibilityMode = 'inactive'
         break
       case 'inactive':
+        $nodeVisibilityMode = 'favorite'
+        break
+      case 'favorite':
         $nodeVisibilityMode = 'all'
         break
       case 'all':
@@ -226,6 +231,7 @@
             class="text-xs font-normal ml-1 {
               $nodeVisibilityMode === 'active' ? 'btn-active' :
               $nodeVisibilityMode === 'inactive' ? 'btn-inactive' :
+              $nodeVisibilityMode === 'favorite' ? 'btn-favorite' :
               'btn'
             }"
           >
