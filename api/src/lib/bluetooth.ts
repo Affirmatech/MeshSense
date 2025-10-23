@@ -1,9 +1,8 @@
-import { Bluetooth } from '../../webbluetooth/dist'
+import { Bluetooth } from 'webbluetooth'
+import { TransportWebBluetooth } from '@meshtastic/transport-web-bluetooth'
 import { State } from './state'
-import { BluetoothDeviceImpl } from '../../webbluetooth/dist/device'
-import { createBluetooth } from 'node-ble'
 
-export let bluetoothDevices: Record<string, BluetoothDeviceImpl> = {}
+export let bluetoothDevices: Record<string, any> = {}
 let bluetoothDeviceList = new State('bluetoothDeviceList', [], { primaryKey: 'id', hideLog: true })
 
 let scanning = false
@@ -18,23 +17,16 @@ export async function scanForDevice() {
   console.log('[bluetooth] scanning...')
 
   try {
-    let device: BluetoothDeviceImpl = await bluetooth.requestDevice({ acceptAllDevices: true }).catch((e) => console.warn(e))
-    // let device = await bluetooth.requestDevice({ filters: [{ services: [Constants.ServiceUuid] }] }).catch((e) => console.error(e))
-    // let device = await bluetooth.requestDevice({ filters: [{ serviceData: [] }] }).catch((e) => console.error(e))
-    // let device = await bluetooth
-    //   .requestDevice({
-    //     filters: [{ services: ['00001801-0000-1000-8000-00805f9b34fb'] }, { services: ['6ba1b218-15a8-461f-9fa8-5dcae273eafd'] }, { services: ['0000180f-0000-1000-8000-00805f9b34fb'] }]
-    //   })
-    //   .catch((e) => console.error(e))
-
-    // device.gatt.disconnect()
+    let device: any = await bluetooth.requestDevice({
+      filters: [{ services: [TransportWebBluetooth.ServiceUuid] }]
+    }).catch((e) => console.warn(e))
 
     if (device) {
       console.log('[bluetooth] Device Detected |', device.id, device.name)
       bluetoothDevices[device.id] = device
       let { id, name } = device
       bluetoothDeviceList.upsert({ id, name })
-      if (id == deviceTargetId) stopScanning()
+      if (device.id == deviceTargetId) stopScanning()
     }
 
     if (!exitScanning) setTimeout(scanForDevice, 500)
@@ -56,7 +48,7 @@ export async function beginScanning(targetId?: string) {
 
   /** Look for an available bluetooth adapter */
   try {
-    adapterAvailable = process.platform == 'linux' ? (await createBluetooth().bluetooth.adapters()).length > 0 : await bluetooth.getAvailability()
+    adapterAvailable = await bluetooth.getAvailability()
   } catch (e) {
     console.warn('[bluetooth] Unable to detect Bluetooth adapters')
   }
@@ -74,26 +66,3 @@ export function stopScanning() {
   exitScanning = true
   scanning = false
 }
-
-// console.log('BLUETOOTH', await bluetooth.getDevices())
-
-// console.log('BLUETOOTH', await bluetooth.requestDevice({ filters: [{ services: '' }] }))
-
-// console.log(
-//   'BLUETOOTH aAD',
-//   await bluetooth.requestDevice({
-//     acceptAllDevices: true
-//     // exclusionFilters: [{ services: [] }]
-//   })
-// )
-
-/** Custom deviceFound logic. Seems to stop at first device **/
-// let b = new Bluetooth({
-//   scanTime: 60,
-//   deviceFound(device, selectFn) {
-//     console.log('DEVICEFOUND', device.id, device.name)
-//     return true
-//   },
-//   allowAllDevices: true
-// })
-// console.log('REQUESTDEVICE', await b.requestDevice({ acceptAllDevices: true }))
